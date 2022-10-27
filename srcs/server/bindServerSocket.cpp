@@ -19,7 +19,7 @@ int	bindServerSocket(int serverSocket, struct sockaddr_in& serverSocketAddr)
 
 	if (bind(serverSocket, (const struct sockaddr *)&serverSocketAddr, sizeAddr) == FAILED)
 	{
-		std::cerr << "Error : Server socket can't bind !" << std::endl;
+		std::cerr << "Error : Server socket cannot bind to address !" << std::endl;
 		close(serverSocket);
 		return (FAILED);
 	}

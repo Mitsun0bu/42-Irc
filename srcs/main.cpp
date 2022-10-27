@@ -14,14 +14,13 @@
 
 int	main(int ac, char** av)
 {
-	std::pair <int, std::string>	param;
-	int								serverSocket;
-
-	param = parseArguments(ac, av);
-
-	serverSocket = setServerSocket(param.first);
+	std::pair <int, std::string> param = parseArguments(ac, av);
+	
+	int serverSocket = setServerSocket(param.first);
 	if (serverSocket == FAILED)
 		exit(1);
+	
+	setServerPasswd();
 
 	return (0);
 }
