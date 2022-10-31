@@ -1,30 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parseEntries.cpp                                   :+:      :+:    :+:   */
+/*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/26 13:52:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/10/26 14:08:30 by llethuil         ###   ########lyon.fr   */
+/*   Created: 2022/10/26 13:32:28 by llethuil          #+#    #+#             */
+/*   Updated: 2022/10/31 14:56:32 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../incs/main.hpp"
+# include "../../incs/main.hpp"
 
-std::pair<int, std::string> parseArguments(int ac, char** av)
+int	main(int ac, char** av)
 {
-	std::pair<int, std::string> entries;
+	std::pair <int, std::string> param = parseArguments(ac, av);
 
-	if (ac != 3)
-	{
-		std::cerr << "Error : Invalid arguments !" << std::endl
-				  << "Usage : ./ircserv [port] [password]";
+	int serverSocket = setServerSocket(param.first);
+	if (serverSocket == FAILED)
 		exit(1);
-	}
-	else
-	{
-		entries = std::make_pair(atoi(av[1]), av[2]);
-		return (entries);
-	}
+
+	std::string passwd = param.second;
+
+	return (0);
 }
+

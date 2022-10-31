@@ -1,4 +1,16 @@
-#include "../incs/main.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   setServerSocket.cpp                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/10/31 14:42:45 by llethuil          #+#    #+#             */
+/*   Updated: 2022/10/31 14:57:40 by llethuil         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../../incs/main.hpp"
 
 int setServerSocket(int port)
 {
@@ -15,9 +27,9 @@ int setServerSocket(int port)
 	// BIND THE serverSocket TO serverSocketAddr						//
 	if (bindServerSocket(serverSocket, serverSocketAddr) == FAILED)
 		return (FAILED);
-	
+
 	// LISTEN TO THE port ON THE serverSocket							//
-	if (listen(serverSocket, SOMAXCONN) == FAILED)								
+	if (listen(serverSocket, SOMAXCONN) == FAILED)
 	{
 		std::cerr << "Error : Server socket cannot listen to the targeted port !" << std::endl;
 		return (FAILED);

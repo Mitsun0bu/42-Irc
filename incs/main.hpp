@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/10/26 17:09:25 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/10/31 14:58:23 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,9 @@
 
 int							main(int argc, char** av);
 std::pair<int, std::string>	parseArguments(int ac, char** av);
+int							bindServerSocket(int serverSocket, struct sockaddr_in& serverSocketAddr);
 int							setServerSocket(int port);
 void						setServerSocketAddr(struct sockaddr_in& serverSocketAddr, const char* internetHostAddress, int port);
-int							bindServerSocket(int serverSocket, struct sockaddr_in& serverSocketAddr);
 
 
 # endif
