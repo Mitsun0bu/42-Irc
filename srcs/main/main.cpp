@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:32:28 by llethuil          #+#    #+#             */
-/*   Updated: 2022/10/31 14:56:32 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/10/31 18:13:15 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,37 @@ int	main(int ac, char** av)
 		exit(1);
 
 	std::string passwd = param.second;
+
+	int new_socket;
+	struct sockaddr_storage their_address;
+	socklen_t addr_size = sizeof(their_address);
+
+	while(1)
+	{
+		std::cout << std::endl << "~~~ Waiting for new connection ~~~" << std::endl;
+
+		if ((new_socket = accept(serverSocket, (struct sockaddr *)&their_address, &addr_size)) == FAILED)
+		{
+			perror("In accept");
+			exit(EXIT_FAILURE);
+		}
+		else
+		{
+			std::cout << std::endl << "~~~ New connection established~~~" << std::endl;
+
+			char buffer[1024];
+			int n = 0;
+			bzero(buffer,1024);
+			n = read(new_socket, buffer, 1024);
+			if (n < 0)
+				std::cout << "ERROR reading from socket";
+			std::cout << "Here is the message: " << buffer ;
+		}
+
+	}
+
+	// CLOSE THE serverSocket
+	close(serverSocket);
 
 	return (0);
 }
