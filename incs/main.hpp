@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/10/31 14:58:23 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/02 16:31:53 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 # define CYAN		"\x1B[36m"
 # define GREEN		"\x1B[32m"
 # define MAGENTA	"\x1B[35m"
+# define ORANGE		"\x1B[34m"
+# define PURPLE		"\x1B[35m"
 # define RED		"\x1B[31m"
 # define WHITE		"\x1B[97m"
 # define YELLOW		"\x1B[33m"
@@ -46,6 +48,7 @@
 # include <algorithm>
 # include <csignal>
 # include <cstring>
+# include <fcntl.h>
 # include <iostream>
 # include <map>
 # include <set>
@@ -69,9 +72,5 @@
 
 int							main(int argc, char** av);
 std::pair<int, std::string>	parseArguments(int ac, char** av);
-int							bindServerSocket(int serverSocket, struct sockaddr_in& serverSocketAddr);
-int							setServerSocket(int port);
-void						setServerSocketAddr(struct sockaddr_in& serverSocketAddr, const char* internetHostAddress, int port);
-
 
 # endif

@@ -6,52 +6,71 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:32:28 by llethuil          #+#    #+#             */
-/*   Updated: 2022/10/31 18:13:15 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/02 16:48:23 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "../../incs/main.hpp"
+# include <vector>
+# include "../../incs/Server.hpp"
+# include "../../incs/User.hpp"
+
+
+// regarder select()
 
 int	main(int ac, char** av)
 {
-	std::pair <int, std::string> param = parseArguments(ac, av);
+	std::pair<int, std::string>	param				= parseArguments(ac, av);
 
-	int serverSocket = setServerSocket(param.first);
-	if (serverSocket == FAILED)
+	int							port				= param.first;
+	std::string					passwd				= param.second;
+
+	int							addressFamily		= AF_INET;
+	int							socketType			= SOCK_STREAM;
+	int							socketFlag			= F_SETFL;
+	int							socketBlockingMode	= O_NONBLOCK;
+	int							protocol			= 0;
+	const char* 				internetHostAddr	= "127.0.0.1";
+
+	Server	s(port, addressFamily, socketType, socketFlag, socketBlockingMode, protocol, internetHostAddr);
+
+	if (s.setSocket() == FAILED)
 		exit(1);
 
-	std::string passwd = param.second;
+	User	b;
 
-	int new_socket;
-	struct sockaddr_storage their_address;
-	socklen_t addr_size = sizeof(their_address);
+	std::cout << std::endl << "~~~ Waiting for new connection ~~~" << std::endl;
 
 	while(1)
 	{
-		std::cout << std::endl << "~~~ Waiting for new connection ~~~" << std::endl;
-
-		if ((new_socket = accept(serverSocket, (struct sockaddr *)&their_address, &addr_size)) == FAILED)
-		{
-			perror("In accept");
-			exit(EXIT_FAILURE);
-		}
-		else
+		if ((b._socket = accept(s._socket, (struct sockaddr *)&b._socketAddr, &b._socketAddrSize)) != FAILED)
 		{
 			std::cout << std::endl << "~~~ New connection established~~~" << std::endl;
 
-			char buffer[1024];
-			int n = 0;
-			bzero(buffer,1024);
-			n = read(new_socket, buffer, 1024);
-			if (n < 0)
-				std::cout << "ERROR reading from socket";
-			std::cout << "Here is the message: " << buffer ;
+			std::vector<User>	users;
+			users.push_back(b);
+
+			char	buffer[512];
+			int		byteCount = 0;
+
+			bzero(buffer, 512);
+
+			byteCount = recv(b._socket, buffer, 512, 0);
+			std::cout << "Here is the message: " << buffer << std::endl;
+			byteCount += recv(b._socket, buffer, 512, 0);
+			std::cout << "Here is the message: " << buffer << std::endl;
+			byteCount += recv(b._socket, buffer, 512, 0);
+			std::cout << "Here is the message: " << buffer << std::endl;
+			std::cout	<< "recv()'d "
+						<< byteCount
+						<< " bytes of data."
+						<< std::endl;
 		}
 
 	}
 
 	// CLOSE THE serverSocket
-	close(serverSocket);
+	close(s._socket);
 
 	return (0);
 }
