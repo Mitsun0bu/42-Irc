@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:24:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/02 16:29:17 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/03 15:08:40 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ User::User(void)
 				<< "A User named has been created !"
 				<< std::endl;
 
+	// this->_socketAddrSize	= sizeof(this->_socketAddr);
+
 	return ;
 }
 
@@ -43,6 +45,8 @@ User::User(int socket, struct sockaddr_storage socketAddr, socklen_t socketAddrS
 				<< END
 				<< "A User named has been created !"
 				<< std::endl;
+
+	// this->_socketAddrSize	= sizeof(this->_socketAddr);
 
 	return ;
 }

@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/02 16:37:59 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/03 10:15:15 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ Server::Server(void)
 	std::cout	<< BLUE
 				<< "[CONSTRUCTOR] : "
 				<< END
-				<< "A Server named has been created !"
+				<< "A Server has been created !"
 				<< std::endl;
 
 	return ;
@@ -41,7 +41,7 @@ Server::Server(int port, int addressFamily, int socketType, int socketFlag, int 
 	std::cout	<< BLUE
 				<< "[CONSTRUCTOR] : "
 				<< END
-				<< "A Server named has been created !"
+				<< "A Server has been created !"
 				<< std::endl;
 
 	return ;
@@ -68,9 +68,15 @@ Server::Server(Server const & src)
 
 Server&	Server::operator=(Server const & src)
 {
-	this->_socket			= src._socket;
-	this->_socketAddr		= src._socketAddr;
-	this->_internetHostAddr	= src._internetHostAddr;
+	this->_port					= src._port;
+	this->_addressFamily		= src._addressFamily;
+	this->_socketType			= src._socketType;
+	this->_socketFlag			= src._socketFlag;
+	this->_socketBlockingMode	= src._socketBlockingMode;
+	this->_protocol				= src._protocol;
+	this->_socket				= src._socket;
+	this->_socketAddr			= src._socketAddr;
+	this->_internetHostAddr		= src._internetHostAddr;
 
 	return (*this);
 }
@@ -116,15 +122,15 @@ int		Server::setSocket()
 	// SET THE SOCKET AS NON-BLOCKING									//
 	fcntl(this->_socket, this->_socketFlag, this->_socketBlockingMode);
 
-	//	SET THE ADDRESS OF THE serverSocket								//
+	//	SET THE ADDRESS OF THE SOCKET									//
 	this->setSocketAddr(this->_socketAddr, this->_internetHostAddr, this->_port);
 
 
-	// BIND THE serverSocket TO serverSocketAddr						//
+	// BIND THE socket TO socketAddr									//
 	if (this->bindSocket(this->_socket, this->_socketAddr) == FAILED)
 		return (FAILED);
 
-	// LISTEN TO THE port ON THE serverSocket							//
+	// LISTEN TO THE PORT ON THE SERVER socket							//
 	if (listen(this->_socket, SOMAXCONN) == FAILED)
 	{
 		std::cerr	<< "Error : Server socket cannot listen to the targeted port !"
@@ -147,7 +153,10 @@ Server::~Server(void)
 	std::cout	<< PURPLE
 				<< "[DESTRUCTOR] : "
 				<< END
-				<< "A Server has been destroyed."
+				<< "A Server has been closed."
 				<< std::endl;
+
+	close(this->_socket);
+
 	return ;
 }

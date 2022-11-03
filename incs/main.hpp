@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/02 16:31:53 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/03 10:55:22 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,21 +48,24 @@
 # include <algorithm>
 # include <csignal>
 # include <cstring>
-# include <fcntl.h>
 # include <iostream>
 # include <map>
 # include <set>
 # include <sstream>
 # include <string>
-# include <unistd.h>
 # include <vector>
+
 # include <arpa/inet.h>
+# include <fcntl.h>
 # include <netdb.h>
 # include <netinet/in.h>
 # include <sys/socket.h>
-# include <sys/types.h>
 # include <sys/time.h>
+# include <sys/types.h>
+# include <unistd.h>
 
+# include "Server.hpp"
+# include "User.hpp"
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -72,5 +75,6 @@
 
 int							main(int argc, char** av);
 std::pair<int, std::string>	parseArguments(int ac, char** av);
+const void*					getInAddr(struct sockaddr *socketAddr);
 
 # endif
