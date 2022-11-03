@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:23:53 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/02 16:27:37 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/03 17:38:05 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,6 @@ class User
 	public :
 		/* constructors													*/
 								User(void);
-								User(
-										int						socket,
-										struct sockaddr_storage	socketAddr,
-										socklen_t				socketAddrSize
-									);
 
 		/* copy constructor												*/
 								User(const User& src);
@@ -48,16 +43,13 @@ class User
 		int						_socket;
 		struct sockaddr_storage	_socketAddr;
 		socklen_t				_socketAddrSize;
+		char					_remoteIP[INET6_ADDRSTRLEN];
+		const void*				_inAddr;
+		const char*				_ip;
 
 		/* member functions												*/
-		int						acceptServerConnection(int socket, sockaddr* socketAddr, socklen_t* socketAddrSize);
-
-		/* exceptions													*/
-		// class GradeTooHighException : public std::exception
-		// {
-		// 	public:
-		// 		virtual const char *what() const throw();
-		// };
+		const void*				getInAddr(void);
+		const char*				getIp(void);
 
 		/* destructor													*/
 								~User(void);

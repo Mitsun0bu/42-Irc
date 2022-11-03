@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:24:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/03 15:27:37 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/03 17:22:55 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,20 +25,6 @@
 /* ************************************************************************** */
 
 User::User(void)
-{
-	std::cout	<< BLUE
-				<< "[CONSTRUCTOR] : "
-				<< END
-				<< "A User named has been created !"
-				<< std::endl;
-
-	this->_socketAddrSize	= sizeof(this->_socketAddr);
-
-	return ;
-}
-
-User::User(int socket, struct sockaddr_storage socketAddr, socklen_t socketAddrSize) :
-	_socket(socket), _socketAddr(socketAddr), _socketAddrSize(socketAddrSize)
 {
 	std::cout	<< BLUE
 				<< "[CONSTRUCTOR] : "
@@ -75,6 +61,7 @@ User&	User::operator=(User const & src)
 	this->_socket			= src._socket;
 	this->_socketAddr		= src._socketAddr;
 	this->_socketAddrSize	= src._socketAddrSize;
+	strcpy(this->_remoteIP, src._remoteIP);
 
 	return (*this);
 }
@@ -84,6 +71,32 @@ User&	User::operator=(User const & src)
 /*                         ~~~ MEMBER FUNCTIONS ~~~                           */
 /*                                                                            */
 /* ************************************************************************** */
+
+
+
+const void*	User::getInAddr(void)
+{
+	struct sockaddr*	address = (struct sockaddr*)&this->_socketAddr;
+
+	if (address->sa_family == AF_INET)
+		this->_inAddr = &(((struct sockaddr_in*)address)->sin_addr);
+	else
+		this->_inAddr = &(((struct sockaddr_in6*)address)->sin6_addr);
+
+	return (this->_inAddr);
+}
+
+const char*	User::getIp(void)
+{
+		this->_ip	= inet_ntop(
+									this->_socketAddr.ss_family,
+									this->getInAddr(),
+									this->_remoteIP,
+									INET6_ADDRSTRLEN
+							   );
+
+		return (this->_ip);
+}
 
 /* ************************************************************************** */
 /*                                                                            */

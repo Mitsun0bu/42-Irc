@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/03 10:55:22 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/03 17:52:10 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+class Server;
+class User;
+
 int							main(int argc, char** av);
 std::pair<int, std::string>	parseArguments(int ac, char** av);
-const void*					getInAddr(struct sockaddr *socketAddr);
+User						handleNewUser(Server &s, fd_set* fdMaster, int* fdmax);
 
 # endif

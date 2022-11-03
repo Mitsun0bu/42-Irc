@@ -6,7 +6,7 @@
 #    By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/31 14:42:54 by llethuil          #+#    #+#              #
-#    Updated: 2022/11/03 15:03:03 by llethuil         ###   ########lyon.fr    #
+#    Updated: 2022/11/03 17:44:31 by llethuil         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -49,8 +49,8 @@ SRCS_SUBDIRS	:=	class							\
 SRCS_LST		:=	class/User.cpp					\
 					class/Server.cpp				\
 					main/main.cpp					\
+					main/handleNewUser.cpp			\
 					parsing/parseArguments.cpp		\
-					getInAddr.cpp					\
 
 OBJS_DIR		:= .objs
 

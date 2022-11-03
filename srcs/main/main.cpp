@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:32:28 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/03 15:36:59 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/03 17:57:22 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,12 @@ int	main(int ac, char** av)
 	// CLIENT-RELATED VARIABLES
 	int							fdmax				= 0;
 	fd_set						fdMaster;
-	fd_set						fdBuff;
+	fd_set						fdRead;
 	FD_ZERO(&fdMaster);
-	FD_ZERO(&fdBuff);
+	FD_ZERO(&fdRead);
 	struct timeval				tv;
-	tv.tv_sec										= 2;
-	tv.tv_usec										= 500000;
+	tv.tv_sec										= 0;
+	tv.tv_usec										= 10;
 
 	// CREATE SERVER, SET SERVER AND ADD SERVER TO THE MASTER FDs SET
 	Server	s(port, addressFamily, socketType, socketFlag, socketBlockingMode, protocol, internetHostAddr);
@@ -47,7 +47,6 @@ int	main(int ac, char** av)
 	fdmax											= s._socket;
 
 	// CREATE USER BUFFER AND USER LIST
-	User				userBuff;
 	std::vector<User>	users;
 
 	std::cout << std::endl << "~~~ Waiting for new connection ~~~" << std::endl;
@@ -55,45 +54,30 @@ int	main(int ac, char** av)
 	// HANDLE CLIENT CONNECTION
 	while(1)
 	{
-		fdBuff = fdMaster;
-		if (select(fdmax + 1, &fdBuff, NULL, NULL, &tv) == FAILED)
+		fdRead = fdMaster;
+		if (select(fdmax + 1, &fdRead, NULL, NULL, &tv) == FAILED)
 		{
 			perror("select()");
 			exit(1);
+		}
+
+		if (users.size() > 1)
+		{
+			std::cout << users[0]._socket << std::endl;
+			std::cout << users[1]._socket << std::endl;
 		}
 
 		// RUN THROUGH THE EXISTING CONNECTION LOOKING FOR DATA
 		for (int i = 0; i <= fdmax; i++)
 		{
 			// ONE FD IS SENDING DATA TO THE SERVER
-			if (FD_ISSET(i, &fdBuff))
+			if (FD_ISSET(i, &fdRead))
 			{
 				if (i == s._socket)
 				{
-					// HANDLE NEW CONNECTIONS
-					userBuff._socket = accept(s._socket, (struct sockaddr *)&userBuff._socketAddr, &userBuff._socketAddrSize);
-					if (userBuff._socket == FAILED)
-						perror("accept()");
-					else
-					{
-						FD_SET(userBuff._socket, &fdMaster);
-
-						if (userBuff._socket > fdmax)
-							fdmax = userBuff._socket;
-
-						char		remoteIP[INET6_ADDRSTRLEN];
-						const void*	inAddr	= getInAddr((struct sockaddr*)&userBuff._socketAddr);
-						const char*	inet	= inet_ntop(userBuff._socketAddr.ss_family, inAddr, remoteIP, INET6_ADDRSTRLEN);
-
-						std::cout	<< "~~~ New connection from "
-									<< inet
-									<< " on socket "
-									<< userBuff._socket
-									<< " ~~~"
-									<< std::endl;
-
-						users.push_back(User(userBuff));
-					}
+					User	newUser;
+					newUser = handleNewUser(s, &fdMaster, &fdmax);
+					users.push_back(newUser);
 				}
 				else
 				{
@@ -107,7 +91,7 @@ int	main(int ac, char** av)
 						// ERROR OR CONNECTION CLOSED BY THE CLIENT
 						if (byteCount == 0)
 						{
-							std::cout	<< "Socket "
+							std::cerr	<< "Socket "
 										<< i
 										<< " hung up !"
 										<< std::endl;
@@ -119,6 +103,8 @@ int	main(int ac, char** av)
 					}
 					else
 					{
+						std::cout << clientDataBuffer << std::endl;
+
 						// HANDLE DATA FROM THE CLIENT
 						for(int j = 0; j <= fdmax; j++)
 						{
@@ -129,24 +115,11 @@ int	main(int ac, char** av)
 								if (j != s._socket && j != i)
 								{
 									if (send(j, clientDataBuffer, byteCount, 0) == -1)
-										perror("send");
+										perror("send()");
 								}
 							}
 						}
 					}
-
-					// bzero(buffer, 512);
-
-					// byteCount = recv(userBuff._socket, buffer, 512, 0);
-					// std::cout << "Here is the message: " << buffer << std::endl;
-					// byteCount += recv(userBuff._socket, buffer, 512, 0);
-					// std::cout << "Here is the message: " << buffer << std::endl;
-					// byteCount += recv(userBuff._socket, buffer, 512, 0);
-					// std::cout << "Here is the message: " << buffer << std::endl;
-					// std::cout	<< "recv()'d "
-					// 			<< byteCount
-					// 			<< " bytes of data."
-					// 			<< std::endl;
 				}
 			}
 		}
