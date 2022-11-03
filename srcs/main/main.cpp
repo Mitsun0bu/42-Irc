@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:32:28 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/03 15:22:41 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/03 15:36:59 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int	main(int ac, char** av)
 				{
 					// HANDLE NEW CONNECTIONS
 					userBuff._socket = accept(s._socket, (struct sockaddr *)&userBuff._socketAddr, &userBuff._socketAddrSize);
-					if (userBuff._socket != FAILED)
+					if (userBuff._socket == FAILED)
 						perror("accept()");
 					else
 					{
@@ -89,7 +89,8 @@ int	main(int ac, char** av)
 									<< inet
 									<< " on socket "
 									<< userBuff._socket
-									<< " ~~~";
+									<< " ~~~"
+									<< std::endl;
 
 						users.push_back(User(userBuff));
 					}
@@ -108,7 +109,7 @@ int	main(int ac, char** av)
 						{
 							std::cout	<< "Socket "
 										<< i
-										<< "hung up !"
+										<< " hung up !"
 										<< std::endl;
 						}
 						else
