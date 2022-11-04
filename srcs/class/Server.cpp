@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/03 10:15:15 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/04 13:59:25 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ Server&	Server::operator=(Server const & src)
 /*                                                                            */
 /* ************************************************************************** */
 
-int	Server::bindSocket(int serverSocket, struct sockaddr_in& socketAddr)
+int		Server::bindSocket(int serverSocket, struct sockaddr_in& socketAddr)
 {
 	int				bindResult	= 0;
 	unsigned int	addrSize	= sizeof(socketAddr);
@@ -116,21 +116,15 @@ void	Server::setSocketAddr(struct sockaddr_in& socketAddr, const char* internetH
 
 int		Server::setSocket()
 {
-	//	ALLOCATE A SOCKET FILE DESCRIPTOR (endpoint for communication)	//
 	this->_socket = socket(this->_addressFamily, this->_socketType, this->_protocol);
 
-	// SET THE SOCKET AS NON-BLOCKING									//
 	fcntl(this->_socket, this->_socketFlag, this->_socketBlockingMode);
 
-	//	SET THE ADDRESS OF THE SOCKET									//
 	this->setSocketAddr(this->_socketAddr, this->_internetHostAddr, this->_port);
 
-
-	// BIND THE socket TO socketAddr									//
 	if (this->bindSocket(this->_socket, this->_socketAddr) == FAILED)
 		return (FAILED);
 
-	// LISTEN TO THE PORT ON THE SERVER socket							//
 	if (listen(this->_socket, SOMAXCONN) == FAILED)
 	{
 		std::cerr	<< "Error : Server socket cannot listen to the targeted port !"
@@ -140,6 +134,94 @@ int		Server::setSocket()
 	}
 
 	return (this->_socket);
+}
+
+void	Server::selectClientSocket(t_fdList *clientFdList)
+{
+	clientFdList->read = clientFdList->master;
+	if (select(clientFdList->max + 1, &clientFdList->read, NULL, NULL, &clientFdList->t) == FAILED)
+	{
+		perror("select()");
+		exit(1);
+	}
+}
+
+void	Server::searchForData(t_fdList *clientFdList)
+{
+	for (int fd = 0; fd <= clientFdList->max; fd++)
+	{
+		if (FD_ISSET(fd, &clientFdList->read))
+		{
+			if (fd == this->_socket)
+				this->handleNewUser(clientFdList);
+			else
+				this->handleClientData(clientFdList, &fd);
+		}
+	}
+}
+
+void	Server::handleNewUser(t_fdList *clientFdList)
+{
+	User		newUser;
+
+	newUser._socket = accept(
+								this->_socket,
+								(struct sockaddr *)&newUser._socketAddr,
+								&newUser._socketAddrSize
+							);
+
+	if (newUser._socket == FAILED)
+		perror("accept()");
+	else
+	{
+		FD_SET(newUser._socket, &clientFdList->master);
+
+		if (newUser._socket > clientFdList->max)
+			clientFdList->max = newUser._socket;
+
+		// DEBUG
+		std::cout	<< "~~~ New connection from "
+					<< newUser.getIp()
+					<< " on socket "
+					<< newUser._socket
+					<< " ~~~"
+					<< std::endl;
+
+		this->_users.push_back(newUser);
+	}
+}
+
+void	Server::handleClientData(t_fdList *clientFdList, int* currentFd)
+{
+	char	buffer[256]	= {0};
+	int		byteCount	= 0;
+
+	byteCount = recv(*currentFd, buffer, sizeof buffer, 0);
+	if (byteCount <= 0)
+	{
+		this->printRecvError(byteCount, *currentFd);
+		close(*currentFd);
+		FD_CLR(*currentFd, &clientFdList->master);
+	}
+	else
+		this->sendClientData(clientFdList, currentFd, buffer, byteCount);
+}
+
+void	Server::printRecvError(int byteCount, int currentFd)
+{
+	if (byteCount == 0)
+			std::cerr << "Socket " << currentFd << " hung up !" << std::endl;
+	else
+		perror("recv()");
+}
+
+void	Server::sendClientData(t_fdList *clientFdList, int* currentFd, char* buffer, int byteCount)
+{
+	for(int fd = 0; fd <= clientFdList->max; fd++)
+		if (FD_ISSET(fd, &clientFdList->master))
+			if (fd != this->_socket && fd != *currentFd)
+				if (send(fd, buffer, byteCount, 0) == -1)
+					perror("send()");
 }
 
 /* ************************************************************************** */

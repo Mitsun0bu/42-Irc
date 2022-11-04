@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:32:28 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/04 12:02:40 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/04 13:30:15 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,23 +19,15 @@ int	main(int ac, char** av)
 	int							port				= param.first;
 	std::string					passwd				= param.second;
 
-	// SERVER-RELATED VARIABLES
-	int							addressFamily		= AF_INET;
-	int							socketType			= SOCK_STREAM;
-	int							socketFlag			= F_SETFL;
-	int							socketBlockingMode	= O_NONBLOCK;
-	int							protocol			= 0;
-	const char*					internetHostAddr	= "127.0.0.1";
-
 	// CREATE SERVER
 	Server	server(
 					port,
-					addressFamily,
-					socketType,
-					socketFlag,
-					socketBlockingMode,
-					protocol,
-					internetHostAddr
+					AF_INET,
+					SOCK_STREAM,
+					F_SETFL,
+					O_NONBLOCK,
+					0,
+					"127.0.0.1"
 			 	  );
 
 	// SET SERVER
@@ -43,14 +35,14 @@ int	main(int ac, char** av)
 		exit(1);
 
 	// CLIENT-RELATED FILE DESCRIPTORS
-	t_clientFdList	clientFd;
-	clientFdListInit(&clientFd, server._socket);
+	t_fdList	clientFdList;
+	clientFdListInit(&clientFdList, server._socket);
 
 	// DEBUG
 	std::cout << std::endl << "~~~ Waiting for new connection ~~~" << std::endl;
 
 	// HANDLE CLIENT CONNECTION
-	launchServer(server, &clientFd);
+	launchServer(server, &clientFdList);
 
 	return (0);
 }

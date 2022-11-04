@@ -6,7 +6,7 @@
 #    By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/31 14:42:54 by llethuil          #+#    #+#              #
-#    Updated: 2022/11/04 11:45:01 by llethuil         ###   ########lyon.fr    #
+#    Updated: 2022/11/04 14:00:20 by llethuil         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,8 +50,7 @@ SRCS_LST		:=	class/User.cpp				\
 					class/Server.cpp			\
 					main/main.cpp				\
 					main/clientFdListInit.cpp	\
-					main/handleNewUser.cpp		\
-					main/handleClientData.cpp	\
+					main/launchServer.cpp		\
 					parsing/parseArguments.cpp	\
 
 OBJS_DIR		:= .objs

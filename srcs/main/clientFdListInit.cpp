@@ -6,13 +6,13 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 11:28:18 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/04 11:28:21 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/04 13:14:00 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "../../incs/main.hpp"
 
-void	clientFdListInit(t_clientFdList *clientFdList, int serverSocket)
+void	clientFdListInit(t_fdList *clientFdList, int serverSocket)
 {
 	clientFdList->max 		= serverSocket;
 	clientFdList->t.tv_sec	= 0;

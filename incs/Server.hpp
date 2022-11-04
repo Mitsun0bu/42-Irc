@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/03 10:15:37 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/04 14:01:13 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@
 /*                               ~~~ CLASS ~~~                                */
 /*                                                                            */
 /* ************************************************************************** */
+
+class User;
 
 class Server
 {
@@ -52,11 +54,18 @@ class Server
 		int					_socket;
 		struct sockaddr_in	_socketAddr;
 		const char*			_internetHostAddr;
+		std::vector<User>	_users;
 
 		/* member functions												*/
 		int					bindSocket(int serverSocket, struct sockaddr_in& socketAddr);
 		void				setSocketAddr(struct sockaddr_in& socketAddr, const char* internetHostAddr, int port);
-		int					setSocket();
+		int					setSocket(void);
+		void				selectClientSocket(t_fdList *clientFd);
+		void				searchForData(t_fdList *clientFdList);
+		void				handleNewUser(t_fdList *clientFdList);
+		void				handleClientData(t_fdList *clientFdList, int* currentFd);
+		void				printRecvError(int byteCount, int currentFd);
+		void				sendClientData(t_fdList *clientFdList, int* currentFd, char* buffer, int byteCount);
 
 		/* exceptions													*/
 		// class GradeTooHighException : public std::exception

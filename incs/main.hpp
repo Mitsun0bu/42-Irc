@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/04 12:01:43 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/04 13:55:16 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,6 @@
 # include <sys/types.h>
 # include <unistd.h>
 
-# include "Server.hpp"
-# include "User.hpp"
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -73,7 +71,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-typedef struct s_clientFdList
+typedef struct s_fdList
 {
 	// MAXIMUM FD NUMBER
 	int				max;
@@ -84,7 +82,10 @@ typedef struct s_clientFdList
 	// TIME STRUCT TO SPECIFIY A TIMEOUT PERIOD
 	struct timeval	t;
 
-}	t_clientFdList;
+}	t_fdList;
+
+# include "Server.hpp"
+# include "User.hpp"
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -97,9 +98,9 @@ class User;
 
 int							main(int argc, char** av);
 std::pair<int, std::string>	parseArguments(int ac, char** av);
-User						handleNewUser(Server &s, t_clientFdList *clientFd);
-void						launchServer(Server &s, t_clientFdList *clientFd);
-void						clientFdListInit(t_clientFdList *clientFd, int listeningSocket);
-void						handleClientData(Server &s, t_clientFdList *clientFd, int* currentFd);
+User						handleNewUser(Server &s, t_fdList *clientFd);
+void						launchServer(Server &s, t_fdList *clientFd);
+void						clientFdListInit(t_fdList *clientFd, int listeningSocket);
+void						handleClientData(Server &s, t_fdList *clientFd, int* currentFd);
 
 # endif
