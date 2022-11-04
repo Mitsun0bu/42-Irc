@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:24:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/03 17:22:55 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/04 11:55:18 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ User::User(void)
 	std::cout	<< BLUE
 				<< "[CONSTRUCTOR] : "
 				<< END
-				<< "A User named has been created !"
+				<< "A new user has been created !"
 				<< std::endl;
 
 	this->_socketAddrSize	= sizeof(this->_socketAddr);
@@ -42,7 +42,7 @@ User::User(User const & src)
 	std::cout	<< ORANGE
 				<< "[COPY CONSTRUCTOR] : "
 				<< END
-				<< "A User has been duplicated !"
+				<< "A user has been duplicated !"
 				<< std::endl;
 
 	*this = src;
@@ -109,7 +109,9 @@ User::~User(void)
 	std::cout	<< PURPLE
 				<< "[DESTRUCTOR] : "
 				<< END
-				<< "A User has been destroyed."
+				<< "User "
+				<< this->_socket
+				<< " has been destroyed."
 				<< std::endl;
 	return ;
 }

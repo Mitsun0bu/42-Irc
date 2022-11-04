@@ -6,13 +6,13 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/03 16:00:49 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/03 17:52:06 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/04 11:43:54 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "../incs/main.hpp"
 
-User	handleNewUser(Server &s, fd_set* fdMaster, int* fdmax)
+User	handleNewUser(Server &s, t_clientFdList *clientFd)
 {
 	User		newUser;
 
@@ -26,11 +26,12 @@ User	handleNewUser(Server &s, fd_set* fdMaster, int* fdmax)
 		perror("accept()");
 	else
 	{
-		FD_SET(newUser._socket, fdMaster);
+		FD_SET(newUser._socket, &clientFd->master);
 
-		if (newUser._socket > *fdmax)
-			*fdmax = newUser._socket;
+		if (newUser._socket > clientFd->max)
+			clientFd->max = newUser._socket;
 
+		// DEBUG
 		std::cout	<< "~~~ New connection from "
 					<< newUser.getIp()
 					<< " on socket "

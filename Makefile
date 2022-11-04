@@ -6,7 +6,7 @@
 #    By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/31 14:42:54 by llethuil          #+#    #+#              #
-#    Updated: 2022/11/03 17:44:31 by llethuil         ###   ########lyon.fr    #
+#    Updated: 2022/11/04 11:45:01 by llethuil         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,20 +37,22 @@ RM				:=	rm -f
 
 INCS_DIR		:=	incs
 
-INCS_LST		:=	main.hpp						\
+INCS_LST		:=	main.hpp					\
 
 SRCS_DIR		:=	srcs
 
-SRCS_SUBDIRS	:=	class							\
-					main							\
-					parsing							\
-					server							\
+SRCS_SUBDIRS	:=	class						\
+					main						\
+					parsing						\
+					server						\
 
-SRCS_LST		:=	class/User.cpp					\
-					class/Server.cpp				\
-					main/main.cpp					\
-					main/handleNewUser.cpp			\
-					parsing/parseArguments.cpp		\
+SRCS_LST		:=	class/User.cpp				\
+					class/Server.cpp			\
+					main/main.cpp				\
+					main/clientFdListInit.cpp	\
+					main/handleNewUser.cpp		\
+					main/handleClientData.cpp	\
+					parsing/parseArguments.cpp	\
 
 OBJS_DIR		:= .objs
 
