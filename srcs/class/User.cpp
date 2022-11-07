@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:24:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/04 11:55:18 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/07 18:13:47 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ User::User(void)
 				<< std::endl;
 
 	this->_socketAddrSize	= sizeof(this->_socketAddr);
+	setIp();
 
 	return ;
 }
@@ -62,6 +63,10 @@ User&	User::operator=(User const & src)
 	this->_socketAddr		= src._socketAddr;
 	this->_socketAddrSize	= src._socketAddrSize;
 	strcpy(this->_remoteIP, src._remoteIP);
+	this->_inAddr = src._inAddr;
+	this->_ip = src._ip;
+
+
 
 	return (*this);
 }
@@ -72,7 +77,21 @@ User&	User::operator=(User const & src)
 /*                                                                            */
 /* ************************************************************************** */
 
+void	User::setIp(void)
+{
+		this->_ip	= inet_ntop(
+									this->_socketAddr.ss_family,
+									this->getInAddr(),
+									this->_remoteIP,
+									INET6_ADDRSTRLEN
+							   );
+}
 
+/* ************************************************************************** */
+/*                                                                            */
+/*                         ~~~ PRIVATE METHODS ~~~                            */
+/*                                                                            */
+/* ************************************************************************** */
 
 const void*	User::getInAddr(void)
 {
@@ -84,18 +103,6 @@ const void*	User::getInAddr(void)
 		this->_inAddr = &(((struct sockaddr_in6*)address)->sin6_addr);
 
 	return (this->_inAddr);
-}
-
-const char*	User::getIp(void)
-{
-		this->_ip	= inet_ntop(
-									this->_socketAddr.ss_family,
-									this->getInAddr(),
-									this->_remoteIP,
-									INET6_ADDRSTRLEN
-							   );
-
-		return (this->_ip);
 }
 
 /* ************************************************************************** */

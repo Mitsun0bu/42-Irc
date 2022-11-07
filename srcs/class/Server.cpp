@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/07 17:42:19 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/07 18:43:28 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,6 +162,12 @@ void	Server::searchForData(t_fdList *clientFdList)
 	}
 }
 
+/* ************************************************************************** */
+/*                                                                            */
+/*                         ~~~ PRIVATE METHODS ~~~                            */
+/*                                                                            */
+/* ************************************************************************** */
+
 void	Server::acceptNewUser(t_fdList *clientFdList)
 {
 	User		newUser;
@@ -183,7 +189,7 @@ void	Server::acceptNewUser(t_fdList *clientFdList)
 
 		// DEBUG
 		std::cout	<< "~~~ New connection from "
-					<< newUser.getIp()
+					<< newUser._ip
 					<< " on socket "
 					<< newUser._socket
 					<< " ~~~"
@@ -208,7 +214,7 @@ void	Server::handleClientData(t_fdList *clientFdList, int* currentFd)
 	}
 	else
 	{
-		tokenizeBuffer(buffer, "\n", cmds);
+		tokenizer(buffer, "\n", cmds);
 		std::string msg = "001 llethuil :Welcome to the 127.0.0.1 Network, llethuil[!llethuil@127.0.0.1]\r\n";
 		send(*currentFd, msg.c_str(), msg.size(), 0);
 		for(size_t i = 0; i < cmds.size(); i ++)
@@ -216,8 +222,6 @@ void	Server::handleClientData(t_fdList *clientFdList, int* currentFd)
 			this->setCmdToExecute(cmds[i]);
 			this->execCmd(this->_users[*currentFd], cmds[i]);
 		}
-
-		// this->sendClientData(clientFdList, currentFd, buffer, byteCount);
 	}
 }
 
@@ -233,7 +237,7 @@ void	Server::setCmdToExecute(std::string cmd)
 {
 	std::string	currentCmd = cmd.substr(0, cmd.find(' ', 0));
 
-	for (int i = 0; i != static_cast<int>(this->_cmdList.size()); i++)
+	for (int i = 0; i != this->_nCmd; i++)
 	{
 		if (currentCmd == this->_cmdList[i])
 		{

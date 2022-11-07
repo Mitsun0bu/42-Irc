@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/07 17:34:37 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/07 18:06:04 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,6 @@ void						clientFdListInit(t_fdList *clientFd, int listeningSocket);
 void						launchServer(Server &s, t_fdList *clientFd);
 int							sendMsg(const int socket, std::string msg);
 std::pair<int, std::string>	parseArguments(int ac, char** av);
-void						tokenizeBuffer(char* str, const char* del, std::vector<std::string> &out);
+void						tokenizer(char* str, const char* del, std::vector<std::string> &out);
 
 # endif

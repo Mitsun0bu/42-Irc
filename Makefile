@@ -6,7 +6,7 @@
 #    By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/31 14:42:54 by llethuil          #+#    #+#              #
-#    Updated: 2022/11/07 17:44:35 by llethuil         ###   ########lyon.fr    #
+#    Updated: 2022/11/07 18:06:38 by llethuil         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -56,7 +56,7 @@ SRCS_LST		:=	class/Channel.cpp			\
 					main/launchServer.cpp		\
 					message/sendMsg.cpp			\
 					parsing/parseArguments.cpp	\
-					parsing/tokenizeCmds.cpp	\
+					parsing/tokenizer.cpp		\
 
 OBJS_DIR		:= .objs
 

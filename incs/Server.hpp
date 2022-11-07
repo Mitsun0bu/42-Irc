@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/07 16:46:40 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/07 18:43:55 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,11 +55,8 @@ class Server
 		struct sockaddr_in			_socketAddr;
 		const char*					_internetHostAddr;
 		std::map<int, User>			_users;
-		std::vector<std::string>	_cmdList = {
-													"PASS",
-													"NICK",
-													"USER"
-											   };
+		static const std::string	_cmdList[3];
+		static const int			_nCmd = 3;
 		int							_cmdToExecute;
 
 		/* member functions												*/
@@ -68,19 +65,6 @@ class Server
 		int					setSocket(void);
 		void				selectClientSocket(t_fdList *clientFd);
 		void				searchForData(t_fdList *clientFdList);
-		void				acceptNewUser(t_fdList *clientFdList);
-		void				handleClientData(t_fdList *clientFdList, int* currentFd);
-		void				printRecvError(int byteCount, int currentFd);
-		void				setCmdToExecute(std::string);
-		void				execCmd(User &user, std::string cmd);
-		void				sendClientData(t_fdList *clientFdList, int* currentFd, char* buffer, int byteCount);
-
-		/* exceptions													*/
-		// class GradeTooHighException : public std::exception
-		// {
-		// 	public:
-		// 		virtual const char *what() const throw();
-		// };
 
 		/* destructor													*/
 							~Server(void);
@@ -95,6 +79,17 @@ class Server
 
 		/* private attributes											*/
 
+		/* private methods												*/
+		void				acceptNewUser(t_fdList *clientFdList);
+
+		void				handleClientData(t_fdList *clientFdList, int* currentFd);
+		void				printRecvError(int byteCount, int currentFd);
+		void				setCmdToExecute(std::string);
+		void				execCmd(User &user, std::string cmd);
+
+		void				sendClientData(t_fdList *clientFdList, int* currentFd, char* buffer, int byteCount);
 };
+
+const std::string	Server::_cmdList[3] = {"PASS", "NICK", "USER"};
 
 # endif
