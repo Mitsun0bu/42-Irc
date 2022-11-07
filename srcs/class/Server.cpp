@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/07 16:34:43 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/07 17:42:19 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,8 +139,9 @@ int		Server::setSocket()
 
 void	Server::selectClientSocket(t_fdList *clientFdList)
 {
-	clientFdList->read = clientFdList->master;
-	if (select(clientFdList->max + 1, &clientFdList->read, NULL, NULL, &clientFdList->t) == FAILED)
+	clientFdList->read	= clientFdList->master;
+	clientFdList->write	= clientFdList->master;
+	if (select(clientFdList->max + 1, &clientFdList->read, &clientFdList->write, NULL, &clientFdList->t) == FAILED)
 	{
 		perror("select()");
 		exit(1);
@@ -196,7 +197,6 @@ void	Server::handleClientData(t_fdList *clientFdList, int* currentFd)
 {
 	char						buffer[256]	= {0};
 	int							byteCount	= 0;
-
 	std::vector<std::string>	cmds;
 
 	byteCount = recv(*currentFd, buffer, sizeof buffer, 0);
@@ -270,9 +270,6 @@ void	Server::sendClientData(t_fdList *clientFdList, int* currentFd, char* buffer
 			}
 		}
 	}
-
-	// DEBUG
-	std::cout << "BUFF = " << buffer << std::endl;
 }
 
 /* ************************************************************************** */

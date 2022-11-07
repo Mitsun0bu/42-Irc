@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/07 16:30:20 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/07 16:46:40 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,22 +45,22 @@ class Server
 								  );
 
 		/* public attributes											*/
-		int					_port;
-		int					_addressFamily;
-		int					_socketType;
-		int					_socketFlag;
-		int					_socketBlockingMode;
-		int					_protocol;
-		int					_socket;
-		struct sockaddr_in	_socketAddr;
-		const char*			_internetHostAddr;
-		std::map<int, User>	_users;
-		std::vector<std::string> _cmdList = {
-			"PASS",
-			"NICK",
-			"USER"
-		};
-		int					_cmdToExecute;
+		int							_port;
+		int							_addressFamily;
+		int							_socketType;
+		int							_socketFlag;
+		int							_socketBlockingMode;
+		int							_protocol;
+		int							_socket;
+		struct sockaddr_in			_socketAddr;
+		const char*					_internetHostAddr;
+		std::map<int, User>			_users;
+		std::vector<std::string>	_cmdList = {
+													"PASS",
+													"NICK",
+													"USER"
+											   };
+		int							_cmdToExecute;
 
 		/* member functions												*/
 		int					bindSocket(int serverSocket, struct sockaddr_in& socketAddr);

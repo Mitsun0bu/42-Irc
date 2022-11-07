@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/07 15:19:51 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/07 17:34:37 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,8 @@ typedef struct s_fdList
 	fd_set			master;
 	// TEMPORARY FD LIST FOR SELECT()
 	fd_set			read;
+	// TEMPORARY FD LIST FOR SELECT()
+	fd_set			write;
 	// TIME STRUCT TO SPECIFIY A TIMEOUT PERIOD
 	struct timeval	t;
 

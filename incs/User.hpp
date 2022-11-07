@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:23:53 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/07 15:43:06 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/07 17:46:14 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,12 @@ class User
 		std::string 			_nickname;
 		std::string 			_username;
 		std::string 			_realname;
+		std::set<std::string>	_channels;
 		// bool					_pass;
 		// unsigned int			_id;
-		// std::string				_cmd;
-		// std::string				_hostname;
-		// std::set<std::string> 	_channels;
-		// std::set<int> 			_privMsg;
+		// std::string			_cmd;
+		// std::string			_hostname;
+		// std::set<int> 		_privMsg;
 
 		/* member functions												*/
 		const void*				getInAddr(void);
