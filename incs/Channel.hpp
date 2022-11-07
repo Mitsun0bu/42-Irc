@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   User.hpp                                           :+:      :+:    :+:   */
+/*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/02 16:23:53 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/07 15:43:06 by llethuil         ###   ########lyon.fr   */
+/*   Created: 2022/11/07 10:23:07 by llethuil          #+#    #+#             */
+/*   Updated: 2022/11/07 14:46:53 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-# ifndef USER_HPP
-# define USER_HPP
+# ifndef CHANNEL_HPP
+# define CHANNEL_HPP
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -27,44 +27,45 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-class User
+class Channel
 {
 	public :
 		/* constructors													*/
-								User(void);
+							Channel(void);
 
-		/* copy constructor												*/
-								User(const User& src);
-
-		/* operator overload											*/
-		User					&operator=(const User& src);
-
-		/* private attributes											*/
-		int						_socket;
-		struct sockaddr_storage	_socketAddr;
-		socklen_t				_socketAddrSize;
-		char					_remoteIP[INET6_ADDRSTRLEN];
-		const void*				_inAddr;
-		const char*				_ip;
-		std::string				_passwd;
-		std::string 			_nickname;
-		std::string 			_username;
-		std::string 			_realname;
-		// bool					_pass;
-		// unsigned int			_id;
-		// std::string				_cmd;
-		// std::string				_hostname;
-		// std::set<std::string> 	_channels;
-		// std::set<int> 			_privMsg;
+		/* public attributes											*/
+		std::string			_name;
+		std::string			_key;
+		bool				_hasKey;
+		std::string			_topic;
+		bool				_topicIsSet;
+		std::set<int>		_members;
+		std::set<int>		_operators;
+		std::string			_mode;
 
 		/* member functions												*/
-		const void*				getInAddr(void);
-		const char*				getIp(void);
+		void	addUser(User &user);
+		void	addUser(int userSocket);
+		void	deleteUser(User &user);
+		void	deleteUser(int userSocket);
+		void	addOperator(User &user);
+		void	addOperator(int userSocket);
+		void	deleteOperator(User &user);
+		void	deleteOperator(int userSocket);
+		// void	sendMsgToMembers(const std::string &content, int socketException) const;
+
+		/* exceptions													*/
 
 		/* destructor													*/
-								~User(void);
+							~Channel(void);
 
-	// private :
+	private :
+
+		/* copy constructor												*/
+							Channel(const Channel& src);
+
+		/* operator overload											*/
+		Channel				&operator=(const Channel& src);
 
 		/* private attributes											*/
 

@@ -1,22 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   launchServer.cpp                                   :+:      :+:    :+:   */
+/*   tokenizeBuffer.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/04 11:57:04 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/07 16:08:36 by llethuil         ###   ########lyon.fr   */
+/*   Created: 2022/11/07 15:20:07 by llethuil          #+#    #+#             */
+/*   Updated: 2022/11/07 15:20:09 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../incs/main.hpp"
+#include "../../incs/main.hpp"
 
-void	launchServer(Server &server, t_fdList *clientFdList)
+void	tokenizeBuffer(char* str, const char* del, std::vector<std::string> &tokens)
 {
-	while(1)
+	char*	token = strtok(str, del);
+	while (token != nullptr)
 	{
-		server.selectClientSocket(clientFdList);
-		server.searchForData(clientFdList);
+		tokens.push_back(std::string(token));
+		token = strtok(nullptr, del);
 	}
 }

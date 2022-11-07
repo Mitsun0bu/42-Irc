@@ -6,7 +6,7 @@
 #    By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/31 14:42:54 by llethuil          #+#    #+#              #
-#    Updated: 2022/11/04 14:00:20 by llethuil         ###   ########lyon.fr    #
+#    Updated: 2022/11/07 15:03:23 by llethuil         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,8 @@ NAME			:=	ircserv
 
 CC				:=	c++
 
-CXXFLAGS		:=	-std=c++98 -Wall -Wextra -Werror
+# CXXFLAGS		:=	-std=c++98 -Wall -Wextra -Werror
+CXXFLAGS		:= -Wall -Wextra -Werror
 
 RM				:=	rm -f
 
@@ -46,12 +47,14 @@ SRCS_SUBDIRS	:=	class						\
 					parsing						\
 					server						\
 
-SRCS_LST		:=	class/User.cpp				\
+SRCS_LST		:=	class/Channel.cpp			\
+					class/User.cpp				\
 					class/Server.cpp			\
 					main/main.cpp				\
 					main/clientFdListInit.cpp	\
 					main/launchServer.cpp		\
 					parsing/parseArguments.cpp	\
+					parsing/tokenizeCmds.cpp	\
 
 OBJS_DIR		:= .objs
 

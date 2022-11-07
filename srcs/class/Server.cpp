@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/04 13:59:25 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/07 16:34:43 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 /* ************************************************************************** */
 
 # include "../../incs/Server.hpp"
+# include "../../incs/main.hpp"
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -153,14 +154,14 @@ void	Server::searchForData(t_fdList *clientFdList)
 		if (FD_ISSET(fd, &clientFdList->read))
 		{
 			if (fd == this->_socket)
-				this->handleNewUser(clientFdList);
+				this->acceptNewUser(clientFdList);
 			else
 				this->handleClientData(clientFdList, &fd);
 		}
 	}
 }
 
-void	Server::handleNewUser(t_fdList *clientFdList)
+void	Server::acceptNewUser(t_fdList *clientFdList)
 {
 	User		newUser;
 
@@ -187,14 +188,16 @@ void	Server::handleNewUser(t_fdList *clientFdList)
 					<< " ~~~"
 					<< std::endl;
 
-		this->_users.push_back(newUser);
+		this->_users[newUser._socket] = newUser;
 	}
 }
 
 void	Server::handleClientData(t_fdList *clientFdList, int* currentFd)
 {
-	char	buffer[256]	= {0};
-	int		byteCount	= 0;
+	char						buffer[256]	= {0};
+	int							byteCount	= 0;
+
+	std::vector<std::string>	cmds;
 
 	byteCount = recv(*currentFd, buffer, sizeof buffer, 0);
 	if (byteCount <= 0)
@@ -204,7 +207,18 @@ void	Server::handleClientData(t_fdList *clientFdList, int* currentFd)
 		FD_CLR(*currentFd, &clientFdList->master);
 	}
 	else
-		this->sendClientData(clientFdList, currentFd, buffer, byteCount);
+	{
+		tokenizeBuffer(buffer, "\n", cmds);
+		std::string msg = "001 llethuil :Welcome to the 127.0.0.1 Network, llethuil[!llethuil@127.0.0.1]\r\n";
+		send(*currentFd, msg.c_str(), msg.size(), 0);
+		for(size_t i = 0; i < cmds.size(); i ++)
+		{
+			this->setCmdToExecute(cmds[i]);
+			this->execCmd(this->_users[*currentFd], cmds[i]);
+		}
+
+		// this->sendClientData(clientFdList, currentFd, buffer, byteCount);
+	}
 }
 
 void	Server::printRecvError(int byteCount, int currentFd)
@@ -215,13 +229,50 @@ void	Server::printRecvError(int byteCount, int currentFd)
 		perror("recv()");
 }
 
+void	Server::setCmdToExecute(std::string cmd)
+{
+	std::string	currentCmd = cmd.substr(0, cmd.find(' ', 0));
+
+	for (int i = 0; i != static_cast<int>(this->_cmdList.size()); i++)
+	{
+		if (currentCmd == this->_cmdList[i])
+		{
+			this->_cmdToExecute = i;
+			return ;
+		}
+	}
+	this->_cmdToExecute = FAILED;
+}
+
+void	Server::execCmd(User &user, std::string cmd)
+{
+	switch(this->_cmdToExecute)
+	{
+		// case 0:
+		// 	...
+		// case 1:
+		// 	...
+		// default:
+		// 	...
+	}
+}
+
 void	Server::sendClientData(t_fdList *clientFdList, int* currentFd, char* buffer, int byteCount)
 {
 	for(int fd = 0; fd <= clientFdList->max; fd++)
+	{
 		if (FD_ISSET(fd, &clientFdList->master))
+		{
 			if (fd != this->_socket && fd != *currentFd)
+			{
 				if (send(fd, buffer, byteCount, 0) == -1)
 					perror("send()");
+			}
+		}
+	}
+
+	// DEBUG
+	std::cout << "BUFF = " << buffer << std::endl;
 }
 
 /* ************************************************************************** */
