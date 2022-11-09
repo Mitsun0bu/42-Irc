@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/09 15:26:10 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/09 16:26:28 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,27 +137,38 @@ int		Server::setSocket()
 	return (this->_socket);
 }
 
-void	Server::selectClientSocket(t_fdList *clientFdList)
+void	Server::clientFdListInit(void)
 {
-	clientFdList->read	= clientFdList->master;
-	clientFdList->write	= clientFdList->master;
-	if (select(clientFdList->max + 1, &clientFdList->read, &clientFdList->write, NULL, &clientFdList->t) == FAILED)
+	this->clientFdList.max			= this->_socket;
+	this->clientFdList.t.tv_sec		= 0;
+	this->clientFdList.t.tv_usec	= 10;
+	FD_ZERO(&this->clientFdList.master);
+	FD_ZERO(&this->clientFdList.read);
+	FD_ZERO(&this->clientFdList.write);
+	FD_SET(this->_socket, &this->clientFdList.master);
+}
+
+void	Server::selectClientSocket(void)
+{
+	this->clientFdList.read	= this->clientFdList.master;
+	this->clientFdList.write	= this->clientFdList.master;
+	if (select(this->clientFdList.max + 1, &this->clientFdList.read, &this->clientFdList.write, NULL, &this->clientFdList.t) == FAILED)
 	{
 		perror("select()");
 		exit(1);
 	}
 }
 
-void	Server::searchForData(t_fdList *clientFdList)
+void	Server::searchForData(void)
 {
-	for (int fd = 0; fd <= clientFdList->max; fd++)
+	for (int fd = 0; fd <= this->clientFdList.max; fd++)
 	{
-		if (FD_ISSET(fd, &clientFdList->read))
+		if (FD_ISSET(fd, &this->clientFdList.read))
 		{
 			if (fd == this->_socket)
-				this->acceptNewUser(clientFdList);
+				this->acceptNewUser();
 			else
-				this->handleClientData(clientFdList, &fd);
+				this->handleClientData(&fd);
 		}
 	}
 }
@@ -168,7 +179,7 @@ void	Server::searchForData(t_fdList *clientFdList)
 /*                                                                            */
 /* ************************************************************************** */
 
-void	Server::acceptNewUser(t_fdList *clientFdList)
+void	Server::acceptNewUser(void)
 {
 	User		newUser;
 
@@ -183,10 +194,10 @@ void	Server::acceptNewUser(t_fdList *clientFdList)
 		perror("accept()");
 	else
 	{
-		FD_SET(newUser._socket, &clientFdList->master);
+		FD_SET(newUser._socket, &this->clientFdList.master);
 
-		if (newUser._socket > clientFdList->max)
-			clientFdList->max = newUser._socket;
+		if (newUser._socket > this->clientFdList.max)
+			this->clientFdList.max = newUser._socket;
 
 		// DEBUG
 		std::cout	<< "~~~ New connection from "
@@ -199,7 +210,7 @@ void	Server::acceptNewUser(t_fdList *clientFdList)
 	}
 }
 
-void	Server::handleClientData(t_fdList *clientFdList, int* currentFd)
+void	Server::handleClientData(int* currentFd)
 {
 	// char						buffer[256]	= {0};
 	std::string					buffer;
@@ -212,7 +223,7 @@ void	Server::handleClientData(t_fdList *clientFdList, int* currentFd)
 	{
 		this->printRecvError(byteCount, *currentFd);
 		close(*currentFd);
-		FD_CLR(*currentFd, &clientFdList->master);
+		FD_CLR(*currentFd, &this->clientFdList.master);
 	}
 	else
 	{
@@ -311,11 +322,11 @@ void	Server::numericReply(User &user, int numReply, std::string &cmd, std::strin
 	(void)msg;
 }
 
-void	Server::sendClientData(t_fdList *clientFdList, int* currentFd, char* buffer, int byteCount)
+void	Server::sendClientData(int* currentFd, char* buffer, int byteCount)
 {
-	for(int fd = 0; fd <= clientFdList->max; fd++)
+	for(int fd = 0; fd <= this->clientFdList.max; fd++)
 	{
-		if (FD_ISSET(fd, &clientFdList->master))
+		if (FD_ISSET(fd, &this->clientFdList.master))
 		{
 			if (fd != this->_socket && fd != *currentFd)
 			{

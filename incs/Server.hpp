@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/09 15:21:06 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/09 16:24:40 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,10 @@ class Server
 		int								_socketFlag;
 		int								_socketBlockingMode;
 		int								_protocol;
+		const char*						_internetHostAddr;
 		int								_socket;
 		struct sockaddr_in				_socketAddr;
-		const char*						_internetHostAddr;
+		t_fdList						clientFdList;
 		std::map<int, User>				_users;
 		std::map<std::string, Channel>	_channels;
 		int								_nCmd;
@@ -64,8 +65,9 @@ class Server
 		int					bindSocket(int serverSocket, struct sockaddr_in& socketAddr);
 		void				setSocketAddr(struct sockaddr_in& socketAddr, const char* internetHostAddr, int port);
 		int					setSocket(void);
-		void				selectClientSocket(t_fdList *clientFd);
-		void				searchForData(t_fdList *clientFdList);
+		void				clientFdListInit(void);
+		void				selectClientSocket(void);
+		void				searchForData(void);
 
 		/* destructor													*/
 							~Server(void);
@@ -81,9 +83,9 @@ class Server
 		/* private attributes											*/
 
 		/* private methods												*/
-		void				acceptNewUser(t_fdList *clientFdList);
+		void				acceptNewUser();
 
-		void				handleClientData(t_fdList *clientFdList, int* currentFd);
+		void				handleClientData(int* currentFd);
 		void				printRecvError(int byteCount, int currentFd);
 
 		void				setCmdToExecute(std::string);
@@ -93,7 +95,7 @@ class Server
 		void				numericReply(User &user, int numReply, std::string msg);
 		void				numericReply(User &user, int numReply, std::string &cmd, std::string msg);
 
-		void				sendClientData(t_fdList *clientFdList, int* currentFd, char* buffer, int byteCount);
+		void				sendClientData(int* currentFd, char* buffer, int byteCount);
 };
 
 # endif

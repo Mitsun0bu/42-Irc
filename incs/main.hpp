@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/09 15:18:16 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/09 16:27:01 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,8 +113,7 @@ class Server;
 class User;
 
 int							main(int argc, char** av);
-void						clientFdListInit(t_fdList *clientFd, int listeningSocket);
-void						launchServer(Server &s, t_fdList *clientFd);
+void						launchServer(Server &s);
 int							sendMsg(const int socket, std::string msg);
 std::pair<int, std::string>	parseArguments(int ac, char** av);
 void						tokenizer(std::string str, const char* del, std::vector<std::string> &tokens);
