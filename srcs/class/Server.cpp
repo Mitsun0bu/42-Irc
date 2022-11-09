@@ -3,14 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2022/11/09 15:54:56 by agirardi         ###   ########lyon.fr   */
-=======
-/*   Updated: 2022/11/09 16:26:28 by llethuil         ###   ########lyon.fr   */
->>>>>>> master
+/*   Updated: 2022/11/09 17:20:49 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -252,20 +248,11 @@ void	Server::printRecvError(int byteCount, int currentFd)
 
 void	Server::setCmdToExecute(std::string cmd)
 {
-<<<<<<< HEAD
-	std::string cmdList[17]	= {
-								"PASS" , 	"NICK", "USER",
-								"PONG" , "QUIT" , "JOIN",
-								"PART"  , "TOPIC", "NAMES", "LIST",
-								"INVITE", "KICK", "MODE" , "PRIVMSG",
-								"NOTICE"
-=======
 	std::string cmdList[15]	= {
 								"PASS" , "NICK"   , "USER"   , "PONG"  ,
 								"QUIT" , "JOIN"   , "PART"   , "TOPIC" ,
 								"NAMES", "LIST"   , "INVITE" , "KICK"  ,
 								"MODE" , "PRIVMSG", "NOTICE"
->>>>>>> master
 							 };
 
 	this->_nCmd				= 15;
@@ -295,17 +282,13 @@ void	Server::execCmd(User &user, std::string cmd)
 			this->execPass(user, cmdTokens);
 			break;
 		// case 1:
-<<<<<<< HEAD
 		// !!	This requires that clients send a PASS command before sending the NICK / USER combination. !!
 		// case 2:
 		// !!	This requires that clients send a PASS command before sending the NICK / USER combination. !!
-
-		case 7 :
-=======
-		// 	...
 		case 6 :
->>>>>>> master
 			this->execJoin(user, cmdTokens);
+		case 7 :
+		// 	...
 			break;
 		// default:
 		// 	...
@@ -315,7 +298,8 @@ void	Server::execCmd(User &user, std::string cmd)
 void	Server::execPass(User &user, std::vector<std::string> &cmdTokens)
 {
 	(void)user;
-	
+	(void)cmdTokens;
+
 	// if (!user._isAuthenticated)
 		// this->numericReply(user._username, 462, "You may not reregister");
 
@@ -325,13 +309,8 @@ void	Server::execPass(User &user, std::vector<std::string> &cmdTokens)
 	// if (cmdTokens[2] != "PASS123")
 	// 	this->numericReply(user._username, 464, "Password incorrect");
 
-	if ((cmdTokens.size() < 2 || cmdTokens[2] != "PASS123")
-		this->sendError(user, "Authentication failed");
-	
-	
-	
-		
-	
+	// if ((cmdTokens.size() < 2 || cmdTokens[2] != "PASS123")
+	// 	this->sendError(user, "Authentication failed");
 }
 
 void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
