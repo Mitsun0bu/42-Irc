@@ -6,7 +6,11 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2022/11/09 15:54:56 by agirardi         ###   ########lyon.fr   */
+=======
+/*   Updated: 2022/11/09 16:26:28 by llethuil         ###   ########lyon.fr   */
+>>>>>>> master
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,27 +141,38 @@ int		Server::setSocket()
 	return (this->_socket);
 }
 
-void	Server::selectClientSocket(t_fdList *clientFdList)
+void	Server::clientFdListInit(void)
 {
-	clientFdList->read	= clientFdList->master;
-	clientFdList->write	= clientFdList->master;
-	if (select(clientFdList->max + 1, &clientFdList->read, &clientFdList->write, NULL, &clientFdList->t) == FAILED)
+	this->clientFdList.max			= this->_socket;
+	this->clientFdList.t.tv_sec		= 0;
+	this->clientFdList.t.tv_usec	= 10;
+	FD_ZERO(&this->clientFdList.master);
+	FD_ZERO(&this->clientFdList.read);
+	FD_ZERO(&this->clientFdList.write);
+	FD_SET(this->_socket, &this->clientFdList.master);
+}
+
+void	Server::selectClientSocket(void)
+{
+	this->clientFdList.read	= this->clientFdList.master;
+	this->clientFdList.write	= this->clientFdList.master;
+	if (select(this->clientFdList.max + 1, &this->clientFdList.read, &this->clientFdList.write, NULL, &this->clientFdList.t) == FAILED)
 	{
 		perror("select()");
 		exit(1);
 	}
 }
 
-void	Server::searchForData(t_fdList *clientFdList)
+void	Server::searchForData(void)
 {
-	for (int fd = 0; fd <= clientFdList->max; fd++)
+	for (int fd = 0; fd <= this->clientFdList.max; fd++)
 	{
-		if (FD_ISSET(fd, &clientFdList->read))
+		if (FD_ISSET(fd, &this->clientFdList.read))
 		{
 			if (fd == this->_socket)
-				this->acceptNewUser(clientFdList);
+				this->acceptNewUser();
 			else
-				this->handleClientData(clientFdList, &fd);
+				this->handleClientData(&fd);
 		}
 	}
 }
@@ -168,7 +183,7 @@ void	Server::searchForData(t_fdList *clientFdList)
 /*                                                                            */
 /* ************************************************************************** */
 
-void	Server::acceptNewUser(t_fdList *clientFdList)
+void	Server::acceptNewUser(void)
 {
 	User		newUser;
 
@@ -183,10 +198,10 @@ void	Server::acceptNewUser(t_fdList *clientFdList)
 		perror("accept()");
 	else
 	{
-		FD_SET(newUser._socket, &clientFdList->master);
+		FD_SET(newUser._socket, &this->clientFdList.master);
 
-		if (newUser._socket > clientFdList->max)
-			clientFdList->max = newUser._socket;
+		if (newUser._socket > this->clientFdList.max)
+			this->clientFdList.max = newUser._socket;
 
 		// DEBUG
 		std::cout	<< "~~~ New connection from "
@@ -199,7 +214,7 @@ void	Server::acceptNewUser(t_fdList *clientFdList)
 	}
 }
 
-void	Server::handleClientData(t_fdList *clientFdList, int* currentFd)
+void	Server::handleClientData(int* currentFd)
 {
 	// char						buffer[256]	= {0};
 	std::string					buffer;
@@ -212,7 +227,7 @@ void	Server::handleClientData(t_fdList *clientFdList, int* currentFd)
 	{
 		this->printRecvError(byteCount, *currentFd);
 		close(*currentFd);
-		FD_CLR(*currentFd, &clientFdList->master);
+		FD_CLR(*currentFd, &this->clientFdList.master);
 	}
 	else
 	{
@@ -237,15 +252,23 @@ void	Server::printRecvError(int byteCount, int currentFd)
 
 void	Server::setCmdToExecute(std::string cmd)
 {
+<<<<<<< HEAD
 	std::string cmdList[17]	= {
 								"PASS" , 	"NICK", "USER",
 								"PONG" , "QUIT" , "JOIN",
 								"PART"  , "TOPIC", "NAMES", "LIST",
 								"INVITE", "KICK", "MODE" , "PRIVMSG",
 								"NOTICE"
+=======
+	std::string cmdList[15]	= {
+								"PASS" , "NICK"   , "USER"   , "PONG"  ,
+								"QUIT" , "JOIN"   , "PART"   , "TOPIC" ,
+								"NAMES", "LIST"   , "INVITE" , "KICK"  ,
+								"MODE" , "PRIVMSG", "NOTICE"
+>>>>>>> master
 							 };
 
-	this->_nCmd				= 17;
+	this->_nCmd				= 15;
 
 	std::string	currentCmd = cmd.substr(0, cmd.find(' ', 0));
 
@@ -272,11 +295,16 @@ void	Server::execCmd(User &user, std::string cmd)
 			this->execPass(user, cmdTokens);
 			break;
 		// case 1:
+<<<<<<< HEAD
 		// !!	This requires that clients send a PASS command before sending the NICK / USER combination. !!
 		// case 2:
 		// !!	This requires that clients send a PASS command before sending the NICK / USER combination. !!
 
 		case 7 :
+=======
+		// 	...
+		case 6 :
+>>>>>>> master
 			this->execJoin(user, cmdTokens);
 			break;
 		// default:
@@ -321,18 +349,31 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 
 	if (cmdTokens.size() < 2)
 	{
-		// numericReply(ERR_NEEDMOREPARAMS, user._socket, this->_users, &cmdTokens[0]);
+		numericReply(user, ERR_NEEDMOREPARAMS, cmdTokens[0], ":Not enough parameters");
 		return ;
 	}
 }
 
-
-
-void	Server::sendClientData(t_fdList *clientFdList, int* currentFd, char* buffer, int byteCount)
+void	Server::numericReply(User &user, int numReply, std::string msg)
 {
-	for(int fd = 0; fd <= clientFdList->max; fd++)
+	(void)user;
+	(void)numReply;
+	(void)msg;
+}
+
+void	Server::numericReply(User &user, int numReply, std::string &cmd, std::string msg)
+{
+	(void)user;
+	(void)numReply;
+	(void)cmd;
+	(void)msg;
+}
+
+void	Server::sendClientData(int* currentFd, char* buffer, int byteCount)
+{
+	for(int fd = 0; fd <= this->clientFdList.max; fd++)
 	{
-		if (FD_ISSET(fd, &clientFdList->master))
+		if (FD_ISSET(fd, &this->clientFdList.master))
 		{
 			if (fd != this->_socket && fd != *currentFd)
 			{
