@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/09 11:49:18 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/09 14:22:11 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,14 +201,12 @@ void	Server::acceptNewUser(t_fdList *clientFdList)
 
 void	Server::handleClientData(t_fdList *clientFdList, int* currentFd)
 {
-	char						buffer[256]	= {0};
+	// char						buffer[256]	= {0};
+	std::string					buffer;
 	int							byteCount	= 0;
 	std::vector<std::string>	cmds;
 
-	byteCount = recv(*currentFd, buffer, sizeof buffer, 0);
-
-	//DEBUG
-	std::cout << buffer << std::endl;
+	byteCount = recv(*currentFd, const_cast<char*>(buffer.c_str()), sizeof buffer, 0);
 
 	if (byteCount <= 0)
 	{
@@ -224,8 +222,6 @@ void	Server::handleClientData(t_fdList *clientFdList, int* currentFd)
 		for(size_t i = 0; i < cmds.size(); i ++)
 		{
 			this->setCmdToExecute(cmds[i]);
-			//DEBUG
-			std::cout << "COMMAND TO EXEC : " << this->_cmdToExecute << std::endl;
 			this->execCmd(this->_users[*currentFd], cmds[i]);
 		}
 	}
@@ -253,10 +249,6 @@ void	Server::setCmdToExecute(std::string cmd)
 
 	std::string	currentCmd = cmd.substr(0, cmd.find(' ', 0));
 
-	//DEBUG
-	std::cout << "CMD : " << cmd << std::endl;
-	std::cout << "CURRENT CMD : " << this->_cmdToExecute << std::endl;
-
 	for (int i = 0; i != this->_nCmd - 1; i++)
 	{
 		if (currentCmd == cmdList[i])
@@ -270,20 +262,23 @@ void	Server::setCmdToExecute(std::string cmd)
 
 void	Server::execCmd(User &user, std::string cmd)
 {
+	std::vector<std::string>	cmdTokens;
+	tokenizer(cmd, " ", cmdTokens);
+
 	switch(this->_cmdToExecute)
 	{
 		// case 0:
 		// 	...
 		// case 1:
 		// 	...
-		case 3 :
-			this->execJoin(user._socket, cmd);
+		case 7 :
+			this->execJoin(user, cmdTokens);
 		// default:
 		// 	...
 	}
 }
 
-void	Server::execJoin(int userSocket, std::string &cmd)
+void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 {
 	/*
 	The server receiving the command checks whether
@@ -295,20 +290,11 @@ void	Server::execJoin(int userSocket, std::string &cmd)
 	the second <key> being used for the second <channel>, etc.
 	*/
 
-
-	// DEBUG
-	(void)userSocket;
-	std::cout << cmd << std::endl;
-
-
-	// if (cmd.size() < 2)
-	// {
-	// 	numericReply(ERR_NEEDMOREPARAMS, socketClient, userMap, &cmd[0]);
-	// 	return ;
-	// }
-	// std::vector<std::string>	chanNames = splitNames(cmd[1]);
-
-
+	if (cmdTokens.size() < 2)
+	{
+		// numericReply(ERR_NEEDMOREPARAMS, user._socket, this->_users, &cmdTokens[0]);
+		return ;
+	}
 }
 
 

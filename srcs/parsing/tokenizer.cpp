@@ -6,15 +6,15 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 18:06:16 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/07 18:06:18 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/09 14:13:01 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../incs/main.hpp"
 
-void	tokenizer(char* str, const char* del, std::vector<std::string> &tokens)
+void	tokenizer(std::string str, const char* del, std::vector<std::string> &tokens)
 {
-	char*	token = strtok(str, del);
+	char*	token = strtok(const_cast<char*>(str.c_str()), del);
 	while (token != nullptr)
 	{
 		tokens.push_back(std::string(token));

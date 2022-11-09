@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/09 11:26:21 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/09 14:18:58 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ class Server
 
 		void				setCmdToExecute(std::string);
 		void				execCmd(User &user, std::string cmd);
-		void				execJoin(int userSocket, std::string &cmd);
+		void				execJoin(User &user, std::vector<std::string> &cmdTokens);
 
 		void				sendClientData(t_fdList *clientFdList, int* currentFd, char* buffer, int byteCount);
 };

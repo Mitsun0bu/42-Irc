@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/09 11:38:07 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/09 14:09:32 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,24 +19,37 @@
 # ifndef MAIN_HPP
 # define MAIN_HPP
 
-# define BLUE		"\x1B[34m"
-# define CYAN		"\x1B[36m"
-# define GREEN		"\x1B[32m"
-# define MAGENTA	"\x1B[35m"
-# define ORANGE		"\x1B[34m"
-# define PURPLE		"\x1B[35m"
-# define RED		"\x1B[31m"
-# define WHITE		"\x1B[97m"
-# define YELLOW		"\x1B[33m"
-# define BBLUE		"\x1B[94m"
-# define BCYAN		"\x1B[96m"
-# define BGREEN		"\x1B[92m"
-# define BMAGENTA	"\x1B[95m"
-# define BRED		"\x1B[91m"
-# define BYELLOW	"\x1B[93m"
-# define END		"\033[0m"
+# define BLUE					"\x1B[34m"
+# define CYAN					"\x1B[36m"
+# define GREEN					"\x1B[32m"
+# define MAGENTA				"\x1B[35m"
+# define ORANGE					"\x1B[34m"
+# define PURPLE					"\x1B[35m"
+# define RED					"\x1B[31m"
+# define WHITE					"\x1B[97m"
+# define YELLOW					"\x1B[33m"
+# define BBLUE					"\x1B[94m"
+# define BCYAN					"\x1B[96m"
+# define BGREEN					"\x1B[92m"
+# define BMAGENTA				"\x1B[95m"
+# define BRED					"\x1B[91m"
+# define BYELLOW				"\x1B[93m"
+# define END					"\033[0m"
 
-# define FAILED		-1
+# define FAILED					-1
+
+# define ERR_NEEDMOREPARAMS		61
+# define ERR_NOSUCHCHANNEL		403
+# define ERR_TOOMANYCHANNELS	405
+# define ERR_BADCHANNELKEY		475
+# define ERR_BANNEDFROMCHAN		474
+# define ERR_CHANNELISFULL		471
+# define ERR_INVITEONLYCHAN		473
+# define ERR_BADCHANMASK		476
+# define RPL_TOPIC				332
+# define RPL_TOPICWHOTIME		333
+# define RPL_NAMREPLY			353
+# define RPL_ENDOFNAMES			366
 
 
 /* ************************************************************************** */
@@ -104,6 +117,6 @@ void						clientFdListInit(t_fdList *clientFd, int listeningSocket);
 void						launchServer(Server &s, t_fdList *clientFd);
 int							sendMsg(const int socket, std::string msg);
 std::pair<int, std::string>	parseArguments(int ac, char** av);
-void						tokenizer(char* str, const char* del, std::vector<std::string> &out);
+void						tokenizer(std::string str, const char* del, std::vector<std::string> &out);
 
 # endif
