@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/09 14:22:11 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/09 15:26:10 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,15 +237,14 @@ void	Server::printRecvError(int byteCount, int currentFd)
 
 void	Server::setCmdToExecute(std::string cmd)
 {
-	std::string cmdList[17]	= {
-								"CAP"   , "AUTHENTICATE", "PASS" , "NICK",
-								"USER"  , "PONG"        , "QUIT" , "JOIN",
-								"PART"  , "TOPIC"       , "NAMES", "LIST",
-								"INVITE", "KICK"        , "MODE" , "PRIVMSG",
-								"NOTICE"
+	std::string cmdList[15]	= {
+								"PASS" , "NICK"   , "USER"   , "PONG"  ,
+								"QUIT" , "JOIN"   , "PART"   , "TOPIC" ,
+								"NAMES", "LIST"   , "INVITE" , "KICK"  ,
+								"MODE" , "PRIVMSG", "NOTICE"
 							 };
 
-	this->_nCmd				= 17;
+	this->_nCmd				= 15;
 
 	std::string	currentCmd = cmd.substr(0, cmd.find(' ', 0));
 
@@ -271,7 +270,7 @@ void	Server::execCmd(User &user, std::string cmd)
 		// 	...
 		// case 1:
 		// 	...
-		case 7 :
+		case 6 :
 			this->execJoin(user, cmdTokens);
 		// default:
 		// 	...
@@ -292,12 +291,25 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 
 	if (cmdTokens.size() < 2)
 	{
-		// numericReply(ERR_NEEDMOREPARAMS, user._socket, this->_users, &cmdTokens[0]);
+		numericReply(user, ERR_NEEDMOREPARAMS, cmdTokens[0], ":Not enough parameters");
 		return ;
 	}
 }
 
+void	Server::numericReply(User &user, int numReply, std::string msg)
+{
+	(void)user;
+	(void)numReply;
+	(void)msg;
+}
 
+void	Server::numericReply(User &user, int numReply, std::string &cmd, std::string msg)
+{
+	(void)user;
+	(void)numReply;
+	(void)cmd;
+	(void)msg;
+}
 
 void	Server::sendClientData(t_fdList *clientFdList, int* currentFd, char* buffer, int byteCount)
 {

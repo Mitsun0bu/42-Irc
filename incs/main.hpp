@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/09 14:09:32 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/09 15:18:16 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@
 
 # define FAILED					-1
 
-# define ERR_NEEDMOREPARAMS		61
+# define ERR_NEEDMOREPARAMS		461
 # define ERR_NOSUCHCHANNEL		403
 # define ERR_TOOMANYCHANNELS	405
 # define ERR_BADCHANNELKEY		475
@@ -117,6 +117,6 @@ void						clientFdListInit(t_fdList *clientFd, int listeningSocket);
 void						launchServer(Server &s, t_fdList *clientFd);
 int							sendMsg(const int socket, std::string msg);
 std::pair<int, std::string>	parseArguments(int ac, char** av);
-void						tokenizer(std::string str, const char* del, std::vector<std::string> &out);
+void						tokenizer(std::string str, const char* del, std::vector<std::string> &tokens);
 
 # endif

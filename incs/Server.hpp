@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/09 14:18:58 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/09 15:21:06 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,9 @@ class Server
 		void				setCmdToExecute(std::string);
 		void				execCmd(User &user, std::string cmd);
 		void				execJoin(User &user, std::vector<std::string> &cmdTokens);
+
+		void				numericReply(User &user, int numReply, std::string msg);
+		void				numericReply(User &user, int numReply, std::string &cmd, std::string msg);
 
 		void				sendClientData(t_fdList *clientFdList, int* currentFd, char* buffer, int byteCount);
 };
