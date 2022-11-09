@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/07 18:06:04 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/09 11:38:07 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ typedef struct s_fdList
 
 }	t_fdList;
 
+# include "Channel.hpp"
 # include "Server.hpp"
 # include "User.hpp"
 

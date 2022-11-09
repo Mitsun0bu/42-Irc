@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/07 18:43:55 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/09 11:26:21 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 /* ************************************************************************** */
 
 class User;
+class Channel;
 
 class Server
 {
@@ -45,19 +46,19 @@ class Server
 								  );
 
 		/* public attributes											*/
-		int							_port;
-		int							_addressFamily;
-		int							_socketType;
-		int							_socketFlag;
-		int							_socketBlockingMode;
-		int							_protocol;
-		int							_socket;
-		struct sockaddr_in			_socketAddr;
-		const char*					_internetHostAddr;
-		std::map<int, User>			_users;
-		static const std::string	_cmdList[3];
-		static const int			_nCmd = 3;
-		int							_cmdToExecute;
+		int								_port;
+		int								_addressFamily;
+		int								_socketType;
+		int								_socketFlag;
+		int								_socketBlockingMode;
+		int								_protocol;
+		int								_socket;
+		struct sockaddr_in				_socketAddr;
+		const char*						_internetHostAddr;
+		std::map<int, User>				_users;
+		std::map<std::string, Channel>	_channels;
+		int								_nCmd;
+		int								_cmdToExecute;
 
 		/* member functions												*/
 		int					bindSocket(int serverSocket, struct sockaddr_in& socketAddr);
@@ -84,12 +85,12 @@ class Server
 
 		void				handleClientData(t_fdList *clientFdList, int* currentFd);
 		void				printRecvError(int byteCount, int currentFd);
+
 		void				setCmdToExecute(std::string);
 		void				execCmd(User &user, std::string cmd);
+		void				execJoin(int userSocket, std::string &cmd);
 
 		void				sendClientData(t_fdList *clientFdList, int* currentFd, char* buffer, int byteCount);
 };
-
-const std::string	Server::_cmdList[3] = {"PASS", "NICK", "USER"};
 
 # endif

@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:24:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/07 18:13:47 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/09 10:35:13 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ User::User(void)
 				<< std::endl;
 
 	this->_socketAddrSize	= sizeof(this->_socketAddr);
-	setIp();
 
 	return ;
 }

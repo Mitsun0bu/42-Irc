@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/07 18:43:28 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/09 11:49:18 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,6 +177,7 @@ void	Server::acceptNewUser(t_fdList *clientFdList)
 								(struct sockaddr *)&newUser._socketAddr,
 								&newUser._socketAddrSize
 							);
+	newUser.setIp();
 
 	if (newUser._socket == FAILED)
 		perror("accept()");
@@ -194,7 +195,6 @@ void	Server::acceptNewUser(t_fdList *clientFdList)
 					<< newUser._socket
 					<< " ~~~"
 					<< std::endl;
-
 		this->_users[newUser._socket] = newUser;
 	}
 }
@@ -206,6 +206,10 @@ void	Server::handleClientData(t_fdList *clientFdList, int* currentFd)
 	std::vector<std::string>	cmds;
 
 	byteCount = recv(*currentFd, buffer, sizeof buffer, 0);
+
+	//DEBUG
+	std::cout << buffer << std::endl;
+
 	if (byteCount <= 0)
 	{
 		this->printRecvError(byteCount, *currentFd);
@@ -220,6 +224,8 @@ void	Server::handleClientData(t_fdList *clientFdList, int* currentFd)
 		for(size_t i = 0; i < cmds.size(); i ++)
 		{
 			this->setCmdToExecute(cmds[i]);
+			//DEBUG
+			std::cout << "COMMAND TO EXEC : " << this->_cmdToExecute << std::endl;
 			this->execCmd(this->_users[*currentFd], cmds[i]);
 		}
 	}
@@ -235,11 +241,25 @@ void	Server::printRecvError(int byteCount, int currentFd)
 
 void	Server::setCmdToExecute(std::string cmd)
 {
+	std::string cmdList[17]	= {
+								"CAP"   , "AUTHENTICATE", "PASS" , "NICK",
+								"USER"  , "PONG"        , "QUIT" , "JOIN",
+								"PART"  , "TOPIC"       , "NAMES", "LIST",
+								"INVITE", "KICK"        , "MODE" , "PRIVMSG",
+								"NOTICE"
+							 };
+
+	this->_nCmd				= 17;
+
 	std::string	currentCmd = cmd.substr(0, cmd.find(' ', 0));
 
-	for (int i = 0; i != this->_nCmd; i++)
+	//DEBUG
+	std::cout << "CMD : " << cmd << std::endl;
+	std::cout << "CURRENT CMD : " << this->_cmdToExecute << std::endl;
+
+	for (int i = 0; i != this->_nCmd - 1; i++)
 	{
-		if (currentCmd == this->_cmdList[i])
+		if (currentCmd == cmdList[i])
 		{
 			this->_cmdToExecute = i;
 			return ;
@@ -256,10 +276,42 @@ void	Server::execCmd(User &user, std::string cmd)
 		// 	...
 		// case 1:
 		// 	...
+		case 3 :
+			this->execJoin(user._socket, cmd);
 		// default:
 		// 	...
 	}
 }
+
+void	Server::execJoin(int userSocket, std::string &cmd)
+{
+	/*
+	The server receiving the command checks whether
+	or not the client can join the given channel,
+	and processes the request.
+	Servers MUST process the parameters of this command as lists
+	on incoming commands from clients,
+	with the first <key> being used for the first <channel>,
+	the second <key> being used for the second <channel>, etc.
+	*/
+
+
+	// DEBUG
+	(void)userSocket;
+	std::cout << cmd << std::endl;
+
+
+	// if (cmd.size() < 2)
+	// {
+	// 	numericReply(ERR_NEEDMOREPARAMS, socketClient, userMap, &cmd[0]);
+	// 	return ;
+	// }
+	// std::vector<std::string>	chanNames = splitNames(cmd[1]);
+
+
+}
+
+
 
 void	Server::sendClientData(t_fdList *clientFdList, int* currentFd, char* buffer, int byteCount)
 {

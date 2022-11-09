@@ -6,11 +6,41 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:32:28 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/04 13:30:15 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/09 11:08:55 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "../../incs/main.hpp"
+
+/*
+	LISTE DES COMMANDES A CODER :
+
+	CONNECTION
+		CAP message
+		AUTHENTICATE message
+		PASS message
+		NICK message
+		USER message
+		PONG message
+		QUIT message
+
+	CHANNEL OPERATIONS
+		JOIN message
+		PART message
+		TOPIC message
+		NAMES message
+		LIST message
+		INVITE message
+		KICK message
+
+	SERVER QUERIES AND COMMANDS
+		MODE message (gerer l'operateur)
+
+	SENDING MESSAGES
+		PRIVMSG message
+		NOTICE message
+*/
+
 
 int	main(int ac, char** av)
 {
