@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:32:28 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/09 11:08:55 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/09 15:53:52 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@
 		PRIVMSG message
 		NOTICE message
 */
-
 
 int	main(int ac, char** av)
 {

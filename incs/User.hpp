@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:23:53 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/07 18:12:39 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/09 14:57:42 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,17 +45,14 @@ class User
 		socklen_t				_socketAddrSize;
 		char					_remoteIP[INET6_ADDRSTRLEN];
 		const void*				_inAddr;
-		std::string				_ip;
-		std::string				_passwd;
-		std::string 			_nickname;
-		std::string 			_username;
-		std::string 			_realname;
-		std::set<std::string>	_channels;
-		// bool					_pass;
-		// unsigned int			_id;
-		// std::string			_cmd;
 		// std::string			_hostname;
-		// std::set<int> 		_privMsg;
+		bool									_pass;
+		bool									_isAuthenticated;
+		std::set<std::string>	_channels;
+		std::string						_ip;
+		std::string 					_nickname;
+		std::string 					_username;
+		std::string 					_realname;
 
 		/* member functions												*/
 		void					setIp(void);

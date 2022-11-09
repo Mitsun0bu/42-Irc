@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/09 14:22:11 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/09 15:54:56 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,10 +238,10 @@ void	Server::printRecvError(int byteCount, int currentFd)
 void	Server::setCmdToExecute(std::string cmd)
 {
 	std::string cmdList[17]	= {
-								"CAP"   , "AUTHENTICATE", "PASS" , "NICK",
-								"USER"  , "PONG"        , "QUIT" , "JOIN",
-								"PART"  , "TOPIC"       , "NAMES", "LIST",
-								"INVITE", "KICK"        , "MODE" , "PRIVMSG",
+								"PASS" , 	"NICK", "USER",
+								"PONG" , "QUIT" , "JOIN",
+								"PART"  , "TOPIC", "NAMES", "LIST",
+								"INVITE", "KICK", "MODE" , "PRIVMSG",
 								"NOTICE"
 							 };
 
@@ -265,21 +265,50 @@ void	Server::execCmd(User &user, std::string cmd)
 	std::vector<std::string>	cmdTokens;
 	tokenizer(cmd, " ", cmdTokens);
 
+
 	switch(this->_cmdToExecute)
 	{
-		// case 0:
-		// 	...
+		case 0:
+			this->execPass(user, cmdTokens);
+			break;
 		// case 1:
-		// 	...
+		// !!	This requires that clients send a PASS command before sending the NICK / USER combination. !!
+		// case 2:
+		// !!	This requires that clients send a PASS command before sending the NICK / USER combination. !!
+
 		case 7 :
 			this->execJoin(user, cmdTokens);
+			break;
 		// default:
 		// 	...
 	}
 }
 
+void	Server::execPass(User &user, std::vector<std::string> &cmdTokens)
+{
+	(void)user;
+	
+	// if (!user._isAuthenticated)
+		// this->numericReply(user._username, 462, "You may not reregister");
+
+	// if (cmdTokens.size() < 2)
+	// 	this->numericReply(user._username, 461, cmdTokens[0], "Not enough parameters");
+
+	// if (cmdTokens[2] != "PASS123")
+	// 	this->numericReply(user._username, 464, "Password incorrect");
+
+	if ((cmdTokens.size() < 2 || cmdTokens[2] != "PASS123")
+		this->sendError(user, "Authentication failed");
+	
+	
+	
+		
+	
+}
+
 void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 {
+	(void)user;
 	/*
 	The server receiving the command checks whether
 	or not the client can join the given channel,
