@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:23:07 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/09 11:38:29 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/10 17:25:13 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,12 @@ class Channel
 	public :
 		/* constructors													*/
 							Channel(void);
-
+							Channel(std::string name);
+							Channel(std::string name, std::string key);
 		/* public attributes											*/
 		std::string			_name;
 		std::string			_key;
-		bool				_hasKey;
+		bool				_requiresKey;
 		std::string			_topic;
 		bool				_topicIsSet;
 		std::set<int>		_members;
@@ -46,14 +47,14 @@ class Channel
 		std::string			_mode;
 
 		/* member functions												*/
-		void	addUser(User &user);
-		void	addUser(int userSocket);
-		void	deleteUser(User &user);
-		void	deleteUser(int userSocket);
-		void	addOperator(User &user);
-		void	addOperator(int userSocket);
-		void	deleteOperator(User &user);
-		void	deleteOperator(int userSocket);
+		void				addUser(User &user);
+		void				addUser(int userSocket);
+		void				deleteUser(User &user);
+		void				deleteUser(int userSocket);
+		void				addOperator(User &user);
+		void				addOperator(int userSocket);
+		void				deleteOperator(User &user);
+		void				deleteOperator(int userSocket);
 		// void	sendMsgToMembers(const std::string &content, int socketException) const;
 
 		/* exceptions													*/

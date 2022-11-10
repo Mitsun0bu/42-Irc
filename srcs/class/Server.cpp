@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/10 11:49:45 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/10 17:22:25 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,7 +226,7 @@ void	Server::handleClientData(int* currentFd)
 	}
 	else
 	{
-		tokenizer(buffer, "\n", cmds);
+		tokenizer(buffer, "\n\r", cmds);
 		std::string msg = "001 llethuil :Welcome to the 127.0.0.1 Network, llethuil[!llethuil@127.0.0.1]\r\n";
 		send(*currentFd, msg.c_str(), msg.size(), 0);
 		for(size_t i = 0; i < cmds.size(); i ++)
@@ -274,7 +274,6 @@ void	Server::execCmd(User &user, std::string cmd)
 	std::vector<std::string>	cmdTokens;
 	tokenizer(cmd, " ", cmdTokens);
 
-
 	switch(this->_cmdToExecute)
 	{
 		case 0:
@@ -314,53 +313,78 @@ void	Server::execPass(User &user, std::vector<std::string> &cmdTokens)
 
 void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 {
-	(void)user;
+	char						prefix	= '0';
+	size_t						i		= 0;
+	std::vector<std::string>	names;
+	std::vector<std::string>	keys;
 
-	// int							nToken = cmdTokens.size();
-	std::vector<std::string>	channelNames;
-	std::vector<std::string>	channelKeys;
+	tokenizer(cmdTokens[1], ",", names);
+	tokenizer(cmdTokens[2], ",", keys);
 
-
-	tokenizer(cmdTokens[1], ",", channelNames);
-	tokenizer(cmdTokens[2], ",", channelKeys);
-
-	// DEBUG
-	bool	isValid[channelNames.size() - 1];
-	size_t	i	= 0;
-	char	c	= '0';
-
-	for(i = 0; i < channelNames.size(); i++)
+	for(i = 0; i < names.size(); i++)
 	{
-		c = channelNames[i][0];
-		if (i == 0 && c != '#')
+		// CHECK IF CHANNEL NAME IS VALID
+		prefix = names[i][0];
+		if (prefix != '#')
+			this->numericReply(user, ERR_NOSUCHCHANNEL, names[i] + " :No such channel");
+		else
 		{
-			std::cout << "no such channel !"<< std::endl;
-			this->numericReply(user, ERR_NOSUCHCHANNEL, ":No such channel");
+	// 		// IF CHANNEL ALREADY EXISTS
+	// 		if (this->_channels.find(names[i]) != this->_channels.end())
+	// 		{
+	// 			// IF USER IS NOT ALREADY IN CHANNEL
+	// 			if (this->_channels[names[i]]._members.find(user._socket) == this->_channels[names[i]]._members.end())
+	// 			{
+	// 				if(this->_channels[names[i]]._requiresKey == true)
+	// 				{
+	// 					if (this->_channels[names[i]]._key == keys[i])
+	// 					{
+	// 						// JOIN
+	// 							// :WiZ JOIN #Twilight_zone	; WiZ is joining the channel #Twilight_zone
+	// 					}
+	// 					else
+	// 					{
+  	// 						// "<client> <channel> :Cannot join channel (+k)"
+	// 						this->numericReply(user, ERR_BADCHANNELKEY, names[i] + " :Cannot join channel (+k)");
+	// 					}
+	// 				}
+	// 				else
+	// 				{
+	// 					// JOIN
+	// 						// :WiZ JOIN #Twilight_zone	; WiZ is joining the channel #Twilight_zone
+	// 				}
+	// 			}
+	// 		}
+	// 		// IF CHANNEL DOES NOT EXIST
+	// 		else
+	// 		{
+				if (keys[i])
+					Channel	newChannel(names[i], keys[i]);
+				else
+					Channel	newChannel(names[i]);
+
+				// JOIN CHANNEL
+				// std::string joinMsg = ":" + user._nickname + "JOIN" + names[i] + " ; " + user._nickname + " is joining the channel" + names[i] + "\r\n";
+				std::string	joinMsg	= ":llethuil JOIN" + names[i] + " ; llethuil is joining the channel" + names[i] + "\r\n";
+				this->replyToClient(user, joinMsg);
+
+				// ADD NEW CHANNEL TO SERVER CHANNEL MAP
+				this->_channels.push_back(newChannel);
+	// 		}
 		}
-		if (c == '#')
-			isValid[i] = true;
 	}
-
-	// std::cout << "--------------------" << std::endl;
-	// for(size_t i = 0; i < channelKeys.size(); i++)
-	// 	std::cout << channelKeys[i] << std::endl;
-
-	// if (nToken < 2)
-	// {
-	// 	std::cout << "JOIN ERROR : ERR_NEEDMOREPARAMS" << std::endl;
-	// 	numericReply(user, ERR_NEEDMOREPARAMS, cmdTokens[0], ":Not enough parameters");
-	// 	return ;
-	// }
 }
 
 void	Server::numericReply(User &user, int numReply, std::string msg)
 {
 	std::string	code		= intToStr(numReply);
-	std::string	finalMsg	= code + " " + user._nickname + " " + msg + "\r\n";
+	// std::string	finalMsg	= code + " " + user._nickname + " " + msg + "\r\n";
+	std::string	finalMsg	= code + " " + "llethuil" + " " + msg + "\r\n";
 
 	std::cout << finalMsg << std::endl;
-
-	// send(user._socket, finalMsg.c_str(), finalMsg.size(), 0);
+	if (FD_ISSET(user._socket, &this->clientFdList.write))
+		if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
+			perror("send()");
 }
 
 void	Server::numericReply(User &user, int numReply, std::string &cmd, std::string msg)
@@ -371,19 +395,11 @@ void	Server::numericReply(User &user, int numReply, std::string &cmd, std::strin
 	(void)msg;
 }
 
-void	Server::sendClientData(int* currentFd, char* buffer, int byteCount)
+void	Server::replyToClient(User &user, std::string msg)
 {
-	for(int fd = 0; fd <= this->clientFdList.max; fd++)
-	{
-		if (FD_ISSET(fd, &this->clientFdList.master))
-		{
-			if (fd != this->_socket && fd != *currentFd)
-			{
-				if (send(fd, buffer, byteCount, 0) == -1)
-					perror("send()");
-			}
-		}
-	}
+	if (FD_ISSET(user._socket, &this->clientFdList.write))
+		if (send(user._socket, msg.c_str(), msg.size(), 0) == FAILED)
+			perror("send()");
 }
 
 /* ************************************************************************** */

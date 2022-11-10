@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:25:31 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/07 14:46:51 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/10 17:36:31 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,30 @@
 /* ************************************************************************** */
 
 Channel::Channel(void)
+{
+	std::cout	<< BLUE
+				<< "[CONSTRUCTOR] : "
+				<< END
+				<< "A Channel has been created !"
+				<< std::endl;
+
+	return ;
+}
+
+Channel::Channel(std::string name) :
+	_name(name), _key(""), _requiresKey(false), _topic(), _topicIsSet(false), _members(), _operators(), _mode()
+{
+	std::cout	<< BLUE
+				<< "[CONSTRUCTOR] : "
+				<< END
+				<< "A Channel has been created !"
+				<< std::endl;
+
+	return ;
+}
+
+Channel::Channel(std::string name, std::string key) :
+	_name(name), _key(key), _requiresKey(true), _topic(), _topicIsSet(false), _members(), _operators(), _mode()
 {
 	std::cout	<< BLUE
 				<< "[CONSTRUCTOR] : "
@@ -59,7 +83,7 @@ Channel&	Channel::operator=(Channel const & src)
 {
 	this->_name			= src._name;
 	this->_key			= src._key;
-	this->_hasKey		= src._hasKey;
+	this->_requiresKey	= src._requiresKey;
 	this->_topic		= src._topic;
 	this->_topicIsSet	= src._topicIsSet;
 	this->_members		= src._members;
