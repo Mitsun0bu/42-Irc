@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:23:07 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/10 17:25:13 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/10 17:56:49 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,9 @@ class Channel
 		std::set<int>		_operators;
 		std::string			_mode;
 
+		/* operator overload											*/
+		Channel				&operator=(const Channel& src);
+
 		/* member functions												*/
 		void				addUser(User &user);
 		void				addUser(int userSocket);
@@ -67,8 +70,6 @@ class Channel
 		/* copy constructor												*/
 							Channel(const Channel& src);
 
-		/* operator overload											*/
-		Channel				&operator=(const Channel& src);
 
 		/* private attributes											*/
 

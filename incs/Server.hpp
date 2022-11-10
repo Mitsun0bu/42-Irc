@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/09 17:05:09 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/10 17:57:46 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,13 +90,17 @@ class Server
 
 		void				setCmdToExecute(std::string);
 		void				execCmd(User &user, std::string cmd);
+
 		void				execPass(User &user, std::vector<std::string> &cmdTokens);
+
 		void				execJoin(User &user, std::vector<std::string> &cmdTokens);
 
 		void				numericReply(User &user, int numReply, std::string msg);
 		void				numericReply(User &user, int numReply, std::string &cmd, std::string msg);
 
-		void				sendClientData(int* currentFd, char* buffer, int byteCount);	
+		void				replyToClient(User &user, std::string msg);
+
+		void				sendClientData(int* currentFd, char* buffer, int byteCount);
 		void				sendError(User &user, std::string reason);
 };
 

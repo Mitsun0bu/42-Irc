@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/10 17:22:25 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/10 17:59:55 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -358,18 +358,23 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 	// 		// IF CHANNEL DOES NOT EXIST
 	// 		else
 	// 		{
-				if (keys[i])
-					Channel	newChannel(names[i], keys[i]);
+
+				// ADD NEW CHANNEL TO SERVER CHANNEL MAP
+				if (keys[i].length())
+				{	Channel	newChannel(names[i], keys[i]);
+					this->_channels[names[i]] = newChannel;
+				}
 				else
+				{
 					Channel	newChannel(names[i]);
+					this->_channels[names[i]] = newChannel;
+				}
 
 				// JOIN CHANNEL
 				// std::string joinMsg = ":" + user._nickname + "JOIN" + names[i] + " ; " + user._nickname + " is joining the channel" + names[i] + "\r\n";
 				std::string	joinMsg	= ":llethuil JOIN" + names[i] + " ; llethuil is joining the channel" + names[i] + "\r\n";
 				this->replyToClient(user, joinMsg);
 
-				// ADD NEW CHANNEL TO SERVER CHANNEL MAP
-				this->_channels.push_back(newChannel);
 	// 		}
 		}
 	}
