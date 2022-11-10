@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/09 17:20:49 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/10 11:49:45 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,12 +212,11 @@ void	Server::acceptNewUser(void)
 
 void	Server::handleClientData(int* currentFd)
 {
-	// char						buffer[256]	= {0};
-	std::string					buffer;
+	char						buffer[256]	= {0};
 	int							byteCount	= 0;
 	std::vector<std::string>	cmds;
 
-	byteCount = recv(*currentFd, const_cast<char*>(buffer.c_str()), sizeof buffer, 0);
+	byteCount = recv(*currentFd, buffer, sizeof buffer, 0);
 
 	if (byteCount <= 0)
 	{
@@ -285,7 +284,7 @@ void	Server::execCmd(User &user, std::string cmd)
 		// !!	This requires that clients send a PASS command before sending the NICK / USER combination. !!
 		// case 2:
 		// !!	This requires that clients send a PASS command before sending the NICK / USER combination. !!
-		case 6 :
+		case 5 :
 			this->execJoin(user, cmdTokens);
 		case 7 :
 		// 	...
@@ -316,28 +315,52 @@ void	Server::execPass(User &user, std::vector<std::string> &cmdTokens)
 void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 {
 	(void)user;
-	/*
-	The server receiving the command checks whether
-	or not the client can join the given channel,
-	and processes the request.
-	Servers MUST process the parameters of this command as lists
-	on incoming commands from clients,
-	with the first <key> being used for the first <channel>,
-	the second <key> being used for the second <channel>, etc.
-	*/
 
-	if (cmdTokens.size() < 2)
+	// int							nToken = cmdTokens.size();
+	std::vector<std::string>	channelNames;
+	std::vector<std::string>	channelKeys;
+
+
+	tokenizer(cmdTokens[1], ",", channelNames);
+	tokenizer(cmdTokens[2], ",", channelKeys);
+
+	// DEBUG
+	bool	isValid[channelNames.size() - 1];
+	size_t	i	= 0;
+	char	c	= '0';
+
+	for(i = 0; i < channelNames.size(); i++)
 	{
-		numericReply(user, ERR_NEEDMOREPARAMS, cmdTokens[0], ":Not enough parameters");
-		return ;
+		c = channelNames[i][0];
+		if (i == 0 && c != '#')
+		{
+			std::cout << "no such channel !"<< std::endl;
+			this->numericReply(user, ERR_NOSUCHCHANNEL, ":No such channel");
+		}
+		if (c == '#')
+			isValid[i] = true;
 	}
+
+	// std::cout << "--------------------" << std::endl;
+	// for(size_t i = 0; i < channelKeys.size(); i++)
+	// 	std::cout << channelKeys[i] << std::endl;
+
+	// if (nToken < 2)
+	// {
+	// 	std::cout << "JOIN ERROR : ERR_NEEDMOREPARAMS" << std::endl;
+	// 	numericReply(user, ERR_NEEDMOREPARAMS, cmdTokens[0], ":Not enough parameters");
+	// 	return ;
+	// }
 }
 
 void	Server::numericReply(User &user, int numReply, std::string msg)
 {
-	(void)user;
-	(void)numReply;
-	(void)msg;
+	std::string	code		= intToStr(numReply);
+	std::string	finalMsg	= code + " " + user._nickname + " " + msg + "\r\n";
+
+	std::cout << finalMsg << std::endl;
+
+	// send(user._socket, finalMsg.c_str(), finalMsg.size(), 0);
 }
 
 void	Server::numericReply(User &user, int numReply, std::string &cmd, std::string msg)
