@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/11 12:26:52 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/11 14:19:11 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,6 +215,7 @@ void	Server::handleClientData(int* currentFd)
 	char						buffer[256]	= {0};
 	int							byteCount	= 0;
 	std::vector<std::string>	cmds;
+	std::vector<std::string>	cmdTokens;
 
 	byteCount = recv(*currentFd, buffer, sizeof buffer, 0);
 
@@ -231,8 +232,8 @@ void	Server::handleClientData(int* currentFd)
 		send(*currentFd, msg.c_str(), msg.size(), 0);
 		for(size_t i = 0; i < cmds.size(); i ++)
 		{
-			this->setCmdToExecute(cmds[i]);
-			this->execCmd(this->_users[*currentFd], cmds[i]);
+			tokenizer(cmds[i], " ", cmdTokens);
+			this->execCmd(this->_users[*currentFd], cmdTokens);
 		}
 	}
 }
@@ -245,36 +246,27 @@ void	Server::printRecvError(int byteCount, int currentFd)
 		perror("recv()");
 }
 
-void	Server::setCmdToExecute(std::string cmd)
+int	Server::findCmdToExecute(std::string cmd)
 {
-	std::string cmdList[15]	= {
-								"PASS" , "NICK"   , "USER"   , "PONG"  ,
-								"QUIT" , "JOIN"   , "PART"   , "TOPIC" ,
-								"NAMES", "LIST"   , "INVITE" , "KICK"  ,
-								"MODE" , "PRIVMSG", "NOTICE"
-							 };
+	const int	nCmd					= 15;
+	std::string	cmdList[nCmd]	= {
+											"PASS" , "NICK"   , "USER"   , "PONG"  ,
+											"QUIT" , "JOIN"   , "PART"   , "TOPIC" ,
+											"NAMES", "LIST"   , "INVITE" , "KICK"  ,
+											"MODE" , "PRIVMSG", "NOTICE"
+							 			  };
 
-	this->_nCmd				= 15;
-
-	std::string	currentCmd = cmd.substr(0, cmd.find(' ', 0));
-
-	for (int i = 0; i != this->_nCmd - 1; i++)
-	{
-		if (currentCmd == cmdList[i])
-		{
-			this->_cmdToExecute = i;
-			return ;
-		}
-	}
-	this->_cmdToExecute = FAILED;
+	for (int i = 0; i < nCmd; i++)
+		if (cmd == cmdList[i])
+			return (i);
+	return (FAILED);
 }
 
-void	Server::execCmd(User &user, std::string cmd)
+void	Server::execCmd(User &user, std::vector<std::string> &cmdTokens)
 {
-	std::vector<std::string>	cmdTokens;
-	tokenizer(cmd, " ", cmdTokens);
+	int	cmdToExecute = this->findCmdToExecute(cmdTokens[0]);
 
-	switch(this->_cmdToExecute)
+	switch(cmdToExecute)
 	{
 		case 0:
 			this->execPass(user, cmdTokens);

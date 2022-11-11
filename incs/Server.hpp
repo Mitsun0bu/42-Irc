@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/11 11:31:50 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/11 14:19:12 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,6 @@ class Server
 		t_fdList						clientFdList;
 		std::map<int, User>				_users;
 		std::map<std::string, Channel>	_channels;
-		int								_nCmd;
-		int								_cmdToExecute;
 
 		/* member functions												*/
 		int					bindSocket(int serverSocket, struct sockaddr_in& socketAddr);
@@ -88,8 +86,8 @@ class Server
 		void				handleClientData(int* currentFd);
 		void				printRecvError(int byteCount, int currentFd);
 
-		void				setCmdToExecute(std::string);
-		void				execCmd(User &user, std::string cmd);
+		int					findCmdToExecute(std::string cmd);
+		void				execCmd(User &user, std::vector<std::string> &cmdTokens);
 
 		void				execPass(User &user, std::vector<std::string> &cmdTokens);
 
