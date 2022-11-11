@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/10 17:57:46 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/11 11:31:50 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,9 @@ class Server
 		void				execPass(User &user, std::vector<std::string> &cmdTokens);
 
 		void				execJoin(User &user, std::vector<std::string> &cmdTokens);
+		void				addChannel(Channel &channel, std::string name);
+
+		void				execNames(User &user, std::vector<std::string> &cmdTokens);
 
 		void				numericReply(User &user, int numReply, std::string msg);
 		void				numericReply(User &user, int numReply, std::string &cmd, std::string msg);

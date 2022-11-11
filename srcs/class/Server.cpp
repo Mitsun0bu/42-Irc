@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/10 17:59:55 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/11 12:26:52 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -285,9 +285,9 @@ void	Server::execCmd(User &user, std::string cmd)
 		// !!	This requires that clients send a PASS command before sending the NICK / USER combination. !!
 		case 5 :
 			this->execJoin(user, cmdTokens);
-		case 7 :
-		// 	...
-			break;
+		case 8 :
+			this->execNames(user, cmdTokens);
+		break;
 		// default:
 		// 	...
 	}
@@ -329,54 +329,101 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 			this->numericReply(user, ERR_NOSUCHCHANNEL, names[i] + " :No such channel");
 		else
 		{
-	// 		// IF CHANNEL ALREADY EXISTS
-	// 		if (this->_channels.find(names[i]) != this->_channels.end())
-	// 		{
-	// 			// IF USER IS NOT ALREADY IN CHANNEL
-	// 			if (this->_channels[names[i]]._members.find(user._socket) == this->_channels[names[i]]._members.end())
-	// 			{
-	// 				if(this->_channels[names[i]]._requiresKey == true)
-	// 				{
-	// 					if (this->_channels[names[i]]._key == keys[i])
-	// 					{
-	// 						// JOIN
-	// 							// :WiZ JOIN #Twilight_zone	; WiZ is joining the channel #Twilight_zone
-	// 					}
-	// 					else
-	// 					{
-  	// 						// "<client> <channel> :Cannot join channel (+k)"
-	// 						this->numericReply(user, ERR_BADCHANNELKEY, names[i] + " :Cannot join channel (+k)");
-	// 					}
-	// 				}
-	// 				else
-	// 				{
-	// 					// JOIN
-	// 						// :WiZ JOIN #Twilight_zone	; WiZ is joining the channel #Twilight_zone
-	// 				}
-	// 			}
-	// 		}
-	// 		// IF CHANNEL DOES NOT EXIST
-	// 		else
-	// 		{
+			// IF CHANNEL EXISTS
+			if (this->_channels.find(names[i]) != this->_channels.end())
+			{
+				// IF USER IS NOT ALREADY IN CHANNEL
+				if (this->_channels[names[i]]._members.find(user._socket) == this->_channels[names[i]]._members.end())
+				{
+					// IF THE CHANNEL REQUIRES A KEY
+					if(this->_channels[names[i]]._requiresKey == true)
+					{
+						// CHECK IF KEY IS VALID
+						if (this->_channels[names[i]]._key == keys[i])
+						{
+							// JOIN CHANNEL
+								// std::string joinMsg = ":" + user._nickname + " JOIN" + names[i] + "\r\n";
+							// TOPIC
+								// "<client> <channel> :<topic>"
+						}
+						else
+							this->numericReply(user, ERR_BADCHANNELKEY, names[i] + " :Cannot join channel (+k)");
+					}
+					// IF THE CHANNEL DOES NOT REQUIRE A KEY
+					else
+					{
+						// JOIN CHANNEL
+						// std::string joinMsg = ":" + user._nickname + " JOIN" + names[i] + "\r\n";
+						std::string	joinMsg = ":llethuil JOIN" + names[i] + "\r\n";
+						this->replyToClient(user, joinMsg);
+						// TOPIC
+							// "<client> <channel> :<topic>"
+					}
+				}
+			}
+			// IF CHANNEL DOES NOT EXIST
+			else
+			{
+				// INSTANTIATE NEW CHANNEL
+				Channel	newChannel(names[i]);
+
+				if (keys.empty() == false && keys[i].length())
+					newChannel.setKey(keys[i]);
+
+				// ADD USER TO THE CHANNEL
+				newChannel.addMember(user);
 
 				// ADD NEW CHANNEL TO SERVER CHANNEL MAP
-				if (keys[i].length())
-				{	Channel	newChannel(names[i], keys[i]);
-					this->_channels[names[i]] = newChannel;
-				}
-				else
-				{
-					Channel	newChannel(names[i]);
-					this->_channels[names[i]] = newChannel;
-				}
+				this->addChannel(newChannel, names[i]);
 
 				// JOIN CHANNEL
-				// std::string joinMsg = ":" + user._nickname + "JOIN" + names[i] + " ; " + user._nickname + " is joining the channel" + names[i] + "\r\n";
-				std::string	joinMsg	= ":llethuil JOIN" + names[i] + " ; llethuil is joining the channel" + names[i] + "\r\n";
+				// std::string joinMsg = ":" + user._nickname + " JOIN" + names[i] + "\r\n";
+				std::string	joinMsg = ":llethuil JOIN " + names[i] + "\r\n";
 				this->replyToClient(user, joinMsg);
 
-	// 		}
+				// NAMES
+				// "<client> <symbol> <channel> :[prefix]<nick>{ [prefix]<nick>}"
+				// "<client> <channel> :End of /NAMES list"
+			}
 		}
+	}
+}
+
+void	Server::addChannel(Channel &channel, std::string name)
+{
+	this->_channels[name] = channel;
+
+	return ;
+}
+
+void	Server::execNames(User &user, std::vector<std::string> &names)
+{
+	char						prefix		= '0';
+
+	for(size_t i = 0; i < names.size(); i++)
+	{
+		//IF CHANNEL NAME IS INVALID
+		prefix = names[i][0];
+		if (prefix != '#')
+			this->numericReply(user, RPL_NAMREPLY, names[i] + " :End of /NAMES list");
+
+		// IF CHANNEL EXISTS
+		if(this->_channels.find(names[i]) != this->_channels.end())
+		{
+			//DEBUG
+			std::cout << names[i] << std::endl;
+
+			// COMMENT ACCEDER AU NICKNAME ??
+			// this->_channels[name[i]]->_members[i];
+			std::string	namesMsg = ":llethuil = " + names[i] + ":";
+
+			this->replyToClient(user, namesMsg);
+			// "<client> <symbol> <channel> :[prefix]<nick>{ [prefix]<nick>}"
+
+			this->numericReply(user, RPL_NAMREPLY, names[i] + " :End of /NAMES list");
+		}
+		else
+			this->numericReply(user, RPL_NAMREPLY, names[i] + " :End of /NAMES list");
 	}
 }
 
@@ -390,6 +437,8 @@ void	Server::numericReply(User &user, int numReply, std::string msg)
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
 		if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
 			perror("send()");
+
+	return ;
 }
 
 void	Server::numericReply(User &user, int numReply, std::string &cmd, std::string msg)
@@ -405,6 +454,8 @@ void	Server::replyToClient(User &user, std::string msg)
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
 		if (send(user._socket, msg.c_str(), msg.size(), 0) == FAILED)
 			perror("send()");
+
+	return ;
 }
 
 /* ************************************************************************** */

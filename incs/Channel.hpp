@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:23:07 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/10 17:56:49 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/11 11:43:18 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ class Channel
 		/* constructors													*/
 							Channel(void);
 							Channel(std::string name);
-							Channel(std::string name, std::string key);
 		/* public attributes											*/
 		std::string			_name;
 		std::string			_key;
@@ -50,14 +49,15 @@ class Channel
 		Channel				&operator=(const Channel& src);
 
 		/* member functions												*/
-		void				addUser(User &user);
-		void				addUser(int userSocket);
-		void				deleteUser(User &user);
-		void				deleteUser(int userSocket);
-		void				addOperator(User &user);
-		void				addOperator(int userSocket);
-		void				deleteOperator(User &user);
-		void				deleteOperator(int userSocket);
+		void				addMember(User &user);
+		void				setKey(std::string key);
+		// void				addMember(int userSocket);
+		// void				deleteMember(User &user);
+		// void				deleteMember(int userSocket);
+		// void				addOperator(User &user);
+		// void				addOperator(int userSocket);
+		// void				deleteOperator(User &user);
+		// void				deleteOperator(int userSocket);
 		// void	sendMsgToMembers(const std::string &content, int socketException) const;
 
 		/* exceptions													*/
