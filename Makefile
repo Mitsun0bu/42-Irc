@@ -6,7 +6,7 @@
 #    By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/31 14:42:54 by llethuil          #+#    #+#              #
-#    Updated: 2022/11/10 11:34:00 by llethuil         ###   ########lyon.fr    #
+#    Updated: 2022/11/11 18:14:59 by llethuil         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,8 +31,7 @@ NAME			:=	ircserv
 
 CC				:=	c++
 
-# CXXFLAGS		:=	-std=c++98 -Wall -Wextra -Werror
-CXXFLAGS		:= -Wall -Wextra -Werror
+CXXFLAGS		:=	-std=c++98 -Wall -Wextra -Werror
 
 RM				:=	rm -f
 

@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/11 14:19:11 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/11 18:44:17 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,8 +228,13 @@ void	Server::handleClientData(int* currentFd)
 	else
 	{
 		tokenizer(buffer, "\n\r", cmds);
-		std::string msg = "001 llethuil :Welcome to the 127.0.0.1 Network, llethuil[!llethuil@127.0.0.1]\r\n";
-		send(*currentFd, msg.c_str(), msg.size(), 0);
+		static int test = 0;
+		if (test == 0)
+		{
+			std::string msg = "001 llethuil :Welcome to the 127.0.0.1 Network, llethuil[!llethuil@127.0.0.1]\r\n";
+			send(*currentFd, msg.c_str(), msg.size(), 0);
+			test ++;
+		}
 		for(size_t i = 0; i < cmds.size(); i ++)
 		{
 			tokenizer(cmds[i], " ", cmdTokens);
@@ -246,7 +251,7 @@ void	Server::printRecvError(int byteCount, int currentFd)
 		perror("recv()");
 }
 
-int	Server::findCmdToExecute(std::string cmd)
+int		Server::findCmdToExecute(std::string cmd)
 {
 	const int	nCmd					= 15;
 	std::string	cmdList[nCmd]	= {
@@ -334,7 +339,7 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 						if (this->_channels[names[i]]._key == keys[i])
 						{
 							// JOIN CHANNEL
-								// std::string joinMsg = ":" + user._nickname + " JOIN" + names[i] + "\r\n";
+								// std::string joinMsg = ":" + user._nickname + " JOIN" + names[i];
 							// TOPIC
 								// "<client> <channel> :<topic>"
 						}
@@ -346,7 +351,7 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 					{
 						// JOIN CHANNEL
 						// std::string joinMsg = ":" + user._nickname + " JOIN" + names[i] + "\r\n";
-						std::string	joinMsg = ":llethuil JOIN" + names[i] + "\r\n";
+						std::string	joinMsg = ":llethuil JOIN" + names[i];
 						this->replyToClient(user, joinMsg);
 						// TOPIC
 							// "<client> <channel> :<topic>"
@@ -369,13 +374,12 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 				this->addChannel(newChannel, names[i]);
 
 				// JOIN CHANNEL
-				// std::string joinMsg = ":" + user._nickname + " JOIN" + names[i] + "\r\n";
-				std::string	joinMsg = ":llethuil JOIN " + names[i] + "\r\n";
+				// std::string joinMsg = ":" + user._nickname + " JOIN" + names[i];
+				std::string	joinMsg = ":llethuil JOIN " + names[i];
 				this->replyToClient(user, joinMsg);
 
 				// NAMES
-				// "<client> <symbol> <channel> :[prefix]<nick>{ [prefix]<nick>}"
-				// "<client> <channel> :End of /NAMES list"
+					// "<client> <channel> :End of /NAMES list"
 			}
 		}
 	}
@@ -388,8 +392,11 @@ void	Server::addChannel(Channel &channel, std::string name)
 	return ;
 }
 
-void	Server::execNames(User &user, std::vector<std::string> &names)
+void	Server::execNames(User &user, std::vector<std::string> &cmdTokens)
 {
+	std::vector<std::string>	names;
+	tokenizer(cmdTokens[1], ",", names);
+
 	char						prefix		= '0';
 
 	for(size_t i = 0; i < names.size(); i++)
@@ -397,37 +404,58 @@ void	Server::execNames(User &user, std::vector<std::string> &names)
 		//IF CHANNEL NAME IS INVALID
 		prefix = names[i][0];
 		if (prefix != '#')
-			this->numericReply(user, RPL_NAMREPLY, names[i] + " :End of /NAMES list");
+			this->numericReply(user, RPL_ENDOFNAMES, names[i] + " :End of /NAMES list");
 
 		// IF CHANNEL EXISTS
 		if(this->_channels.find(names[i]) != this->_channels.end())
 		{
-			//DEBUG
-			std::cout << names[i] << std::endl;
+			std::string namesMsg = ":127.0.0.1 " + intToStr(RPL_NAMREPLY) + " = " + names[i] + " :";
 
-			// COMMENT ACCEDER AU NICKNAME ??
-			// this->_channels[name[i]]->_members[i];
-			std::string	namesMsg = ":llethuil = " + names[i] + ":";
+			// ADD CHANNEL MEMBERS' NICKNAME TO MESSAGE
+			// THIS IS NOT WORKING !!!!!!!!!!!!!!!!!!!!!!!!!!!
+			std::set<int>	members = this->_channels[names[i]]._members;
+			for (std::set<int>::iterator fd = members.begin(); fd != members.end(); fd++)
+			{
+				namesMsg += this->_users[*fd]._nickname;
+				std::cout << this->_users[*fd]._nickname << std::endl;
+			}
+
+			// DEBUG
+			// std::string m1 = ":127.0.0.1 353 = #test1 :llethuil\r\n";
+			// std::cout << m1 << std::endl;
+			// std::cout << "---------------" << std::endl;
+			// std::cout << namesMsg << std::endl;
+			// std::cout << "---------------" << std::endl;
 
 			this->replyToClient(user, namesMsg);
-			// "<client> <symbol> <channel> :[prefix]<nick>{ [prefix]<nick>}"
 
-			this->numericReply(user, RPL_NAMREPLY, names[i] + " :End of /NAMES list");
+			std::string endMsg = "= " + names[i] + " :End of /NAMES list";
+			this->numericReply(user, ":127.0.0.1", RPL_ENDOFNAMES, endMsg);
 		}
 		else
-			this->numericReply(user, RPL_NAMREPLY, names[i] + " :End of /NAMES list");
+			this->numericReply(user, RPL_ENDOFNAMES, names[i] + " :End of /NAMES list");
 	}
 }
 
 void	Server::numericReply(User &user, int numReply, std::string msg)
 {
 	std::string	code		= intToStr(numReply);
-	// std::string	finalMsg	= code + " " + user._nickname + " " + msg + "\r\n";
-	std::string	finalMsg	= code + " " + "llethuil" + " " + msg + "\r\n";
+	std::string	finalMsg	= code + " " + user._nickname + " " + msg + "\r\n";
 
-	std::cout << finalMsg << std::endl;
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
-		if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
+		if (send(user._socket, msg.c_str(), msg.size(), 0) == FAILED)
+			perror("send()");
+
+	return ;
+}
+
+void	Server::numericReply(User &user, std::string client, int numReply, std::string msg)
+{
+	std::string	code		= intToStr(numReply);
+	std::string	finalMsg	= client + " " + code + " " + msg + "\r\n";
+
+	if (FD_ISSET(user._socket, &this->clientFdList.write))
+		if (send(user._socket, msg.c_str(), msg.size(), 0) == FAILED)
 			perror("send()");
 
 	return ;
@@ -443,6 +471,8 @@ void	Server::numericReply(User &user, int numReply, std::string &cmd, std::strin
 
 void	Server::replyToClient(User &user, std::string msg)
 {
+	msg += "\r\n";
+
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
 		if (send(user._socket, msg.c_str(), msg.size(), 0) == FAILED)
 			perror("send()");

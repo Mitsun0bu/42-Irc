@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/11 14:19:12 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/11 18:27:49 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,8 +97,8 @@ class Server
 		void				execNames(User &user, std::vector<std::string> &cmdTokens);
 
 		void				numericReply(User &user, int numReply, std::string msg);
+		void				numericReply(User &user, std::string client, int numReply, std::string msg);
 		void				numericReply(User &user, int numReply, std::string &cmd, std::string msg);
-
 		void				replyToClient(User &user, std::string msg);
 
 		void				sendClientData(int* currentFd, char* buffer, int byteCount);
