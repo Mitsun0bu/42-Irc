@@ -6,11 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2022/11/09 15:54:56 by agirardi         ###   ########lyon.fr   */
-=======
-/*   Updated: 2022/11/09 16:26:28 by llethuil         ###   ########lyon.fr   */
->>>>>>> master
+/*   Updated: 2022/11/11 14:11:23 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +36,8 @@ Server::Server(void)
 	return ;
 }
 
-Server::Server(int port, int addressFamily, int socketType, int socketFlag, int socketBlockingMode, int protocol, const char* internetHostAddr) :
-	_port(port), _addressFamily(addressFamily), _socketType(socketType), _socketFlag(socketFlag), _socketBlockingMode(socketBlockingMode), _protocol(protocol), _internetHostAddr(internetHostAddr)
+Server::Server(int port, std::string passwd, int addressFamily, int socketType, int socketFlag, int socketBlockingMode, int protocol, const char* internetHostAddr) :
+	_port(port), _passwd(passwd), _addressFamily(addressFamily), _socketType(socketType), _socketFlag(socketFlag), _socketBlockingMode(socketBlockingMode), _protocol(protocol), _internetHostAddr(internetHostAddr)
 {
 	std::cout	<< BLUE
 				<< "[CONSTRUCTOR] : "
@@ -216,13 +212,14 @@ void	Server::acceptNewUser(void)
 
 void	Server::handleClientData(int* currentFd)
 {
-	// char						buffer[256]	= {0};
-	std::string					buffer;
+	char						buffer[256]	= {0};
 	int							byteCount	= 0;
+	std::string			bufferStr;
 	std::vector<std::string>	cmds;
+	std::vector<std::string>	cmdTokens;
 
-	byteCount = recv(*currentFd, const_cast<char*>(buffer.c_str()), sizeof buffer, 0);
 
+	byteCount = recv(*currentFd, buffer, 256, 0);
 	if (byteCount <= 0)
 	{
 		this->printRecvError(byteCount, *currentFd);
@@ -231,13 +228,13 @@ void	Server::handleClientData(int* currentFd)
 	}
 	else
 	{
-		tokenizer(buffer, "\n", cmds);
-		std::string msg = "001 llethuil :Welcome to the 127.0.0.1 Network, llethuil[!llethuil@127.0.0.1]\r\n";
-		send(*currentFd, msg.c_str(), msg.size(), 0);
+		bufferStr = buffer;
+		tokenizer(bufferStr, "\n", cmds);
+		
 		for(size_t i = 0; i < cmds.size(); i ++)
 		{
-			this->setCmdToExecute(cmds[i]);
-			this->execCmd(this->_users[*currentFd], cmds[i]);
+			tokenizer(cmds[i], " ", cmdTokens);
+			this->execCmd(this->_users[*currentFd], cmdTokens);
 		}
 	}
 }
@@ -250,61 +247,55 @@ void	Server::printRecvError(int byteCount, int currentFd)
 		perror("recv()");
 }
 
-void	Server::setCmdToExecute(std::string cmd)
+int	Server::findCmdToExecute(std::string &cmd)
 {
-<<<<<<< HEAD
-	std::string cmdList[17]	= {
-								"PASS" , 	"NICK", "USER",
-								"PONG" , "QUIT" , "JOIN",
-								"PART"  , "TOPIC", "NAMES", "LIST",
-								"INVITE", "KICK", "MODE" , "PRIVMSG",
-								"NOTICE"
-=======
-	std::string cmdList[15]	= {
+	const int nCmd = 15;
+	std::string cmdList[nCmd]	= {
 								"PASS" , "NICK"   , "USER"   , "PONG"  ,
 								"QUIT" , "JOIN"   , "PART"   , "TOPIC" ,
 								"NAMES", "LIST"   , "INVITE" , "KICK"  ,
 								"MODE" , "PRIVMSG", "NOTICE"
->>>>>>> master
 							 };
 
-	this->_nCmd				= 15;
-
-	std::string	currentCmd = cmd.substr(0, cmd.find(' ', 0));
-
-	for (int i = 0; i != this->_nCmd - 1; i++)
-	{
-		if (currentCmd == cmdList[i])
-		{
-			this->_cmdToExecute = i;
-			return ;
-		}
-	}
-	this->_cmdToExecute = FAILED;
+	for (size_t i = 0; i < nCmd; i++)
+		if (cmd == cmdList[i])
+			return (i);
+	return (FAILED);
 }
 
-void	Server::execCmd(User &user, std::string cmd)
+void	Server::execCmd(User &user, std::vector<std::string> &cmdTokens)
 {
-	std::vector<std::string>	cmdTokens;
-	tokenizer(cmd, " ", cmdTokens);
+	int	cmdToExecute = this->findCmdToExecute(cmdTokens[0]);
+
+	// Bouger tokenizer dans la for loop de handleClientData()
+	// Supprimer currentCmd dans setCmdToExecute()
+
+	// this->_cmdToExecute utile ?
 
 
-	switch(this->_cmdToExecute)
+
+
+
+	// if (!user._isAuthenticated && this->_cmdToExecute < 3)
+	// 	...
+	// else
+	// 	switch
+		
+
+
+	switch(cmdToExecute)
 	{
 		case 0:
 			this->execPass(user, cmdTokens);
 			break;
 		// case 1:
-<<<<<<< HEAD
 		// !!	This requires that clients send a PASS command before sending the NICK / USER combination. !!
 		// case 2:
 		// !!	This requires that clients send a PASS command before sending the NICK / USER combination. !!
 
 		case 7 :
-=======
 		// 	...
 		case 6 :
->>>>>>> master
 			this->execJoin(user, cmdTokens);
 			break;
 		// default:
@@ -314,25 +305,58 @@ void	Server::execCmd(User &user, std::string cmd)
 
 void	Server::execPass(User &user, std::vector<std::string> &cmdTokens)
 {
-	(void)user;
-	
-	// if (!user._isAuthenticated)
-		// this->numericReply(user._username, 462, "You may not reregister");
+	// std::cout << "passwd: '" << this->_passwd << "'" << std::endl; // debug
+	// std::cout << "cmdTokens[1]: '" << cmdTokens[1] << "'" << std::endl << std::endl; // debug
 
-	// if (cmdTokens.size() < 2)
-	// 	this->numericReply(user._username, 461, cmdTokens[0], "Not enough parameters");
+	if (user._isAuthenticated)
+		return this->numericReply(user, 462, ":You may not reregister");
+	else if (cmdTokens.size() < 2)
+		return this->numericReply(user, 461, cmdTokens[0], ":Not enough parameters");
+	else if (cmdTokens[1] != this->_passwd)
+	{	
+		this->numericReply(user, 464, ":Password incorrect");
+		return this->sendError(user, "Authentication failed");
+	}
+	else
+		user._validPasswd = true;
 
-	// if (cmdTokens[2] != "PASS123")
-	// 	this->numericReply(user._username, 464, "Password incorrect");
 
-	if ((cmdTokens.size() < 2 || cmdTokens[2] != "PASS123")
-		this->sendError(user, "Authentication failed");
-	
-	
-	
-		
-	
 }
+
+void	Server::execNick(User &user, std::vector<std::string> &cmdTokens)
+{
+	if (!user._validPasswd)
+		return ;
+	else if (searchForUser(cmdTokens[1]))
+		return this->numericReply(user, 433, cmdTokens[1], ":Nickname is already in use");
+	
+
+}
+
+bool	Server::searchForUser(std::string nickname)
+{
+	std::map<int, User>::iterator	it;
+
+	for (it = this->_users.begin(); it != this->_users.end(); it++)
+	{
+			std::cout << it->first << ':' << it->second._nickname << std::endl; // debug
+			if (nickname == it->second._nickname)
+				return true;
+	}
+	return false;
+}
+
+bool	Server::parseNick(std::string nickname)
+{
+	// std::string validSpecialCharset = "-_[]{}\`|";
+
+	if (nickname.size() > 9)
+		return false;
+	
+	return true;
+}
+
+
 
 void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 {
@@ -354,11 +378,24 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 	}
 }
 
+void	Server::sendError(User &user, std::string reason)
+{
+	std::string cmd = "Error :" + reason + "\r\n";
+	if (FD_ISSET(user._socket, &this->clientFdList.write))
+		if (send(user._socket, cmd.c_str(), cmd.size(), 0) == FAILED)
+			perror("send");
+}
+
 void	Server::numericReply(User &user, int numReply, std::string msg)
 {
-	(void)user;
-	(void)numReply;
-	(void)msg;
+	std::string code        = intToStr(numReply);
+	// std::string  finalMsg    = code + " " + user._nickname + " " + msg + "\r\n";
+	std::string finalMsg    = code + " " + "alex" + " " + msg + "\r\n";
+
+    std::cout << finalMsg << std::endl;
+    if (FD_ISSET(user._socket, &this->clientFdList.write))
+        if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
+            perror("send");
 }
 
 void	Server::numericReply(User &user, int numReply, std::string &cmd, std::string msg)

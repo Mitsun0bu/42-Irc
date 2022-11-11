@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/09 17:05:09 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/11 14:10:33 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,17 +36,19 @@ class Server
 		/* constructors													*/
 							Server(void);
 							Server(
-									int			port,
-									int			addressFamily,
-									int			socketType,
-									int			socketFlag,
-									int			socketBlockingMode,
-									int			protocol,
+									int					port,
+									std::string	passwd,
+									int					addressFamily,
+									int					socketType,
+									int					socketFlag,
+									int					socketBlockingMode,
+									int					protocol,
 									const char*	internetHostAddr
 								  );
 
 		/* public attributes											*/
 		int								_port;
+		std::string				_passwd;
 		int								_addressFamily;
 		int								_socketType;
 		int								_socketFlag;
@@ -59,7 +61,6 @@ class Server
 		std::map<int, User>				_users;
 		std::map<std::string, Channel>	_channels;
 		int								_nCmd;
-		int								_cmdToExecute;
 
 		/* member functions												*/
 		int					bindSocket(int serverSocket, struct sockaddr_in& socketAddr);
@@ -68,6 +69,8 @@ class Server
 		void				clientFdListInit(void);
 		void				selectClientSocket(void);
 		void				searchForData(void);
+
+
 
 		/* destructor													*/
 							~Server(void);
@@ -88,9 +91,10 @@ class Server
 		void				handleClientData(int* currentFd);
 		void				printRecvError(int byteCount, int currentFd);
 
-		void				setCmdToExecute(std::string);
-		void				execCmd(User &user, std::string cmd);
+		int					findCmdToExecute(std::string &cmd);
+		void				execCmd(User &user, std::vector<std::string> &cmd);
 		void				execPass(User &user, std::vector<std::string> &cmdTokens);
+		void				execNick(User &user, std::vector<std::string> &cmdTokens);
 		void				execJoin(User &user, std::vector<std::string> &cmdTokens);
 
 		void				numericReply(User &user, int numReply, std::string msg);
@@ -98,6 +102,8 @@ class Server
 
 		void				sendClientData(int* currentFd, char* buffer, int byteCount);	
 		void				sendError(User &user, std::string reason);
+		bool				searchForUser(std::string nickname);
+		bool				parseNick(std::string nickname);
 };
 
 # endif

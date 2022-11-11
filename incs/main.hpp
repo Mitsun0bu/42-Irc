@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/09 16:27:01 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/10 15:30:30 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,8 @@ int							main(int argc, char** av);
 void						launchServer(Server &s);
 int							sendMsg(const int socket, std::string msg);
 std::pair<int, std::string>	parseArguments(int ac, char** av);
-void						tokenizer(std::string str, const char* del, std::vector<std::string> &tokens);
+void						tokenizer(std::string str, std::string del, std::vector<std::string> &tokens);
+std::string			intToStr (int n);
+
 
 # endif

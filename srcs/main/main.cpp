@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:32:28 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/09 17:11:21 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/10 15:12:25 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,12 @@ int	main(int ac, char** av)
 	// HANDLE PROGRAM ARGUMENTS
 	std::pair<int, std::string>	param				= parseArguments(ac, av);
 	int							port				= param.first;
-	std::string					passwd				= param.second;
+	std::string			passwd			= param.second;
 
 	// CREATE SERVER
 	Server	server(
 					port,
+					passwd,
 					AF_INET,
 					SOCK_STREAM,
 					F_SETFL,
