@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/14 16:35:02 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/14 16:42:14 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ int		Server::bindSocket(int serverSocket, struct sockaddr_in& socketAddr)
 		std::cerr	<< "Error : Server socket cannot bind to address !"
 					<< std::endl;
 
-		close(serverSocket);
+		close(serverSocket); 
 
 		return (FAILED);
 	}
