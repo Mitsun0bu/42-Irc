@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/11 18:44:17 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/14 11:54:37 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -351,6 +351,7 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 					{
 						// JOIN CHANNEL
 						// std::string joinMsg = ":" + user._nickname + " JOIN" + names[i] + "\r\n";
+						// SWITCH TO THE LINE ABOVE WHEN NICK WILL BE SET !!!!!
 						std::string	joinMsg = ":llethuil JOIN" + names[i];
 						this->replyToClient(user, joinMsg);
 						// TOPIC
@@ -375,11 +376,9 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 
 				// JOIN CHANNEL
 				// std::string joinMsg = ":" + user._nickname + " JOIN" + names[i];
+				// SWITCH TO THE LINE ABOVE WHEN NICK WILL BE SET !!!!!
 				std::string	joinMsg = ":llethuil JOIN " + names[i];
 				this->replyToClient(user, joinMsg);
-
-				// NAMES
-					// "<client> <channel> :End of /NAMES list"
 			}
 		}
 	}
@@ -404,36 +403,34 @@ void	Server::execNames(User &user, std::vector<std::string> &cmdTokens)
 		//IF CHANNEL NAME IS INVALID
 		prefix = names[i][0];
 		if (prefix != '#')
-			this->numericReply(user, RPL_ENDOFNAMES, names[i] + " :End of /NAMES list");
-
+		{
+			std::string endMsg = names[i] + " :End of /NAMES list";
+			this->numericReply(user, ":127.0.0.1", RPL_ENDOFNAMES, endMsg);
+		}
 		// IF CHANNEL EXISTS
 		if(this->_channels.find(names[i]) != this->_channels.end())
 		{
-			std::string namesMsg = ":127.0.0.1 " + intToStr(RPL_NAMREPLY) + " = " + names[i] + " :";
+			// std::string namesMsg = intToStr(RPL_NAMREPLY) + " " + user._nickname + " = " + names[i] + " :";
+			// SWITCH TO THE LINE ABOVE WHEN NICK WILL BE SET !!!!!
+			std::string namesMsg = intToStr(RPL_NAMREPLY) + " llethuil" + " = " + names[i] + " :";
 
 			// ADD CHANNEL MEMBERS' NICKNAME TO MESSAGE
-			// THIS IS NOT WORKING !!!!!!!!!!!!!!!!!!!!!!!!!!!
 			std::set<int>	members = this->_channels[names[i]]._members;
 			for (std::set<int>::iterator fd = members.begin(); fd != members.end(); fd++)
 			{
-				namesMsg += this->_users[*fd]._nickname;
-				std::cout << this->_users[*fd]._nickname << std::endl;
+				// DEBUG
+				// std::cout << this->_users[*fd]._nickname << std::endl;
+
+				// namesMsg += this->_users[*fd]._nickname;
+				// SWITCH TO THE LINE ABOVE WHEN NICK WILL BE SET !!!!!
+				namesMsg += "llethuil";
 			}
-
-			// DEBUG
-			// std::string m1 = ":127.0.0.1 353 = #test1 :llethuil\r\n";
-			// std::cout << m1 << std::endl;
-			// std::cout << "---------------" << std::endl;
-			// std::cout << namesMsg << std::endl;
-			// std::cout << "---------------" << std::endl;
-
 			this->replyToClient(user, namesMsg);
-
-			std::string endMsg = "= " + names[i] + " :End of /NAMES list";
-			this->numericReply(user, ":127.0.0.1", RPL_ENDOFNAMES, endMsg);
 		}
-		else
-			this->numericReply(user, RPL_ENDOFNAMES, names[i] + " :End of /NAMES list");
+		// std::string endMsg = intToStr(RPL_ENDOFNAMES) + " " + user._nickname + " " + names[i] + " :End of /NAMES list";
+		// SWITCH TO THE LINE ABOVE WHEN NICK WILL BE SET !!!!!
+		std::string endMsg = intToStr(RPL_ENDOFNAMES) + " llethuil " + names[i] + " :End of /NAMES list";
+		this->replyToClient(user, endMsg);
 	}
 }
 
@@ -459,14 +456,6 @@ void	Server::numericReply(User &user, std::string client, int numReply, std::str
 			perror("send()");
 
 	return ;
-}
-
-void	Server::numericReply(User &user, int numReply, std::string &cmd, std::string msg)
-{
-	(void)user;
-	(void)numReply;
-	(void)cmd;
-	(void)msg;
 }
 
 void	Server::replyToClient(User &user, std::string msg)
