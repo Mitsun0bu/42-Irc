@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+         #
+#    By: agirardi <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/31 14:42:54 by llethuil          #+#    #+#              #
-#    Updated: 2022/11/07 18:06:38 by llethuil         ###   ########lyon.fr    #
+#    Updated: 2022/11/14 16:03:09 by agirardi         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,7 +32,7 @@ NAME			:=	ircserv
 CC				:=	c++
 
 # CXXFLAGS		:=	-std=c++98 -Wall -Wextra -Werror
-CXXFLAGS		:= -Wall -Wextra -Werror
+CXXFLAGS		:= 
 
 RM				:=	rm -f
 
@@ -46,7 +46,7 @@ SRCS_SUBDIRS	:=	class						\
 					main						\
 					message						\
 					parsing						\
-					server						\
+					utils						\
 
 SRCS_LST		:=	class/Channel.cpp			\
 					class/User.cpp				\
@@ -57,6 +57,7 @@ SRCS_LST		:=	class/Channel.cpp			\
 					message/sendMsg.cpp			\
 					parsing/parseArguments.cpp	\
 					parsing/tokenizer.cpp		\
+					utils/intToStr.cpp		\
 
 OBJS_DIR		:= .objs
 
