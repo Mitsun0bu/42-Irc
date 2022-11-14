@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/11 14:10:33 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/14 16:34:14 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,20 +47,22 @@ class Server
 								  );
 
 		/* public attributes											*/
-		int								_port;
-		std::string				_passwd;
-		int								_addressFamily;
-		int								_socketType;
-		int								_socketFlag;
-		int								_socketBlockingMode;
-		int								_protocol;
-		const char*						_internetHostAddr;
-		int								_socket;
-		struct sockaddr_in				_socketAddr;
-		t_fdList						clientFdList;
-		std::map<int, User>				_users;
+		int															_port;
+		std::string											_passwd;
+		int															_addressFamily;
+		int															_socketType;
+		int															_socketFlag;
+		int															_socketBlockingMode;
+		int															_protocol;
+		const char*											_internetHostAddr;
+		int															_socket;
+		int															_nCmd;
+		struct sockaddr_in							_socketAddr;
+		t_num														num;
+		t_fdList												clientFdList;
+		std::string											_date;
+		std::map<int, User>							_users;
 		std::map<std::string, Channel>	_channels;
-		int								_nCmd;
 
 		/* member functions												*/
 		int					bindSocket(int serverSocket, struct sockaddr_in& socketAddr);
@@ -69,6 +71,7 @@ class Server
 		void				clientFdListInit(void);
 		void				selectClientSocket(void);
 		void				searchForData(void);
+		void				initNum(void);
 
 
 
@@ -95,15 +98,19 @@ class Server
 		void				execCmd(User &user, std::vector<std::string> &cmd);
 		void				execPass(User &user, std::vector<std::string> &cmdTokens);
 		void				execNick(User &user, std::vector<std::string> &cmdTokens);
+		void				execUser(User &user, std::vector<std::string> &cmdTokens);
 		void				execJoin(User &user, std::vector<std::string> &cmdTokens);
 
-		void				numericReply(User &user, int numReply, std::string msg);
-		void				numericReply(User &user, int numReply, std::string &cmd, std::string msg);
+		void	numericReply(User &user, std::string num, std::string msg);
+		void	numericReply(User &user, std::string num, std::string firstParam, std::string msg);
+		void	numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string msg);
+		void	numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string thirdParam, std::string msg);
+		void  cmdReply(User &user, std::string cmd, std::string param);
 
-		void				sendClientData(int* currentFd, char* buffer, int byteCount);	
 		void				sendError(User &user, std::string reason);
-		bool				searchForUser(std::string nickname);
-		bool				parseNick(std::string nickname);
+		bool				isNickAvailable(std::string &nickname);
+		bool				parseNick(std::string &nickname);
+		void				registerUser(User &user);
 };
 
 # endif
