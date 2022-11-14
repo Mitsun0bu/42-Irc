@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/10 11:31:46 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/10 11:32:48 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/14 17:30:08 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 std::string intToStr (int n)
 {
-	std::stringstream buff;
-	buff << n;
-	return (buff.str());
+    std::stringstream buff;
+    buff << n;
+    return (buff.str());
 }
