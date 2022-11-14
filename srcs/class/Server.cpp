@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/14 11:54:37 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/14 15:04:18 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -439,6 +439,9 @@ void	Server::numericReply(User &user, int numReply, std::string msg)
 	std::string	code		= intToStr(numReply);
 	std::string	finalMsg	= code + " " + user._nickname + " " + msg + "\r\n";
 
+	std::cout << "NUMERIC REPLY 1 : " << msg << std::endl;
+	std::cout << "----------------" << std::endl;
+
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
 		if (send(user._socket, msg.c_str(), msg.size(), 0) == FAILED)
 			perror("send()");
@@ -451,6 +454,9 @@ void	Server::numericReply(User &user, std::string client, int numReply, std::str
 	std::string	code		= intToStr(numReply);
 	std::string	finalMsg	= client + " " + code + " " + msg + "\r\n";
 
+	std::cout << "NUMERIC REPLY 2 : " << msg << std::endl;
+	std::cout << "----------------" << std::endl;
+
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
 		if (send(user._socket, msg.c_str(), msg.size(), 0) == FAILED)
 			perror("send()");
@@ -461,6 +467,9 @@ void	Server::numericReply(User &user, std::string client, int numReply, std::str
 void	Server::replyToClient(User &user, std::string msg)
 {
 	msg += "\r\n";
+
+	std::cout << "REPLY TO CLIENT : " <<msg << std::endl;
+	std::cout << "----------------" << std::endl;
 
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
 		if (send(user._socket, msg.c_str(), msg.size(), 0) == FAILED)
