@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/16 15:59:42 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/16 16:32:51 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -308,7 +308,9 @@ void	Server::execCmd(User &user, std::vector<std::string> &cmdTokens)
 
 void	Server::logoutUser(User &user)
 {
-	for (std::map<std::string, Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
+	std::map<std::string, Channel>::iterator it = _channels.begin();
+
+	while (it != _channels.end())
 	{
 		if (it->second._operators.find(user._socket) != it->second._operators.end())
 			it->second._operators.erase(user._socket);
@@ -316,8 +318,18 @@ void	Server::logoutUser(User &user)
 		{
 			it->second._members.erase(user._socket);
 			if (it->second._members.size() == 0)
-				_channels.erase(it);
+			{
+				std::map<std::string, Channel>::iterator toErase = it;
+				++it;
+				_channels.erase(toErase);
+			}
+			else
+			{
+				++it;
+				continue;
+			}
 		}
+		++it;
 	}
 	this->_users.erase(user._socket);
 }
