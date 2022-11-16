@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/14 19:46:16 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/16 10:26:21 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -454,6 +454,9 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 
 				// JOIN CHANNEL
 				this->cmdReply(user, "JOIN", names[i]);
+
+				// CALL NAMES FUNCTION
+				this->execNames(user, cmdTokens);
 			}
 		}
 	}
