@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/16 14:36:51 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/16 15:59:42 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -247,8 +247,12 @@ void	Server::handleClientData(int* currentFd)
 
 void	Server::printRecvError(int byteCount, int currentFd)
 {
+	if (this->_users.find(currentFd) != this->_users.end())
+		logoutUser(this->_users[currentFd]);
 	if (byteCount == 0)
-			std::cerr << "Socket " << currentFd << " hung up !" << std::endl;
+	{
+		std::cerr << "Socket " << currentFd << " hung up !" << std::endl;
+	}
 	else
 		perror("recv()");
 }
@@ -287,19 +291,35 @@ void	Server::execCmd(User &user, std::vector<std::string> &cmdTokens)
 		case USER:
 			this->execUser(user, cmdTokens);
 			break;
+		case QUIT:
+			this->execUser(user, cmdTokens);
+			break;
 		case JOIN:
 			this->execJoin(user, cmdTokens);
 			break;
-		case 8 :
+		case NAMES:
 			this->execNames(user, cmdTokens);
 			break;
-		case 7 :
-			break;
-		// 	...
-		default :
+		default:
 			this->numericReply(user, num.ERR_UNKNOWNCOMMAND, cmdTokens[0], num.MSG_ERR_UNKNOWNCOMMAND);
 	}
 
+}
+
+void	Server::logoutUser(User &user)
+{
+	for (std::map<std::string, Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
+	{
+		if (it->second._operators.find(user._socket) != it->second._operators.end())
+			it->second._operators.erase(user._socket);
+		if (it->second._members.find(user._socket) != it->second._members.end())
+		{
+			it->second._members.erase(user._socket);
+			if (it->second._members.size() == 0)
+				_channels.erase(it);
+		}
+	}
+	this->_users.erase(user._socket);
 }
 
 void	Server::execPass(User &user, std::vector<std::string> &cmdTokens)
@@ -548,7 +568,6 @@ void	Server::cmdReply(User &user, std::string cmd, std::string param)
             perror("send()");
 }
 
-void	Server::initNum(void)
 void	Server::initNum(void)
 {
 	num.ERR_PASSWDMISMATCH = "464";

@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/16 14:32:14 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/16 15:58:34 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,7 @@ class Server
 		void				numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string thirdParam, std::string msg);
 		void				cmdReply(User &user, std::string cmd, std::string param);
 
+		void				logoutUser(User &user);
 		void				sendError(User &user, std::string reason);
 		bool				isNickAvailable(std::string &nickname);
 		bool				parseNick(std::string &nickname);
