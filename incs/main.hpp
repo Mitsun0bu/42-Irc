@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/16 16:48:54 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/16 18:10:53 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,20 +37,21 @@
 # define END					"\033[0m"
 
 # define PASS					0
-# define NICK					1
-# define USER					2
-# define PONG					3
-# define QUIT					4
-# define JOIN					5
-# define PART					6
-# define TOPIC					7
-# define NAMES					8
-# define LIST					9
-# define INVITE					10
-# define KICK					11
-# define MODE					12
-# define PRIVMSG				13
-# define NOTICE					14
+# define CAP					1
+# define NICK					2
+# define USER					3
+# define PONG					4
+# define QUIT					5
+# define JOIN					6
+# define PART					7
+# define TOPIC					8
+# define NAMES					9
+# define LIST					10
+# define INVITE					11
+# define KICK					12
+# define MODE					13
+# define PRIVMSG				14
+# define NOTICE					15
 
 # define FAILED					-1
 

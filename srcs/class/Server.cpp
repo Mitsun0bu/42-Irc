@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/16 16:54:17 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/16 18:25:13 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -261,11 +261,11 @@ int		Server::findCmdToExecute(std::string &cmd)
 {
 	const int	nCmd	= 16;
 	std::string cmdList[nCmd]	= {
-								"PASS" , "NICK"   , "USER"   , "PONG"  ,
-								"QUIT" , "JOIN"   , "PART"   , "TOPIC" ,
-								"NAMES", "LIST"   , "INVITE" , "KICK"  ,
-								"MODE" , "PRIVMSG", "NOTICE", "CAP"
-							 };
+								"PASS"	, "CAP"		, "NICK"	, "USER",
+								"PONG"	, "QUIT"	, "JOIN"	, "PART",
+								"TOPIC"	, "NAMES"	, "LIST"	, "INVITE",
+								"KICK"	, "MODE"	, "PRIVMSG"	, "NOTICE"
+								  };
 
 	for (size_t i = 0; i < nCmd; i++)
 		if (cmd == cmdList[i])
@@ -284,6 +284,8 @@ void	Server::execCmd(User &user, std::vector<std::string> &cmdTokens)
 	{
 		case PASS:
 			this->execPass(user, cmdTokens);
+			break;
+		case CAP:
 			break;
 		case NICK:
 			this->execNick(user, cmdTokens);
@@ -486,10 +488,12 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 				this->addChannel(newChannel, channelNames[i]);
 
 				// JOIN CHANNEL
+				user.addLocation(channelNames[i]);
 				this->cmdReply(user, "JOIN", channelNames[i]);
 
 				// CALL NAMES FUNCTION
-
+				//DEBUG
+				std::cout << "New channel create, call execNames" << std::endl;
 				this->execNames(user, cmdTokens);
 			}
 		}
@@ -599,7 +603,7 @@ void	Server::sendError(User &user, std::string reason)
 
 void	Server::numericReply(User &user, std::string num, std::string msg)
 {
-	std::string finalMsg = num + " " + msg + "\r\n";
+	std::string finalMsg = num + msg + "\r\n";
 
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
 		if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
@@ -646,49 +650,94 @@ void	Server::cmdReply(User &user, std::string cmd, std::string param)
 
 void	Server::initNum(void)
 {
-	num.ERR_ALREADYREGISTERED		= "462";
-	num.ERR_BADCHANMASK				= "476";
-	num.ERR_BADCHANNELKEY			= "475";
-	num.ERR_BANNEDFROMCHAN			= "474";
-	num.ERR_CHANNELISFULL			= "471";
-	num.ERR_ERRONEUSNICKNAME		= "432";
-	num.ERR_INVITEONLYCHAN			= "473";
-	num.ERR_NEEDMOREPARAMS			= "461";
-	num.ERR_NICKNAMEINUSE			= "433";
-	num.ERR_NONICKNAMEGIVEN			= "431";
-	num.ERR_NOSUCHCHANNEL			= "403";
-	num.ERR_NOTONCHANNEL			= "442";
-	num.ERR_NOTREGISTERED			= "451";
-	num.ERR_PASSWDMISMATCH			= "464";
-	num.ERR_TOOMANYCHANNELS			= "405";
-	num.ERR_UNKNOWNCOMMAND			= "421";
+	// num.ERR_ALREADYREGISTERED		= "462";
+	// num.ERR_BADCHANMASK				= "476";
+	// num.ERR_BADCHANNELKEY			= "475";
+	// num.ERR_BANNEDFROMCHAN			= "474";
+	// num.ERR_CHANNELISFULL			= "471";
+	// num.ERR_ERRONEUSNICKNAME		= "432";
+	// num.ERR_INVITEONLYCHAN			= "473";
+	// num.ERR_NEEDMOREPARAMS			= "461";
+	// num.ERR_NICKNAMEINUSE			= "433";
+	// num.ERR_NONICKNAMEGIVEN			= "431";
+	// num.ERR_NOSUCHCHANNEL			= "403";
+	// num.ERR_NOTONCHANNEL			= "442";
+	// num.ERR_NOTREGISTERED			= "451";
+	// num.ERR_PASSWDMISMATCH			= "464";
+	// num.ERR_TOOMANYCHANNELS			= "405";
+	// num.ERR_UNKNOWNCOMMAND			= "421";
 
-	num.RPL_CREATED					= "003";
-	num.RPL_ENDOFNAMES				= "366";
-	num.RPL_MYINFO					= "004";
-	num.RPL_NAMREPLY				= "353";
-	num.RPL_NOTOPIC					= "331";
-	num.RPL_TOPIC					= "332";
-	num.RPL_TOPICWHOTIME			= "333";
-	num.RPL_WELCOME					= "001";
-	num.RPL_YOURHOST				= "002";
+	// num.RPL_CREATED					= "003";
+	// num.RPL_ENDOFNAMES				= "366";
+	// num.RPL_MYINFO					= "004";
+	// num.RPL_NAMREPLY				= "353";
+	// num.RPL_NOTOPIC					= "331";
+	// num.RPL_TOPIC					= "332";
+	// num.RPL_TOPICWHOTIME			= "333";
+	// num.RPL_WELCOME					= "001";
+	// num.RPL_YOURHOST				= "002";
 
-	num.MSG_ERR_ALREADYREGISTERED	= " :You may not reregister";
-	num.MSG_ERR_BADCHANMASK			= "";
-	num.MSG_ERR_BADCHANNELKEY		= " :Cannot join channel (+k)";
-	num.MSG_ERR_BANNEDFROMCHAN		= "";
-	num.MSG_ERR_CHANNELISFULL		= "";
-	num.MSG_ERR_ERRONEUSNICKNAME	= " :Erroneus nickname";
-	num.MSG_ERR_INVITEONLYCHAN		= "";
-	num.MSG_ERR_NEEDMOREPARAMS		= " :Not enough parameters";
-	num.MSG_ERR_NICKNAMEINUSE		= " :Nickname is already in use";
-	num.MSG_ERR_NONICKNAMEGIVEN		= " :No nickname given";
-	num.MSG_ERR_NOSUCHCHANNEL		= " :No such channel";
-	num.MSG_ERR_NOTONCHANNEL		= " :You're not on that channel";
-	num.MSG_ERR_NOTREGISTERED		= " :You have not registered";
-	num.MSG_ERR_PASSWDMISMATCH		= " :Password incorrect";
-	num.MSG_ERR_TOOMANYCHANNELS		= "";
-	num.MSG_ERR_UNKNOWNCOMMAND		= " :Unknown command";
+	// num.MSG_ERR_ALREADYREGISTERED	= " :You may not reregister";
+	// num.MSG_ERR_BADCHANMASK			= "";
+	// num.MSG_ERR_BADCHANNELKEY		= " :Cannot join channel (+k)";
+	// num.MSG_ERR_BANNEDFROMCHAN		= "";
+	// num.MSG_ERR_CHANNELISFULL		= "";
+	// num.MSG_ERR_ERRONEUSNICKNAME	= " :Erroneus nickname";
+	// num.MSG_ERR_INVITEONLYCHAN		= "";
+	// num.MSG_ERR_NEEDMOREPARAMS		= " :Not enough parameters";
+	// num.MSG_ERR_NICKNAMEINUSE		= " :Nickname is already in use";
+	// num.MSG_ERR_NONICKNAMEGIVEN		= " :No nickname given";
+	// num.MSG_ERR_NOSUCHCHANNEL		= " :No such channel";
+	// num.MSG_ERR_NOTONCHANNEL		= " :You're not on that channel";
+	// num.MSG_ERR_NOTREGISTERED		= " :You have not registered";
+	// num.MSG_ERR_PASSWDMISMATCH		= " :Password incorrect";
+	// num.MSG_ERR_TOOMANYCHANNELS		= "";
+	// num.MSG_ERR_UNKNOWNCOMMAND		= " :Unknown command";
+
+	num.ERR_PASSWDMISMATCH = "464";
+	num.MSG_ERR_PASSWDMISMATCH = " :Password incorrect";
+	num.ERR_ALREADYREGISTERED = "462";
+	num.MSG_ERR_ALREADYREGISTERED = " :You may not reregister";
+	num.ERR_NEEDMOREPARAMS	= "461";
+	num.MSG_ERR_NEEDMOREPARAMS = " :Not enough parameters";
+	num.ERR_NICKNAMEINUSE = "433	";
+	num.MSG_ERR_NICKNAMEINUSE = " :Nickname is already in use";
+	num.ERR_ERRONEUSNICKNAME = "432";
+	num.MSG_ERR_ERRONEUSNICKNAME = " :Erroneus nickname";
+	num.ERR_NONICKNAMEGIVEN = "431";
+	num.MSG_ERR_NONICKNAMEGIVEN = " :No nickname given";
+	num.ERR_NOSUCHCHANNEL	= "403";
+	num.MSG_ERR_NOSUCHCHANNEL = " :No such channel";
+	num.ERR_TOOMANYCHANNELS	= "405";
+	num.MSG_ERR_TOOMANYCHANNELS = "";
+	num.ERR_BADCHANNELKEY	= "475";
+	num.MSG_ERR_BADCHANNELKEY = " :Cannot join channel (+k)";
+	num.ERR_BANNEDFROMCHAN	= "474";
+	num.MSG_ERR_BANNEDFROMCHAN = "";
+	num.ERR_CHANNELISFULL	= "471";
+	num.MSG_ERR_CHANNELISFULL = "";
+	num.ERR_INVITEONLYCHAN	= "473";
+	num.MSG_ERR_INVITEONLYCHAN = "";
+	num.ERR_BADCHANMASK	= "476";
+	num.MSG_ERR_BADCHANMASK = "";
+	num.RPL_TOPIC	= "332";
+	num.RPL_TOPICWHOTIME	= "333";
+	num.MSG_RPL_TOPICWHOTIME = "";
+	num.RPL_NAMREPLY	= "353";
+	num.RPL_ENDOFNAMES	= "366";
+	num.MSG_RPL_ENDOFNAMES = " :End of /NAMES list";
+	num.ERR_UNKNOWNCOMMAND	= "421";
+	num.MSG_ERR_UNKNOWNCOMMAND = " :Unknown command";
+	num.ERR_NOTREGISTERED = "451";
+	num.MSG_ERR_NOTREGISTERED = " :You have not registered";
+	num.RPL_MYINFO	= "004";
+	num.MSG_RPL_MYINFO = " 127.0.0.1 1 oOr RO";
+	num.RPL_CREATED	= "003";
+	num.MSG_RPL_CREATED = " :This server was created ";
+	num.RPL_YOURHOST	= "002";
+	num.MSG_RPL_YOURHOST = " :Your host is 127.0.0.1, running version 1";
+	num.RPL_WELCOME	= "001";
+	num.MSG_RPL_WELCOME = " :Welcome to the 127.0.0.1 Network, ";
 }
 
 /* ************************************************************************** */
