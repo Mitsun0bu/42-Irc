@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/16 11:42:32 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/16 14:32:14 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,21 +47,21 @@ class Server
 								  );
 
 		/* public attributes											*/
-		int															_port;
-		std::string											_passwd;
-		int															_addressFamily;
-		int															_socketType;
-		int															_socketFlag;
-		int															_socketBlockingMode;
-		int															_protocol;
-		const char*											_internetHostAddr;
-		int															_socket;
-		int															_nCmd;
-		struct sockaddr_in							_socketAddr;
-		t_num														num;
-		t_fdList												clientFdList;
-		std::string											_date;
-		std::map<int, User>							_users;
+		int								_port;
+		std::string						_passwd;
+		int								_addressFamily;
+		int								_socketType;
+		int								_socketFlag;
+		int								_socketBlockingMode;
+		int								_protocol;
+		const char*						_internetHostAddr;
+		int								_socket;
+		int								_nCmd;
+		struct sockaddr_in				_socketAddr;
+		t_num							num;
+		t_fdList						clientFdList;
+		std::string						_date;
+		std::map<int, User>				_users;
 		std::map<std::string, Channel>	_channels;
 
 		/* member functions												*/
@@ -101,12 +101,15 @@ class Server
 		void				execUser(User &user, std::vector<std::string> &cmdTokens);
 		void				execPong(User &user, std::vector<std::string> &cmdTokens);
 		void				execJoin(User &user, std::vector<std::string> &cmdTokens);
+		void				addChannel(Channel &channel, std::string name);
 
-		void	numericReply(User &user, std::string num, std::string msg);
-		void	numericReply(User &user, std::string num, std::string firstParam, std::string msg);
-		void	numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string msg);
-		void	numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string thirdParam, std::string msg);
-		void  cmdReply(User &user, std::string cmd, std::string param);
+		void				execNames(User &user, std::vector<std::string> &cmdTokens);
+
+		void				numericReply(User &user, std::string num, std::string msg);
+		void				numericReply(User &user, std::string num, std::string firstParam, std::string msg);
+		void				numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string msg);
+		void				numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string thirdParam, std::string msg);
+		void				cmdReply(User &user, std::string cmd, std::string param);
 
 		void				sendError(User &user, std::string reason);
 		bool				isNickAvailable(std::string &nickname);

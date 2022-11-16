@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/16 12:17:25 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/16 14:36:51 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ int		Server::bindSocket(int serverSocket, struct sockaddr_in& socketAddr)
 		std::cerr	<< "Error : Server socket cannot bind to address !"
 					<< std::endl;
 
-		close(serverSocket); 
+		close(serverSocket);
 
 		return (FAILED);
 	}
@@ -220,7 +220,7 @@ void	Server::handleClientData(int* currentFd)
 {
 	char						buffer[256]	= {0};
 	int							byteCount	= 0;
-	std::string			bufferStr;
+	std::string					bufferStr;
 	std::vector<std::string>	cmds;
 	std::vector<std::string>	cmdTokens;
 
@@ -236,7 +236,7 @@ void	Server::handleClientData(int* currentFd)
 	{
 		bufferStr = buffer;
 		tokenizer(bufferStr, "\r\n", cmds);
-		
+
 		for(size_t i = 0; i < cmds.size(); i ++)
 		{
 			tokenizer(cmds[i], " ", cmdTokens);
@@ -253,7 +253,7 @@ void	Server::printRecvError(int byteCount, int currentFd)
 		perror("recv()");
 }
 
-int	Server::findCmdToExecute(std::string &cmd)
+int		Server::findCmdToExecute(std::string &cmd)
 {
 	const int	nCmd	= 16;
 	std::string cmdList[nCmd]	= {
@@ -290,6 +290,12 @@ void	Server::execCmd(User &user, std::vector<std::string> &cmdTokens)
 		case JOIN:
 			this->execJoin(user, cmdTokens);
 			break;
+		case 8 :
+			this->execNames(user, cmdTokens);
+			break;
+		case 7 :
+			break;
+		// 	...
 		default :
 			this->numericReply(user, num.ERR_UNKNOWNCOMMAND, cmdTokens[0], num.MSG_ERR_UNKNOWNCOMMAND);
 	}
@@ -347,7 +353,8 @@ bool	Server::parseNick(std::string &nickname)
 
 	if (nickname.size() > 9)
 		return (false);
-	for (int i = 0; i < nickname.size(); i++)
+
+	for (size_t i = 0; i < nickname.size(); i++)
 	{
 		if (!isalnum(nickname[i]) && validSpecialCharset.find(nickname[i]) == std::string::npos)
 			return (false);
@@ -364,7 +371,7 @@ void	Server::execUser(User &user, std::vector<std::string> &cmdTokens)
 	else if (user._isAuthenticated)
 		this->numericReply(user, num.ERR_ALREADYREGISTERED, num.MSG_ERR_ALREADYREGISTERED);
 	else
-	{		
+	{
 		user._username = cmdTokens[1];
 		if (!user._nickname.empty())
 			registerUser(user);
@@ -382,21 +389,107 @@ void	Server::registerUser(User &user)
 
 void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 {
-	(void)user;
-	/*
-	The server receiving the command checks whether
-	or not the client can join the given channel,
-	and processes the request.
-	Servers MUST process the parameters of this command as lists
-	on incoming commands from clients,
-	with the first <key> being used for the first <channel>,
-	the second <key> being used for the second <channel>, etc.
-	*/
+	char						prefix	= '0';
+	size_t						i		= 0;
+	std::vector<std::string>	names;
+	std::vector<std::string>	keys;
 
-	if (cmdTokens.size() < 2)
+	tokenizer(cmdTokens[1], ",", names);
+	tokenizer(cmdTokens[2], ",", keys);
+
+	for(i = 0; i < names.size(); i++)
 	{
-		numericReply(user, num.ERR_NEEDMOREPARAMS, cmdTokens[0], num.MSG_ERR_NEEDMOREPARAMS);
-		return ;
+		// CHECK IF CHANNEL NAME IS VALID
+		prefix = names[i][0];
+		if (prefix != '#')
+			this->numericReply(user, num.ERR_NOSUCHCHANNEL, names[i] + " :No such channel");
+		else
+		{
+			// IF CHANNEL EXISTS
+			if (this->_channels.find(names[i]) != this->_channels.end())
+			{
+				// IF USER IS NOT ALREADY IN CHANNEL
+				if (this->_channels[names[i]]._members.find(user._socket) == this->_channels[names[i]]._members.end())
+				{
+					// IF THE CHANNEL REQUIRES A KEY
+					if(this->_channels[names[i]]._requiresKey == true)
+					{
+						// CHECK IF KEY IS VALID
+						if (this->_channels[names[i]]._key == keys[i])
+						{
+							// JOIN CHANNEL
+								// std::string joinMsg = ":" + user._nickname + " JOIN" + names[i];
+							// TOPIC
+								// "<client> <channel> :<topic>"
+						}
+						else
+							this->numericReply(user, num.ERR_BADCHANNELKEY, names[i] + " :Cannot join channel (+k)");
+					}
+					// IF THE CHANNEL DOES NOT REQUIRE A KEY
+					else
+					{
+						// JOIN CHANNEL
+						this->cmdReply(user, "JOIN", names[i]);
+						// TOPIC
+							// "<client> <channel> :<topic>"
+					}
+				}
+			}
+			// IF CHANNEL DOES NOT EXIST
+			else
+			{
+				// INSTANTIATE NEW CHANNEL
+				Channel	newChannel(names[i]);
+
+				if (keys.empty() == false && keys[i].length())
+					newChannel.setKey(keys[i]);
+
+				// ADD USER TO THE CHANNEL
+				newChannel.addMember(user);
+
+				// ADD NEW CHANNEL TO SERVER CHANNEL MAP
+				this->addChannel(newChannel, names[i]);
+
+				// JOIN CHANNEL
+				this->cmdReply(user, "JOIN", names[i]);
+
+				// CALL NAMES FUNCTION
+				this->execNames(user, cmdTokens);
+			}
+		}
+	}
+}
+
+void	Server::addChannel(Channel &channel, std::string name)
+{
+	this->_channels[name] = channel;
+
+	return ;
+}
+
+void	Server::execNames(User &user, std::vector<std::string> &cmdTokens)
+{
+	std::vector<std::string>	names;
+	tokenizer(cmdTokens[1], ",", names);
+	char						prefix		= '0';
+
+	for(size_t i = 0; i < names.size(); i++)
+	{
+		//IF CHANNEL NAME IS INVALID
+		prefix = names[i][0];
+		if (prefix != '#')
+			this->numericReply(user, num.RPL_ENDOFNAMES, user._nickname + " " + names[i], num.MSG_RPL_ENDOFNAMES);
+		// IF CHANNEL EXISTS
+		if(this->_channels.find(names[i]) != this->_channels.end())
+		{
+			std::string namesMsg = " = " + names[i] + " :";
+			// ADD CHANNEL MEMBERS' NICKNAME TO MESSAGE
+			std::set<int>	members = this->_channels[names[i]]._members;
+			for (std::set<int>::iterator fd = members.begin(); fd != members.end(); fd++)
+				namesMsg += this->_users[*fd]._nickname;
+			this->numericReply(user, num.RPL_NAMREPLY, namesMsg);
+		}
+		this->numericReply(user, num.RPL_ENDOFNAMES, user._nickname + " " + names[i], num.MSG_RPL_ENDOFNAMES);
 	}
 }
 
@@ -413,8 +506,8 @@ void	Server::numericReply(User &user, std::string num, std::string msg)
 	std::string finalMsg = num + msg + "\r\n";
 
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
-    if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
-      perror("send()");
+		if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
+			perror("send()");
 }
 
 void	Server::numericReply(User &user, std::string num, std::string firstParam, std::string msg)
@@ -422,8 +515,8 @@ void	Server::numericReply(User &user, std::string num, std::string firstParam, s
 	std::string finalMsg = num + " " + firstParam + msg + "\r\n";
 
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
-    if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
-      perror("send()");
+		if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
+			perror("send()");
 }
 
 void	Server::numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string msg)
@@ -431,8 +524,8 @@ void	Server::numericReply(User &user, std::string num, std::string firstParam, s
 	std::string finalMsg = num + " " + firstParam + " " + secondParam + msg + "\r\n";
 
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
-    if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
-      perror("send()");
+		if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
+			perror("send()");
 }
 
 void	Server::numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string thirdParam, std::string msg)
@@ -455,6 +548,7 @@ void	Server::cmdReply(User &user, std::string cmd, std::string param)
             perror("send()");
 }
 
+void	Server::initNum(void)
 void	Server::initNum(void)
 {
 	num.ERR_PASSWDMISMATCH = "464";

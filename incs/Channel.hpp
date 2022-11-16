@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:23:07 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/09 11:38:29 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/11 15:24:53 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,26 +34,30 @@ class Channel
 	public :
 		/* constructors													*/
 							Channel(void);
-
+							Channel(std::string name);
 		/* public attributes											*/
 		std::string			_name;
 		std::string			_key;
-		bool				_hasKey;
+		bool				_requiresKey;
 		std::string			_topic;
 		bool				_topicIsSet;
 		std::set<int>		_members;
 		std::set<int>		_operators;
 		std::string			_mode;
 
+		/* operator overload											*/
+		Channel				&operator=(const Channel& src);
+
 		/* member functions												*/
-		void	addUser(User &user);
-		void	addUser(int userSocket);
-		void	deleteUser(User &user);
-		void	deleteUser(int userSocket);
-		void	addOperator(User &user);
-		void	addOperator(int userSocket);
-		void	deleteOperator(User &user);
-		void	deleteOperator(int userSocket);
+		void				addMember(User &user);
+		void				setKey(std::string key);
+		// void				addMember(int userSocket);
+		// void				deleteMember(User &user);
+		// void				deleteMember(int userSocket);
+		// void				addOperator(User &user);
+		// void				addOperator(int userSocket);
+		// void				deleteOperator(User &user);
+		// void				deleteOperator(int userSocket);
 		// void	sendMsgToMembers(const std::string &content, int socketException) const;
 
 		/* exceptions													*/
@@ -66,8 +70,6 @@ class Channel
 		/* copy constructor												*/
 							Channel(const Channel& src);
 
-		/* operator overload											*/
-		Channel				&operator=(const Channel& src);
 
 		/* private attributes											*/
 
