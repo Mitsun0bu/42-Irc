@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/14 19:46:46 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/16 10:53:29 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,11 +96,17 @@ class Server
 
 		int					findCmdToExecute(std::string &cmd);
 		void				execCmd(User &user, std::vector<std::string> &cmd);
+
 		void				execPass(User &user, std::vector<std::string> &cmdTokens);
+
 		void				execNick(User &user, std::vector<std::string> &cmdTokens);
+
 		void				execUser(User &user, std::vector<std::string> &cmdTokens);
+
 		void				execJoin(User &user, std::vector<std::string> &cmdTokens);
 		void				addChannel(Channel &channel, std::string name);
+
+		void				execTopic(User &user, std::vector<std::string> &cmdTokens);
 
 		void				execNames(User &user, std::vector<std::string> &cmdTokens);
 

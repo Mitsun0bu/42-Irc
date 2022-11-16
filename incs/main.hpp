@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/14 17:26:06 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/16 11:43:14 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,47 +73,52 @@
 
 typedef struct s_num
 {
-	std::string ERR_PASSWDMISMATCH;
-	std::string MSG_ERR_PASSWDMISMATCH;
 	std::string ERR_ALREADYREGISTERED;
-	std::string MSG_ERR_ALREADYREGISTERED;
-	std::string ERR_NEEDMOREPARAMS;
-	std::string MSG_ERR_NEEDMOREPARAMS;
-	std::string ERR_NICKNAMEINUSE;
-	std::string MSG_ERR_NICKNAMEINUSE;
-	std::string ERR_ERRONEUSNICKNAME;
-	std::string MSG_ERR_ERRONEUSNICKNAME;
-	std::string ERR_NONICKNAMEGIVEN;
-	std::string MSG_ERR_NONICKNAMEGIVEN;
-	std::string ERR_NOSUCHCHANNEL;
-	std::string MSG_ERR_NOSUCHCHANNEL;
-	std::string ERR_TOOMANYCHANNELS;
-	std::string MSG_ERR_TOOMANYCHANNELS;
-	std::string ERR_BADCHANNELKEY;
-	std::string MSG_ERR_BADCHANNELKEY;
-	std::string ERR_BANNEDFROMCHAN;
-	std::string MSG_ERR_BANNEDFROMCHAN;
-	std::string ERR_CHANNELISFULL;
-	std::string MSG_ERR_CHANNELISFULL;
-	std::string ERR_INVITEONLYCHAN;
-	std::string MSG_ERR_INVITEONLYCHAN;
 	std::string ERR_BADCHANMASK;
-	std::string MSG_ERR_BADCHANMASK;
-	std::string RPL_TOPIC;
-	std::string MSG_RPL_TOPIC;
-	std::string RPL_TOPICWHOTIME;
-	std::string MSG_RPL_TOPICWHOTIME;
-	std::string RPL_NAMREPLY;
-	std::string RPL_ENDOFNAMES;
-	std::string MSG_RPL_ENDOFNAMES;
-	std::string RPL_MYINFO;
-	std::string MSG_RPL_MYINFO;
+	std::string ERR_BADCHANNELKEY;
+	std::string ERR_BANNEDFROMCHAN;
+	std::string ERR_CHANNELISFULL;
+	std::string ERR_ERRONEUSNICKNAME;
+	std::string ERR_INVITEONLYCHAN;
+	std::string ERR_NEEDMOREPARAMS;
+	std::string ERR_NICKNAMEINUSE;
+	std::string ERR_NONICKNAMEGIVEN;
+	std::string ERR_NOSUCHCHANNEL;
+	std::string ERR_PASSWDMISMATCH;
+	std::string ERR_TOOMANYCHANNELS;
+
 	std::string RPL_CREATED;
-	std::string MSG_RPL_CREATED;
-	std::string RPL_YOURHOST;
-	std::string MSG_RPL_YOURHOST;
+	std::string RPL_ENDOFNAMES;
+	std::string RPL_MYINFO;
+	std::string RPL_NAMREPLY;
+	std::string RPL_NOTOPIC;
+	std::string RPL_TOPIC;
+	std::string RPL_TOPICWHOTIME;
 	std::string RPL_WELCOME;
+	std::string RPL_YOURHOST;
+
+	std::string MSG_ERR_ALREADYREGISTERED;
+	std::string MSG_ERR_BADCHANMASK;
+	std::string MSG_ERR_BADCHANNELKEY;
+	std::string MSG_ERR_BANNEDFROMCHAN;
+	std::string MSG_ERR_CHANNELISFULL;
+	std::string MSG_ERR_ERRONEUSNICKNAME;
+	std::string MSG_ERR_INVITEONLYCHAN;
+	std::string MSG_ERR_NEEDMOREPARAMS;
+	std::string MSG_ERR_NICKNAMEINUSE;
+	std::string MSG_ERR_NONICKNAMEGIVEN;
+	std::string MSG_ERR_NOSUCHCHANNEL;
+	std::string MSG_ERR_PASSWDMISMATCH;
+	std::string MSG_ERR_TOOMANYCHANNELS;
+
+	std::string MSG_RPL_CREATED;
+	std::string MSG_RPL_ENDOFNAMES;
+	std::string MSG_RPL_MYINFO;
+	std::string MSG_RPL_NOTOPIC;
+	std::string MSG_RPL_TOPICWHOTIME;
+	std::string MSG_RPL_YOURHOST;
 	std::string MSG_RPL_WELCOME;
+
 }	t_num;
 
 typedef struct s_fdList
@@ -145,12 +150,12 @@ typedef struct s_fdList
 class Server;
 class User;
 
-int													main(int argc, char** av);
-void												launchServer(Server &s);
-int													sendMsg(const int socket, std::string msg);
+int							main(int argc, char** av);
+void						launchServer(Server &s);
+int							sendMsg(const int socket, std::string msg);
 std::pair<int, std::string>	parseArguments(int ac, char** av);
-void												tokenizer(std::string str, const char *del, std::vector<std::string> &tokens);
-std::string									intToStr (int n);
-std::string									getDate(void);
+void						tokenizer(std::string str, const char *del, std::vector<std::string> &tokens);
+std::string					intToStr (int n);
+std::string					getDate(void);
 
 # endif
