@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:23:07 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/11 15:24:53 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/16 15:08:55 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,20 +33,20 @@ class Channel
 {
 	public :
 		/* constructors													*/
-							Channel(void);
-							Channel(std::string name);
+		Channel(void);
+		Channel(std::string name);
 		/* public attributes											*/
-		std::string			_name;
-		std::string			_key;
-		bool				_requiresKey;
-		std::string			_topic;
-		bool				_topicIsSet;
-		std::set<int>		_members;
-		std::set<int>		_operators;
-		std::string			_mode;
+		std::string		_name;
+		std::string		_key;
+		bool					_requiresKey;
+		std::string		_topic;
+		bool					_topicIsSet;
+		std::set<int>	_members;
+		std::set<int>	_operators;
+		std::string		_mode;
 
 		/* operator overload											*/
-		Channel				&operator=(const Channel& src);
+		Channel			&operator=(const Channel& src);
 
 		/* member functions												*/
 		void				addMember(User &user);

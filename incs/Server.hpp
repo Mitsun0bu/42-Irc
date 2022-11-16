@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/16 10:53:29 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/16 16:49:36 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,8 @@ class Server
 
 		void				execUser(User &user, std::vector<std::string> &cmdTokens);
 
+		void				execPong(User &user, std::vector<std::string> &cmdTokens);
+
 		void				execJoin(User &user, std::vector<std::string> &cmdTokens);
 		void				addChannel(Channel &channel, std::string name);
 
@@ -116,6 +118,7 @@ class Server
 		void				numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string thirdParam, std::string msg);
 		void				cmdReply(User &user, std::string cmd, std::string param);
 
+		void				logoutUser(User &user);
 		void				sendError(User &user, std::string reason);
 		bool				isNickAvailable(std::string &nickname);
 		bool				parseNick(std::string &nickname);

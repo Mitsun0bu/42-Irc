@@ -6,9 +6,10 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/16 16:40:37 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/16 16:54:17 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -42,7 +43,7 @@ Server::Server(int port, std::string passwd, int addressFamily, int socketType, 
 	std::time_t t = std::time(0);
 
 	this->_date = ctime(&t);
-
+	this->_date.pop_back();
 	initNum();
 
 	std::cout	<< BLUE
@@ -246,23 +247,27 @@ void	Server::handleClientData(int* currentFd)
 
 void	Server::printRecvError(int byteCount, int currentFd)
 {
+	if (this->_users.find(currentFd) != this->_users.end())
+		logoutUser(this->_users[currentFd]);
 	if (byteCount == 0)
-			std::cerr << "Socket " << currentFd << " hung up !" << std::endl;
+	{
+		std::cerr << "Socket " << currentFd << " hung up !" << std::endl;
+	}
 	else
 		perror("recv()");
 }
 
 int		Server::findCmdToExecute(std::string &cmd)
 {
-	const int	nCmd			= 15;
-	std::string	cmdList[nCmd]	= {
-									"PASS" , "NICK"   , "USER"   , "PONG"  ,
-									"QUIT" , "JOIN"   , "PART"   , "TOPIC" ,
-									"NAMES", "LIST"   , "INVITE" , "KICK"  ,
-									"MODE" , "PRIVMSG", "NOTICE"
-							 	  };
+	const int	nCmd	= 16;
+	std::string cmdList[nCmd]	= {
+								"PASS" , "NICK"   , "USER"   , "PONG"  ,
+								"QUIT" , "JOIN"   , "PART"   , "TOPIC" ,
+								"NAMES", "LIST"   , "INVITE" , "KICK"  ,
+								"MODE" , "PRIVMSG", "NOTICE", "CAP"
+							 };
 
-	for (int i = 0; i < nCmd; i++)
+	for (size_t i = 0; i < nCmd; i++)
 		if (cmd == cmdList[i])
 			return (i);
 	return (FAILED);
@@ -272,68 +277,95 @@ void	Server::execCmd(User &user, std::vector<std::string> &cmdTokens)
 {
 	int	cmdToExecute = this->findCmdToExecute(cmdTokens[0]);
 
-	// if (!user._isAuthenticated && cmdToExecute < 4)
-		// ...
+	if (!user._isAuthenticated && cmdToExecute > 4)
+		return(this->numericReply(user, num.ERR_NOTREGISTERED, cmdTokens[0], num.MSG_ERR_NOTREGISTERED));
 
 	switch(cmdToExecute)
 	{
-		case 0:
+		case PASS:
 			this->execPass(user, cmdTokens);
 			break;
-		case 1:
+		case NICK:
 			this->execNick(user, cmdTokens);
 			break;
-		case 2:
+		case USER:
 			this->execUser(user, cmdTokens);
 			break;
-		case 5 :
+		case QUIT:
+			this->execUser(user, cmdTokens);
+			break;
+		case JOIN:
 			this->execJoin(user, cmdTokens);
 			break;
-		case 7 :
+		case TOPIC:
 			this->execTopic(user, cmdTokens);
-		case 8 :
+		case NAMES:
 			this->execNames(user, cmdTokens);
 			break;
-		// 	...
-		// default:
-		// 	...
+		default:
+			this->numericReply(user, num.ERR_UNKNOWNCOMMAND, cmdTokens[0], num.MSG_ERR_UNKNOWNCOMMAND);
 	}
 
+}
+
+void	Server::logoutUser(User &user)
+{
+	std::map<std::string, Channel>::iterator it = _channels.begin();
+
+	while (it != _channels.end())
+	{
+		if (it->second._operators.find(user._socket) != it->second._operators.end())
+			it->second._operators.erase(user._socket);
+		if (it->second._members.find(user._socket) != it->second._members.end())
+		{
+			it->second._members.erase(user._socket);
+			if (it->second._members.size() == 0)
+			{
+				std::map<std::string, Channel>::iterator toErase = it;
+				++it;
+				_channels.erase(toErase);
+			}
+			else
+			{
+				++it;
+				continue;
+			}
+		}
+		++it;
+	}
+	this->_users.erase(user._socket);
 }
 
 void	Server::execPass(User &user, std::vector<std::string> &cmdTokens)
 {
 	if (user._isAuthenticated)
-		return (this->numericReply(user, num.ERR_ALREADYREGISTERED, num.MSG_ERR_ALREADYREGISTERED));
+		this->numericReply(user, num.ERR_ALREADYREGISTERED, num.MSG_ERR_ALREADYREGISTERED);
 	else if (cmdTokens.size() < 2)
-		return (this->numericReply(user, num.ERR_NEEDMOREPARAMS, cmdTokens[0], num.MSG_ERR_NEEDMOREPARAMS));
+		this->numericReply(user, num.ERR_NEEDMOREPARAMS, cmdTokens[0], num.MSG_ERR_NEEDMOREPARAMS);
 	else if (cmdTokens[1] != this->_passwd)
 	{
 		this->numericReply(user, num.ERR_PASSWDMISMATCH, cmdTokens[1], num.MSG_ERR_PASSWDMISMATCH);
-		return (this->sendError(user, "Authentication failed"));
+		this->sendError(user, "Authentication failed");
 	}
 	else
 		user._validPasswd = true;
-	std::cout << "user._validPasswd: " << user._validPasswd << std::endl;
 }
 
 void	Server::execNick(User &user, std::vector<std::string> &cmdTokens)
 {
 	if (!user._validPasswd)
 		return ;
-	else if (isNickAvailable(cmdTokens[1]))
-		return (this->numericReply(user, num.ERR_NICKNAMEINUSE, cmdTokens[1], num.MSG_ERR_NICKNAMEINUSE));
+	else if (!isNickAvailable(cmdTokens[1]))
+		this->numericReply(user, num.ERR_NICKNAMEINUSE, cmdTokens[1], num.MSG_ERR_NICKNAMEINUSE);
 	else if (!parseNick(cmdTokens[1]))
-		return (this->numericReply(user, num.ERR_ERRONEUSNICKNAME, cmdTokens[1], num.MSG_ERR_ERRONEUSNICKNAME));
+		this->numericReply(user, num.ERR_ERRONEUSNICKNAME, cmdTokens[1], num.MSG_ERR_ERRONEUSNICKNAME);
 	else if (cmdTokens.size() < 2)
-		return (this->numericReply(user, num.ERR_NONICKNAMEGIVEN, num.MSG_ERR_NONICKNAMEGIVEN));
+		this->numericReply(user, num.ERR_NONICKNAMEGIVEN, num.MSG_ERR_NONICKNAMEGIVEN);
 	else
 	{
-		user._nickname = cmdTokens[1];
 		if (user._isAuthenticated)
-		{
-			return(cmdReply(user, "NICK", cmdTokens[1]));
-		}
+			return(this->cmdReply(user, "NICK", cmdTokens[1]));
+		user._nickname = cmdTokens[1];
 		if (!user._username.empty())
 			registerUser(user);
 	}
@@ -345,8 +377,8 @@ bool	Server::isNickAvailable(std::string &nickname)
 
 	for (it = this->_users.begin(); it != this->_users.end(); it++)
 			if (nickname == it->second._nickname)
-				return (true);
-	return (false);
+				return (false);
+	return (true);
 }
 
 bool	Server::parseNick(std::string &nickname)
@@ -369,9 +401,9 @@ void	Server::execUser(User &user, std::vector<std::string> &cmdTokens)
 	if (!user._validPasswd)
 		return ;
 	else if (cmdTokens.size() < 4)
-		return (this->numericReply(user, num.ERR_NEEDMOREPARAMS, cmdTokens[0], num.MSG_ERR_NEEDMOREPARAMS));
+		this->numericReply(user, num.ERR_NEEDMOREPARAMS, cmdTokens[0], num.MSG_ERR_NEEDMOREPARAMS);
 	else if (user._isAuthenticated)
-		return (this->numericReply(user, num.ERR_ALREADYREGISTERED, num.MSG_ERR_ALREADYREGISTERED));
+		this->numericReply(user, num.ERR_ALREADYREGISTERED, num.MSG_ERR_ALREADYREGISTERED);
 	else
 	{
 		user._username = cmdTokens[1];
@@ -382,11 +414,11 @@ void	Server::execUser(User &user, std::vector<std::string> &cmdTokens)
 
 void	Server::registerUser(User &user)
 {
-		std::cout << "Registering" << std::endl;
-		this->numericReply(user, num.RPL_WELCOME, user._nickname, num.MSG_RPL_WELCOME, user._nickname);
-		this->numericReply(user, num.RPL_YOURHOST, user._nickname, num.MSG_RPL_YOURHOST);
-		this->numericReply(user, num.RPL_CREATED, user._nickname, num.MSG_RPL_CREATED, _date);
-		this->numericReply(user, num.RPL_MYINFO, user._nickname, num.MSG_RPL_MYINFO);
+	user._isAuthenticated = true;
+	this->numericReply(user, num.RPL_WELCOME, user._nickname, num.MSG_RPL_WELCOME, user._nickname);
+	this->numericReply(user, num.RPL_YOURHOST, user._nickname, num.MSG_RPL_YOURHOST);
+	this->numericReply(user, num.RPL_CREATED, user._nickname, num.MSG_RPL_CREATED, _date);
+	this->numericReply(user, num.RPL_MYINFO, user._nickname, num.MSG_RPL_MYINFO);
 }
 
 void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
@@ -605,14 +637,11 @@ void	Server::cmdReply(User &user, std::string cmd, std::string param)
 {
     std::string finalMsg = ":" + user._nickname + " " + cmd + " " + param + "\r\n";
 
-    // std::cout << "REPLY TO CLIENT : " << msg << std::endl;
-    // std::cout << "----------------" << std::endl;
+		std::cout << "cmdReply: " << finalMsg << std::endl;
 
     if (FD_ISSET(user._socket, &this->clientFdList.write))
         if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
             perror("send()");
-
-    return ;
 }
 
 void	Server::initNum(void)
@@ -629,8 +658,10 @@ void	Server::initNum(void)
 	num.ERR_NONICKNAMEGIVEN			= "431";
 	num.ERR_NOSUCHCHANNEL			= "403";
 	num.ERR_NOTONCHANNEL			= "442";
+	num.ERR_NOTREGISTERED			= "451";
 	num.ERR_PASSWDMISMATCH			= "464";
 	num.ERR_TOOMANYCHANNELS			= "405";
+	num.ERR_UNKNOWNCOMMAND			= "421";
 
 	num.RPL_CREATED					= "003";
 	num.RPL_ENDOFNAMES				= "366";
@@ -654,16 +685,10 @@ void	Server::initNum(void)
 	num.MSG_ERR_NONICKNAMEGIVEN		= " :No nickname given";
 	num.MSG_ERR_NOSUCHCHANNEL		= " :No such channel";
 	num.MSG_ERR_NOTONCHANNEL		= " :You're not on that channel";
+	num.MSG_ERR_NOTREGISTERED		= " :You have not registered";
 	num.MSG_ERR_PASSWDMISMATCH		= " :Password incorrect";
 	num.MSG_ERR_TOOMANYCHANNELS		= "";
-
-	num.MSG_RPL_CREATED				= " :This server was created ";
-	num.MSG_RPL_ENDOFNAMES			= " :End of /NAMES list";
-	num.MSG_RPL_MYINFO				= " 127.0.0.1 1 oOr RO";
-	num.MSG_RPL_NOTOPIC				= " :No topic is set";
-	num.MSG_RPL_TOPICWHOTIME		= "";
-	num.MSG_RPL_WELCOME				= " :Welcome to the 127.0.0.1 Network, ";
-	num.MSG_RPL_YOURHOST			= " :Your host is 127.0.0.1, running version 1";
+	num.MSG_ERR_UNKNOWNCOMMAND		= " :Unknown command";
 }
 
 /* ************************************************************************** */
