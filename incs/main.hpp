@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/14 16:36:13 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/16 11:48:49 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,23 @@
 # define BYELLOW				"\x1B[93m"
 # define END					"\033[0m"
 
-# define FAILED					-1
+# define PASS			0
+# define NICK			1
+# define USER			2
+# define PONG			3
+# define QUIT			4
+# define JOIN			5
+# define PART			6
+# define TOPIC		7
+# define NAMES		8
+# define LIST			9
+# define INVITE		10
+# define KICK			11
+# define MODE			12
+# define PRIVMSG	13
+# define NOTICE		14
+
+# define FAILED		-1
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -108,6 +124,10 @@ typedef struct s_num
 	std::string MSG_RPL_ENDOFNAMES; 
 	std::string RPL_MYINFO;	
 	std::string MSG_RPL_MYINFO; 
+	std::string ERR_UNKNOWNCOMMAND;
+	std::string MSG_ERR_UNKNOWNCOMMAND;
+	std::string ERR_NOTREGISTERED;
+	std::string MSG_ERR_NOTREGISTERED;
 	std::string RPL_CREATED;	
 	std::string MSG_RPL_CREATED; 
 	std::string RPL_YOURHOST;	

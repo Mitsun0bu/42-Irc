@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/14 16:34:14 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/16 11:42:32 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ class Server
 		void				execPass(User &user, std::vector<std::string> &cmdTokens);
 		void				execNick(User &user, std::vector<std::string> &cmdTokens);
 		void				execUser(User &user, std::vector<std::string> &cmdTokens);
+		void				execPong(User &user, std::vector<std::string> &cmdTokens);
 		void				execJoin(User &user, std::vector<std::string> &cmdTokens);
 
 		void	numericReply(User &user, std::string num, std::string msg);
