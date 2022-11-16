@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:23:53 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/11 11:30:08 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/16 16:13:15 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,16 +46,17 @@ class User
 		char					_remoteIP[INET6_ADDRSTRLEN];
 		const void*				_inAddr;
 		// std::string			_hostname;
-		bool									_validPasswd;
-		bool									_isAuthenticated;
-		std::set<std::string>	_channels;
-		std::string						_ip;
-		std::string 					_nickname;
-		std::string 					_username;
-		std::string 					_realname;
+		bool					_validPasswd;
+		bool					_isAuthenticated;
+		std::set<std::string>	_locations;
+		std::string				_ip;
+		std::string 			_nickname;
+		std::string 			_username;
+		std::string 			_realname;
 
 		/* member functions												*/
 		void					setIp(void);
+		void					addLocation(std::string channelName);
 
 		/* destructor													*/
 								~User(void);

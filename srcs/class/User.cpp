@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:24:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/14 16:03:21 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/16 16:15:54 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,12 @@ void	User::setIp(void)
 									this->_remoteIP,
 									INET6_ADDRSTRLEN
 							   );
+}
+
+void	User::addLocation(std::string channelName)
+{
+	_locations.insert(channelName);
+	return ;
 }
 
 /* ************************************************************************** */

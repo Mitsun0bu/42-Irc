@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/16 11:43:23 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/16 16:40:37 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -393,45 +393,46 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 {
 	char						prefix	= '0';
 	size_t						i		= 0;
-	std::vector<std::string>	names;
-	std::vector<std::string>	keys;
+	std::vector<std::string>	channelNames;
+	std::vector<std::string>	channelKeys;
 
-	tokenizer(cmdTokens[1], ",", names);
-	tokenizer(cmdTokens[2], ",", keys);
+	tokenizer(cmdTokens[1], ",", channelNames);
+	tokenizer(cmdTokens[2], ",", channelKeys);
 
-	for(i = 0; i < names.size(); i++)
+	for(i = 0; i < channelNames.size(); i++)
 	{
 		// CHECK IF CHANNEL NAME IS VALID
-		prefix = names[i][0];
+		prefix = channelNames[i][0];
 		if (prefix != '#')
-			this->numericReply(user, num.ERR_NOSUCHCHANNEL, names[i] + " :No such channel");
+			this->numericReply(user, num.ERR_NOSUCHCHANNEL, channelNames[i] + " :No such channel");
 		else
 		{
 			// IF CHANNEL EXISTS
-			if (this->_channels.find(names[i]) != this->_channels.end())
+			if (this->_channels.find(channelNames[i]) != this->_channels.end())
 			{
 				// IF USER IS NOT ALREADY IN CHANNEL
-				if (this->_channels[names[i]]._members.find(user._socket) == this->_channels[names[i]]._members.end())
+				if (this->_channels[channelNames[i]]._members.find(user._socket) == this->_channels[channelNames[i]]._members.end())
 				{
 					// IF THE CHANNEL REQUIRES A KEY
-					if(this->_channels[names[i]]._requiresKey == true)
+					if(this->_channels[channelNames[i]]._requiresKey == true)
 					{
 						// CHECK IF KEY IS VALID
-						if (this->_channels[names[i]]._key == keys[i])
+						if (this->_channels[channelNames[i]]._key == channelKeys[i])
 						{
 							// JOIN CHANNEL
-								// std::string joinMsg = ":" + user._nickname + " JOIN" + names[i];
+								// std::string joinMsg = ":" + user._nickname + " JOIN" + channelNames[i];
 							// TOPIC
 								// "<client> <channel> :<topic>"
 						}
 						else
-							this->numericReply(user, num.ERR_BADCHANNELKEY, names[i] + " :Cannot join channel (+k)");
+							this->numericReply(user, num.ERR_BADCHANNELKEY, channelNames[i] + " :Cannot join channel (+k)");
 					}
 					// IF THE CHANNEL DOES NOT REQUIRE A KEY
 					else
 					{
 						// JOIN CHANNEL
-						this->cmdReply(user, "JOIN", names[i]);
+						user.addLocation(channelNames[i]);
+						this->cmdReply(user, "JOIN", channelNames[i]);
 						// TOPIC
 							// "<client> <channel> :<topic>"
 					}
@@ -441,30 +442,31 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 			else
 			{
 				// INSTANTIATE NEW CHANNEL
-				Channel	newChannel(names[i]);
+				Channel	newChannel(channelNames[i]);
 
-				if (keys.empty() == false && keys[i].length())
-					newChannel.setKey(keys[i]);
+				if (channelKeys.empty() == false && channelKeys[i].length())
+					newChannel.setKey(channelKeys[i]);
 
 				// ADD USER TO THE CHANNEL
 				newChannel.addMember(user);
 
 				// ADD NEW CHANNEL TO SERVER CHANNEL MAP
-				this->addChannel(newChannel, names[i]);
+				this->addChannel(newChannel, channelNames[i]);
 
 				// JOIN CHANNEL
-				this->cmdReply(user, "JOIN", names[i]);
+				this->cmdReply(user, "JOIN", channelNames[i]);
 
 				// CALL NAMES FUNCTION
+
 				this->execNames(user, cmdTokens);
 			}
 		}
 	}
 }
 
-void	Server::addChannel(Channel &channel, std::string name)
+void	Server::addChannel(Channel &channel, std::string channelName)
 {
-	this->_channels[name] = channel;
+	this->_channels[channelName] = channel;
 
 	return ;
 }
@@ -475,12 +477,6 @@ void	Server::execTopic(User &user, std::vector<std::string> &cmdTokens)
 	Command		: TOPIC
 	Parameters	: <channel> [<topic>]
 
-	The TOPIC command is used to change or view the topic of the given channel.
-	If <topic> is not given, either RPL_TOPIC or RPL_NOTOPIC is returned specifying the current channel topic or lack of one.
-	If <topic> is an empty string, the topic for the channel will be cleared.
-	If the client sending this command is not joined to the given channel,
-	and tries to view its’ topic, the server MAY return the ERR_NOTONCHANNEL (442) numeric and have the command fail.
-	If RPL_TOPIC is returned to the client sending this command, RPL_TOPICWHOTIME SHOULD also be sent to that client.
 	If the protected topic mode is set on a channel, then clients MUST have appropriate channel permissions to modify the topic of that channel.
 	If a client does not have appropriate channel permissions and tries to change the topic, the ERR_CHANOPRIVSNEEDED (482) numeric is returned and the command will fail.
 	If the topic of a channel is changed or cleared, every client in that channel (including the author of the topic change) will receive a TOPIC command with the new topic as argument (or an empty argument if the topic was cleared) alerting them to how the topic has changed.
@@ -494,27 +490,45 @@ void	Server::execTopic(User &user, std::vector<std::string> &cmdTokens)
 		RPL_NOTOPIC (331)
 		RPL_TOPIC (332)
 		RPL_TOPICWHOTIME (333)
-
-	Command Examples:
-
-		TOPIC #test :New topic	;	Setting the topic on "#test" to "New topic".
-		TOPIC #test :			;	Clearing the topic on "#test"
-		TOPIC #test				;	Checking the topic for "#test"
 	*/
-	std::string	channel	= cmdTokens[0];
-	std::string	topic	= cmdTokens[1];
 
-	//DEBUG
-	std::cout << "channel : " << channel << std::endl;
-	std::cout << "topic : " << topic << std::endl;
+	std::string	channel	= cmdTokens[1];
+	std::string	topic;
+	std::string	topicMsg = user._nickname + " " + channel;
 
-	if (topic.empty())
+	if (cmdTokens[2].empty() == false)
+		topic = cmdTokens[2];
+
+	// IF USER NOT IN CHANNEL
+	if (user._locations.find(channel) == user._locations.end())
 	{
-		//	RPL_NOTOPIC (331)	-->	"<client> <channel> :No topic is set"
-
+		numericReply(user, num.ERR_NOTONCHANNEL, topicMsg, num.MSG_ERR_NOTONCHANNEL);
+		return ;
 	}
-	//	RPL_TOPIC (331)		--> "<client> <channel> :<topic>"
+	// IF NO TOPIC GIVEN BY THE USER AND TOPIC NOT ALREADY SET IN CHANNEL
+	if (topic.empty() && _channels[channel]._topicIsSet == false)
+	{
+		numericReply(user, num.RPL_NOTOPIC, topicMsg, num.MSG_RPL_NOTOPIC);
+		return ;
+	}
+	// IF TOPIC ARGUMENT IS EMPTY, CLEAR THE TOPIC
+	if (topic == "::")
+	{
+		_channels[channel]._topic.clear();
+		_channels[channel]._topicIsSet = false;
+		return ;
+	}
+	// IF TOPIC IS NOT SET, SET IT
+	if (_channels[channel]._topicIsSet == false)
+	{
+		_channels[channel]._topic		= topic.erase(0, 1);
+		_channels[channel]._topicIsSet	= true;
+	}
+	// REPLY TO CLIENT
+	topicMsg += " " + _channels[channel]._topic;
+	numericReply(user, num.RPL_TOPIC, topicMsg);
 
+	return ;
 }
 
 void	Server::execNames(User &user, std::vector<std::string> &cmdTokens)
@@ -553,7 +567,7 @@ void	Server::sendError(User &user, std::string reason)
 
 void	Server::numericReply(User &user, std::string num, std::string msg)
 {
-	std::string finalMsg = num + msg + "\r\n";
+	std::string finalMsg = num + " " + msg + "\r\n";
 
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
 		if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
@@ -614,6 +628,7 @@ void	Server::initNum(void)
 	num.ERR_NICKNAMEINUSE			= "433";
 	num.ERR_NONICKNAMEGIVEN			= "431";
 	num.ERR_NOSUCHCHANNEL			= "403";
+	num.ERR_NOTONCHANNEL			= "442";
 	num.ERR_PASSWDMISMATCH			= "464";
 	num.ERR_TOOMANYCHANNELS			= "405";
 
@@ -638,13 +653,14 @@ void	Server::initNum(void)
 	num.MSG_ERR_NICKNAMEINUSE		= " :Nickname is already in use";
 	num.MSG_ERR_NONICKNAMEGIVEN		= " :No nickname given";
 	num.MSG_ERR_NOSUCHCHANNEL		= " :No such channel";
+	num.MSG_ERR_NOTONCHANNEL		= " :You're not on that channel";
 	num.MSG_ERR_PASSWDMISMATCH		= " :Password incorrect";
 	num.MSG_ERR_TOOMANYCHANNELS		= "";
 
 	num.MSG_RPL_CREATED				= " :This server was created ";
 	num.MSG_RPL_ENDOFNAMES			= " :End of /NAMES list";
 	num.MSG_RPL_MYINFO				= " 127.0.0.1 1 oOr RO";
-	num.MSG_RPL_NOTOPIC				= ":No topic is set";
+	num.MSG_RPL_NOTOPIC				= " :No topic is set";
 	num.MSG_RPL_TOPICWHOTIME		= "";
 	num.MSG_RPL_WELCOME				= " :Welcome to the 127.0.0.1 Network, ";
 	num.MSG_RPL_YOURHOST			= " :Your host is 127.0.0.1, running version 1";
