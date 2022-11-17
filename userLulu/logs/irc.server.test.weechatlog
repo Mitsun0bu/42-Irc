@@ -33,3 +33,22 @@
 2022-11-17 14:20:53	--	PING: Unknown command
 2022-11-17 14:21:31	--	irc: disconnected from server
 2022-11-17 14:39:24	=!=	irc: not connected to server "test"!
+2022-11-17 15:00:31	--	irc: connecting to server 127.0.0.1/6667...
+2022-11-17 15:00:31	--	irc: connected to 127.0.0.1/6667 (127.0.0.1)
+2022-11-17 15:00:31	--	Welcome to the 127.0.0.1 Network, lucas2
+2022-11-17 15:00:31	--	Your host is 127.0.0.1, running version 1
+2022-11-17 15:00:31	--	This server was created Thu Nov 17 14:59:48 2022
+2022-11-17 15:00:31	--	127.0.0.1 1 oOr RO
+2022-11-17 15:00:36	=!=	irc: too few parameters received in command "475" (received: 1, expected: at least 2)
+2022-11-17 15:00:36	=!=	irc: failed to parse command "475" (please report to developers): "475 #test475"
+2022-11-17 15:01:31	--	PING: Unknown command
+2022-11-17 15:02:27	--	irc: disconnected from server
+2022-11-17 15:03:04	--	irc: connecting to server 127.0.0.1/6667...
+2022-11-17 15:03:04	--	irc: connected to 127.0.0.1/6667 (127.0.0.1)
+2022-11-17 15:03:04	--	Welcome to the 127.0.0.1 Network, lucas2
+2022-11-17 15:03:04	--	Your host is 127.0.0.1, running version 1
+2022-11-17 15:03:04	--	This server was created Thu Nov 17 15:02:44 2022
+2022-11-17 15:03:04	--	127.0.0.1 1 oOr RO
+2022-11-17 15:03:21	--	#test: Cannot join channel (+k)
+2022-11-17 15:03:36	--	MODE: Unknown command
+2022-11-17 15:03:50	--	irc: disconnected from server

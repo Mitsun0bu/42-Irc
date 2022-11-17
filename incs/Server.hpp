@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/17 14:40:19 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/17 15:45:06 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,10 @@ class Server
 
 		void				execPong(User &user, std::vector<std::string> &cmdTokens);
 
+		int					checkChannelName(std::string channelName);
 		void				execJoin(User &user, std::vector<std::string> &cmdTokens);
+		int					joinExistingChannel(User &user, std::string channelName, std::string channelKey);
+		void				joinNewChannel(User &user, std::string channelName, std::string channelKey);
 		void				addChannel(Channel &channel, std::string name);
 
 		void				execTopic(User &user, std::vector<std::string> &cmdTokens);

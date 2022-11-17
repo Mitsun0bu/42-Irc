@@ -26,3 +26,4 @@
 2022-11-17 14:19:22		Option changed: irc.server_default.nicks = "lucas2"  (default: "")
 2022-11-17 14:19:33	=!=	Option "irc.server_default.pass" not found
 2022-11-17 14:19:52		Option changed: irc.server_default.password = "PASS123"  (default: "")
+2022-11-17 15:00:10		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
