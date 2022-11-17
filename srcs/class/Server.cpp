@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/16 18:25:13 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/17 11:29:59 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -301,6 +301,7 @@ void	Server::execCmd(User &user, std::vector<std::string> &cmdTokens)
 			break;
 		case TOPIC:
 			this->execTopic(user, cmdTokens);
+			break;
 		case NAMES:
 			this->execNames(user, cmdTokens);
 			break;
@@ -429,6 +430,7 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 	size_t						i		= 0;
 	std::vector<std::string>	channelNames;
 	std::vector<std::string>	channelKeys;
+	std::string					topicMsg;
 
 	tokenizer(cmdTokens[1], ",", channelNames);
 	tokenizer(cmdTokens[2], ",", channelKeys);
@@ -438,39 +440,38 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 		// CHECK IF CHANNEL NAME IS VALID
 		prefix = channelNames[i][0];
 		if (prefix != '#')
-			this->numericReply(user, num.ERR_NOSUCHCHANNEL, channelNames[i] + " :No such channel");
+			numericReply(user, num.ERR_NOSUCHCHANNEL, channelNames[i], num.MSG_ERR_NOSUCHCHANNEL);
 		else
 		{
 			// IF CHANNEL EXISTS
-			if (this->_channels.find(channelNames[i]) != this->_channels.end())
+			if (_channels.find(channelNames[i]) != _channels.end())
 			{
-				// IF USER IS NOT ALREADY IN CHANNEL
-				if (this->_channels[channelNames[i]]._members.find(user._socket) == this->_channels[channelNames[i]]._members.end())
+				// IF USER IS ALREADY IN CHANNEL
+				if (_channels[channelNames[i]]._members.find(user._socket) != _channels[channelNames[i]]._members.end())
+					return ;
+				// IF THE CHANNEL REQUIRES A KEY AND KEY IS WRONG
+				if(_channels[channelNames[i]]._requiresKey == true && _channels[channelNames[i]]._key != channelKeys[i])
 				{
-					// IF THE CHANNEL REQUIRES A KEY
-					if(this->_channels[channelNames[i]]._requiresKey == true)
-					{
-						// CHECK IF KEY IS VALID
-						if (this->_channels[channelNames[i]]._key == channelKeys[i])
-						{
-							// JOIN CHANNEL
-								// std::string joinMsg = ":" + user._nickname + " JOIN" + channelNames[i];
-							// TOPIC
-								// "<client> <channel> :<topic>"
-						}
-						else
-							this->numericReply(user, num.ERR_BADCHANNELKEY, channelNames[i] + " :Cannot join channel (+k)");
-					}
-					// IF THE CHANNEL DOES NOT REQUIRE A KEY
-					else
-					{
-						// JOIN CHANNEL
-						user.addLocation(channelNames[i]);
-						this->cmdReply(user, "JOIN", channelNames[i]);
-						// TOPIC
-							// "<client> <channel> :<topic>"
-					}
+					numericReply(user, num.ERR_BADCHANNELKEY, channelNames[i] + " :Cannot join channel (+k)");
+					return ;
 				}
+				// JOIN CHANNEL
+				user.addLocation(channelNames[i]);
+				cmdReply(user, "JOIN", channelNames[i]);
+
+				// GIVE TOPIC
+				if (_channels[channelNames[i]]._topicIsSet == true)
+				{
+					topicMsg += " " + _channels[channelNames[i]]._topic;
+					numericReply(user, num.RPL_TOPIC, topicMsg);
+				}
+				else
+				{
+					topicMsg = " " + user._nickname + " " + channelNames[i];
+					numericReply(user, num.RPL_NOTOPIC, topicMsg, num.MSG_RPL_NOTOPIC);
+				}
+				// CALL NAME FUNCTION
+				execNames(user, cmdTokens);
 			}
 			// IF CHANNEL DOES NOT EXIST
 			else
@@ -485,16 +486,18 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 				newChannel.addMember(user);
 
 				// ADD NEW CHANNEL TO SERVER CHANNEL MAP
-				this->addChannel(newChannel, channelNames[i]);
+				addChannel(newChannel, channelNames[i]);
 
 				// JOIN CHANNEL
 				user.addLocation(channelNames[i]);
-				this->cmdReply(user, "JOIN", channelNames[i]);
+				cmdReply(user, "JOIN", channelNames[i]);
 
-				// CALL NAMES FUNCTION
-				//DEBUG
-				std::cout << "New channel create, call execNames" << std::endl;
-				this->execNames(user, cmdTokens);
+				// GIVE TOPIC
+				topicMsg = " " + user._nickname + " " + channelNames[i];
+				numericReply(user, num.RPL_NOTOPIC, topicMsg, num.MSG_RPL_NOTOPIC);
+
+				// CALL NAME FUNCTION
+				execNames(user, cmdTokens);
 			}
 		}
 	}
@@ -502,8 +505,7 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 
 void	Server::addChannel(Channel &channel, std::string channelName)
 {
-	this->_channels[channelName] = channel;
-
+	_channels[channelName] = channel;
 	return ;
 }
 
@@ -513,24 +515,19 @@ void	Server::execTopic(User &user, std::vector<std::string> &cmdTokens)
 	Command		: TOPIC
 	Parameters	: <channel> [<topic>]
 
-	If the protected topic mode is set on a channel, then clients MUST have appropriate channel permissions to modify the topic of that channel.
-	If a client does not have appropriate channel permissions and tries to change the topic, the ERR_CHANOPRIVSNEEDED (482) numeric is returned and the command will fail.
-	If the topic of a channel is changed or cleared, every client in that channel (including the author of the topic change) will receive a TOPIC command with the new topic as argument (or an empty argument if the topic was cleared) alerting them to how the topic has changed.
-	Clients joining the channel in the future will receive a RPL_TOPIC numeric (or lack thereof) accordingly.
-
-	Numeric Replies:
-		ERR_NEEDMOREPARAMS (461)
-		ERR_NOSUCHCHANNEL (403)
-		ERR_NOTONCHANNEL (442)
-		ERR_CHANOPRIVSNEEDED (482)
-		RPL_NOTOPIC (331)
-		RPL_TOPIC (332)
-		RPL_TOPICWHOTIME (333)
+	- If the protected topic mode is set on a channel,
+	then clients MUST have appropriate channel permissions to modify the topic of that channel.
+	- If a client does not have appropriate channel permissions and tries to change the topic,
+	the ERR_CHANOPRIVSNEEDED (482) numeric is returned and the command will fail.
+	- If the topic of a channel is changed or cleared,
+	every client in that channel (including the author of the topic change) will receive a TOPIC command
+	with the new topic as argument (or an empty argument if the topic was cleared) alerting them to how the topic has changed.
+	- Clients joining the channel in the future will receive a RPL_TOPIC numeric (or lack thereof) accordingly.
 	*/
 
 	std::string	channel	= cmdTokens[1];
 	std::string	topic;
-	std::string	topicMsg = user._nickname + " " + channel;
+	std::string	topicMsg = " " + user._nickname + " " + channel;
 
 	if (cmdTokens[2].empty() == false)
 		topic = cmdTokens[2];
@@ -650,94 +647,57 @@ void	Server::cmdReply(User &user, std::string cmd, std::string param)
 
 void	Server::initNum(void)
 {
-	// num.ERR_ALREADYREGISTERED		= "462";
-	// num.ERR_BADCHANMASK				= "476";
-	// num.ERR_BADCHANNELKEY			= "475";
-	// num.ERR_BANNEDFROMCHAN			= "474";
-	// num.ERR_CHANNELISFULL			= "471";
-	// num.ERR_ERRONEUSNICKNAME		= "432";
-	// num.ERR_INVITEONLYCHAN			= "473";
-	// num.ERR_NEEDMOREPARAMS			= "461";
-	// num.ERR_NICKNAMEINUSE			= "433";
-	// num.ERR_NONICKNAMEGIVEN			= "431";
-	// num.ERR_NOSUCHCHANNEL			= "403";
-	// num.ERR_NOTONCHANNEL			= "442";
-	// num.ERR_NOTREGISTERED			= "451";
-	// num.ERR_PASSWDMISMATCH			= "464";
-	// num.ERR_TOOMANYCHANNELS			= "405";
-	// num.ERR_UNKNOWNCOMMAND			= "421";
+	num.ERR_ALREADYREGISTERED		= "462";
+	num.ERR_BADCHANMASK				= "476";
+	num.ERR_BADCHANNELKEY			= "475";
+	num.ERR_BANNEDFROMCHAN			= "474";
+	num.ERR_CHANNELISFULL			= "471";
+	num.ERR_ERRONEUSNICKNAME		= "432";
+	num.ERR_INVITEONLYCHAN			= "473";
+	num.ERR_NEEDMOREPARAMS			= "461";
+	num.ERR_NICKNAMEINUSE			= "433";
+	num.ERR_NONICKNAMEGIVEN			= "431";
+	num.ERR_NOSUCHCHANNEL			= "403";
+	num.ERR_NOTONCHANNEL			= "442";
+	num.ERR_NOTREGISTERED			= "451";
+	num.ERR_PASSWDMISMATCH			= "464";
+	num.ERR_TOOMANYCHANNELS			= "405";
+	num.ERR_UNKNOWNCOMMAND			= "421";
 
-	// num.RPL_CREATED					= "003";
-	// num.RPL_ENDOFNAMES				= "366";
-	// num.RPL_MYINFO					= "004";
-	// num.RPL_NAMREPLY				= "353";
-	// num.RPL_NOTOPIC					= "331";
-	// num.RPL_TOPIC					= "332";
-	// num.RPL_TOPICWHOTIME			= "333";
-	// num.RPL_WELCOME					= "001";
-	// num.RPL_YOURHOST				= "002";
+	num.MSG_ERR_ALREADYREGISTERED	= " :You may not reregister";
+	num.MSG_ERR_BADCHANMASK			= "";
+	num.MSG_ERR_BADCHANNELKEY		= " :Cannot join channel (+k)";
+	num.MSG_ERR_BANNEDFROMCHAN		= "";
+	num.MSG_ERR_CHANNELISFULL		= "";
+	num.MSG_ERR_ERRONEUSNICKNAME	= " :Erroneus nickname";
+	num.MSG_ERR_INVITEONLYCHAN		= "";
+	num.MSG_ERR_NEEDMOREPARAMS		= " :Not enough parameters";
+	num.MSG_ERR_NICKNAMEINUSE		= " :Nickname is already in use";
+	num.MSG_ERR_NONICKNAMEGIVEN		= " :No nickname given";
+	num.MSG_ERR_NOSUCHCHANNEL		= " :No such channel";
+	num.MSG_ERR_NOTONCHANNEL		= " :You're not on that channel";
+	num.MSG_ERR_NOTREGISTERED		= " :You have not registered";
+	num.MSG_ERR_PASSWDMISMATCH		= " :Password incorrect";
+	num.MSG_ERR_TOOMANYCHANNELS		= "";
+	num.MSG_ERR_UNKNOWNCOMMAND		= " :Unknown command";
 
-	// num.MSG_ERR_ALREADYREGISTERED	= " :You may not reregister";
-	// num.MSG_ERR_BADCHANMASK			= "";
-	// num.MSG_ERR_BADCHANNELKEY		= " :Cannot join channel (+k)";
-	// num.MSG_ERR_BANNEDFROMCHAN		= "";
-	// num.MSG_ERR_CHANNELISFULL		= "";
-	// num.MSG_ERR_ERRONEUSNICKNAME	= " :Erroneus nickname";
-	// num.MSG_ERR_INVITEONLYCHAN		= "";
-	// num.MSG_ERR_NEEDMOREPARAMS		= " :Not enough parameters";
-	// num.MSG_ERR_NICKNAMEINUSE		= " :Nickname is already in use";
-	// num.MSG_ERR_NONICKNAMEGIVEN		= " :No nickname given";
-	// num.MSG_ERR_NOSUCHCHANNEL		= " :No such channel";
-	// num.MSG_ERR_NOTONCHANNEL		= " :You're not on that channel";
-	// num.MSG_ERR_NOTREGISTERED		= " :You have not registered";
-	// num.MSG_ERR_PASSWDMISMATCH		= " :Password incorrect";
-	// num.MSG_ERR_TOOMANYCHANNELS		= "";
-	// num.MSG_ERR_UNKNOWNCOMMAND		= " :Unknown command";
+	num.RPL_CREATED					= "003";
+	num.RPL_ENDOFNAMES				= "366";
+	num.RPL_MYINFO					= "004";
+	num.RPL_NAMREPLY				= "353";
+	num.RPL_NOTOPIC					= "331";
+	num.RPL_TOPIC					= "332";
+	num.RPL_TOPICWHOTIME			= "333";
+	num.RPL_WELCOME					= "001";
+	num.RPL_YOURHOST				= "002";
 
-	num.ERR_PASSWDMISMATCH = "464";
-	num.MSG_ERR_PASSWDMISMATCH = " :Password incorrect";
-	num.ERR_ALREADYREGISTERED = "462";
-	num.MSG_ERR_ALREADYREGISTERED = " :You may not reregister";
-	num.ERR_NEEDMOREPARAMS	= "461";
-	num.MSG_ERR_NEEDMOREPARAMS = " :Not enough parameters";
-	num.ERR_NICKNAMEINUSE = "433	";
-	num.MSG_ERR_NICKNAMEINUSE = " :Nickname is already in use";
-	num.ERR_ERRONEUSNICKNAME = "432";
-	num.MSG_ERR_ERRONEUSNICKNAME = " :Erroneus nickname";
-	num.ERR_NONICKNAMEGIVEN = "431";
-	num.MSG_ERR_NONICKNAMEGIVEN = " :No nickname given";
-	num.ERR_NOSUCHCHANNEL	= "403";
-	num.MSG_ERR_NOSUCHCHANNEL = " :No such channel";
-	num.ERR_TOOMANYCHANNELS	= "405";
-	num.MSG_ERR_TOOMANYCHANNELS = "";
-	num.ERR_BADCHANNELKEY	= "475";
-	num.MSG_ERR_BADCHANNELKEY = " :Cannot join channel (+k)";
-	num.ERR_BANNEDFROMCHAN	= "474";
-	num.MSG_ERR_BANNEDFROMCHAN = "";
-	num.ERR_CHANNELISFULL	= "471";
-	num.MSG_ERR_CHANNELISFULL = "";
-	num.ERR_INVITEONLYCHAN	= "473";
-	num.MSG_ERR_INVITEONLYCHAN = "";
-	num.ERR_BADCHANMASK	= "476";
-	num.MSG_ERR_BADCHANMASK = "";
-	num.RPL_TOPIC	= "332";
-	num.RPL_TOPICWHOTIME	= "333";
-	num.MSG_RPL_TOPICWHOTIME = "";
-	num.RPL_NAMREPLY	= "353";
-	num.RPL_ENDOFNAMES	= "366";
-	num.MSG_RPL_ENDOFNAMES = " :End of /NAMES list";
-	num.ERR_UNKNOWNCOMMAND	= "421";
-	num.MSG_ERR_UNKNOWNCOMMAND = " :Unknown command";
-	num.ERR_NOTREGISTERED = "451";
-	num.MSG_ERR_NOTREGISTERED = " :You have not registered";
-	num.RPL_MYINFO	= "004";
-	num.MSG_RPL_MYINFO = " 127.0.0.1 1 oOr RO";
-	num.RPL_CREATED	= "003";
-	num.MSG_RPL_CREATED = " :This server was created ";
-	num.RPL_YOURHOST	= "002";
-	num.MSG_RPL_YOURHOST = " :Your host is 127.0.0.1, running version 1";
-	num.RPL_WELCOME	= "001";
-	num.MSG_RPL_WELCOME = " :Welcome to the 127.0.0.1 Network, ";
+	num.MSG_RPL_CREATED				= " :This server was created ";
+	num.MSG_RPL_ENDOFNAMES			= " :End of /NAMES list";
+	num.MSG_RPL_MYINFO				= " 127.0.0.1 1 oOr RO";
+	num.MSG_RPL_NOTOPIC				= "  :No topic is set";
+	num.MSG_RPL_TOPICWHOTIME		= "";
+	num.MSG_RPL_WELCOME				= " :Welcome to the 127.0.0.1 Network, ";
+	num.MSG_RPL_YOURHOST			= " :Your host is 127.0.0.1, running version 1";
 }
 
 /* ************************************************************************** */

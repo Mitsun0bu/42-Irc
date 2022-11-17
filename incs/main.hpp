@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/16 18:10:53 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/17 10:32:32 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,16 +107,6 @@ typedef struct s_num
 	std::string	ERR_TOOMANYCHANNELS;
 	std::string ERR_UNKNOWNCOMMAND;
 
-	std::string	RPL_CREATED;
-	std::string	RPL_ENDOFNAMES;
-	std::string	RPL_MYINFO;
-	std::string	RPL_NAMREPLY;
-	std::string	RPL_NOTOPIC;
-	std::string	RPL_TOPIC;
-	std::string	RPL_TOPICWHOTIME;
-	std::string	RPL_WELCOME;
-	std::string	RPL_YOURHOST;
-
 	std::string	MSG_ERR_ALREADYREGISTERED;
 	std::string	MSG_ERR_BADCHANMASK;
 	std::string	MSG_ERR_BADCHANNELKEY;
@@ -134,6 +124,16 @@ typedef struct s_num
 	std::string	MSG_ERR_TOOMANYCHANNELS;
 	std::string MSG_ERR_UNKNOWNCOMMAND;
 
+	std::string	RPL_CREATED;
+	std::string	RPL_ENDOFNAMES;
+	std::string	RPL_MYINFO;
+	std::string	RPL_NAMREPLY;
+	std::string	RPL_NOTOPIC;
+	std::string	RPL_TOPIC;
+	std::string	RPL_TOPICWHOTIME;
+	std::string	RPL_WELCOME;
+	std::string	RPL_YOURHOST;
+
 	std::string	MSG_RPL_CREATED;
 	std::string	MSG_RPL_ENDOFNAMES;
 	std::string	MSG_RPL_MYINFO;
@@ -141,7 +141,6 @@ typedef struct s_num
 	std::string	MSG_RPL_TOPICWHOTIME;
 	std::string	MSG_RPL_YOURHOST;
 	std::string	MSG_RPL_WELCOME;
-
 }	t_num;
 
 typedef struct s_fdList

@@ -1,0 +1,24 @@
+2022-11-17 11:35:17		New key binding (context "default"): meta-B => /buflist toggle
+2022-11-17 11:35:17		New key binding (context "default"): meta-OP => /bar scroll buflist * -100%
+2022-11-17 11:35:17		New key binding (context "default"): meta2-11~ => /bar scroll buflist * -100%
+2022-11-17 11:35:17		New key binding (context "default"): meta-OQ => /bar scroll buflist * +100%
+2022-11-17 11:35:17		New key binding (context "default"): meta2-12~ => /bar scroll buflist * +100%
+2022-11-17 11:35:17		New key binding (context "default"): meta2-11^ => /bar scroll buflist * -100%
+2022-11-17 11:35:17		New key binding (context "default"): meta2-1;5P => /bar scroll buflist * -100%
+2022-11-17 11:35:17		New key binding (context "default"): meta2-12^ => /bar scroll buflist * +100%
+2022-11-17 11:35:17		New key binding (context "default"): meta2-1;5Q => /bar scroll buflist * +100%
+2022-11-17 11:35:17		New key binding (context "default"): meta-meta-OP => /bar scroll buflist * b
+2022-11-17 11:35:17		New key binding (context "default"): meta-meta2-11~ => /bar scroll buflist * b
+2022-11-17 11:35:17		New key binding (context "default"): meta2-1;3P => /bar scroll buflist * b
+2022-11-17 11:35:17		New key binding (context "default"): meta-meta-OQ => /bar scroll buflist * e
+2022-11-17 11:35:17		New key binding (context "default"): meta-meta2-12~ => /bar scroll buflist * e
+2022-11-17 11:35:17		New key binding (context "default"): meta2-1;3Q => /bar scroll buflist * e
+2022-11-17 11:35:18		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2022-11-17 11:37:36		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2022-11-17 11:37:58	=!=	irc: unable to add temporary server "test" because the addition of temporary servers with command /connect is currently disabled
+2022-11-17 11:37:58	=!=	irc: if you want to add a standard server, use the command "/server add" (see /help server); if you really want to add a temporary server (NOT SAVED), turn on the option irc.look.temporary_servers
+2022-11-17 11:38:12	=!=	Too few arguments for command "/server add" (help on command: /help server)
+2022-11-17 11:39:23		irc: server added: test
+2022-11-17 11:39:50	=!=	irc: command "join" must be executed on connected irc server
+2022-11-17 11:40:13	=!=	Unknown command "/qui" (type /help for help)
+2022-11-17 11:40:19		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
