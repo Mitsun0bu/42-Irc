@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/17 14:48:45 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/17 16:36:36 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,20 +37,22 @@
 # define END					"\033[0m"
 
 # define PASS			0
-# define NICK			1
-# define USER			2
-# define PONG			3
-# define QUIT			4
-# define JOIN			5
-# define PART			6
-# define TOPIC		7
-# define NAMES		8
-# define LIST			9
-# define INVITE		10
-# define KICK			11
-# define MODE			12
-# define PRIVMSG	13
-# define NOTICE		14
+# define CAP			1
+# define NICK			2
+# define USER			3
+# define PING			4
+# define PONG			5
+# define QUIT			6
+# define JOIN			7
+# define PART			8
+# define TOPIC		9
+# define NAMES		10
+# define LIST			11
+# define INVITE		12
+# define KICK			13
+# define MODE			14
+# define PRIVMSG	15
+# define NOTICE		16
 
 # define FAILED		-1
 
