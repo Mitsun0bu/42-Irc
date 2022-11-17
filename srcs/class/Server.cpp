@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/16 16:32:51 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/17 15:43:11 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,7 +174,7 @@ void	Server::searchForData(void)
 			if (fd == this->_socket)
 				this->acceptNewUser();
 			else
-				this->handleClientData(&fd);
+				this->handleClientData(fd);
 		}
 	}
 }
@@ -216,7 +216,7 @@ void	Server::acceptNewUser(void)
 	}
 }
 
-void	Server::handleClientData(int* currentFd)
+void	Server::handleClientData(int &currentFd)
 {
 	char						buffer[256]	= {0};
 	int							byteCount	= 0;
@@ -225,12 +225,15 @@ void	Server::handleClientData(int* currentFd)
 	std::vector<std::string>	cmdTokens;
 
 
-	byteCount = recv(*currentFd, buffer, 256, 0);
+	byteCount = recv(currentFd, buffer, 256, 0);
 	if (byteCount <= 0)
 	{
-		this->printRecvError(byteCount, *currentFd);
-		close(*currentFd);
-		FD_CLR(*currentFd, &this->clientFdList.master);
+
+		this->printRecvError(byteCount, currentFd);
+		if (_users.find(currentFd) != _users.end())
+			logoutUser(_users[currentFd]);
+		close(currentFd);
+		FD_CLR(currentFd, &this->clientFdList.master);
 	}
 	else
 	{
@@ -240,15 +243,13 @@ void	Server::handleClientData(int* currentFd)
 		for(size_t i = 0; i < cmds.size(); i ++)
 		{
 			tokenizer(cmds[i], " ", cmdTokens);
-			this->execCmd(this->_users[*currentFd], cmdTokens);
+			this->execCmd(this->_users[currentFd], cmdTokens);
 		}
 	}
 }
 
 void	Server::printRecvError(int byteCount, int currentFd)
 {
-	if (this->_users.find(currentFd) != this->_users.end())
-		logoutUser(this->_users[currentFd]);
 	if (byteCount == 0)
 	{
 		std::cerr << "Socket " << currentFd << " hung up !" << std::endl;
@@ -292,7 +293,7 @@ void	Server::execCmd(User &user, std::vector<std::string> &cmdTokens)
 			this->execUser(user, cmdTokens);
 			break;
 		case QUIT:
-			this->execUser(user, cmdTokens);
+			this->execQuit(user, cmdTokens);
 			break;
 		case JOIN:
 			this->execJoin(user, cmdTokens);
@@ -324,14 +325,19 @@ void	Server::logoutUser(User &user)
 				_channels.erase(toErase);
 			}
 			else
-			{
 				++it;
-				continue;
-			}
 		}
-		++it;
 	}
 	this->_users.erase(user._socket);
+}
+
+void	Server::execQuit(User &user, std::vector<std::string> &cmdTokens)
+{
+	std::string msg = "Quit: ";
+	for (size_t i = 1; i < cmdTokens.size(); i++)
+		msg.append(cmdTokens[i]);
+
+	cmdReply(user, "QUIT", msg);
 }
 
 void	Server::execPass(User &user, std::vector<std::string> &cmdTokens)
@@ -569,11 +575,9 @@ void	Server::numericReply(User &user, std::string num, std::string firstParam, s
     	perror("send()");
 }
 
-void	Server::cmdReply(User &user, std::string cmd, std::string param)
+void	Server::cmdReply(User &user, std::string cmd, std::string param)	
 {
     std::string finalMsg = ":" + user._nickname + " " + cmd + " " + param + "\r\n";
-
-		std::cout << "cmdReply: " << finalMsg << std::endl;
 
     if (FD_ISSET(user._socket, &this->clientFdList.write))
         if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)

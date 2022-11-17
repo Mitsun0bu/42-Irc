@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/16 15:58:34 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/17 15:37:57 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,11 +91,12 @@ class Server
 		/* private methods												*/
 		void				acceptNewUser();
 
-		void				handleClientData(int* currentFd);
+		void				handleClientData(int &currentFd);
 		void				printRecvError(int byteCount, int currentFd);
 
 		int					findCmdToExecute(std::string &cmd);
 		void				execCmd(User &user, std::vector<std::string> &cmd);
+		void				execQuit(User &user, std::vector<std::string> &cmdTokens);
 		void				execPass(User &user, std::vector<std::string> &cmdTokens);
 		void				execNick(User &user, std::vector<std::string> &cmdTokens);
 		void				execUser(User &user, std::vector<std::string> &cmdTokens);
