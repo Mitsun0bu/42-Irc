@@ -14,3 +14,22 @@
 2022-11-17 11:40:37	--	irc: disconnecting from server...
 2022-11-17 11:40:37	--	irc: disconnected from server
 2022-11-17 11:40:37	--	irc: reconnecting to server in 10 seconds
+2022-11-17 14:18:31	--	irc: connecting to server 127.0.0.1/6667...
+2022-11-17 14:18:31	--	irc: connected to 127.0.0.1/6667 (127.0.0.1)
+2022-11-17 14:18:43	--	irc: connecting to server 127.0.0.1/6667...
+2022-11-17 14:18:43	--	irc: connected to 127.0.0.1/6667 (127.0.0.1)
+2022-11-17 14:19:43	=!=	irc: connection timeout (message 001 not received)
+2022-11-17 14:19:43	--	irc: disconnected from server
+2022-11-17 14:19:43	--	irc: reconnecting to server in 10 seconds
+2022-11-17 14:19:53	--	irc: reconnecting to server...
+2022-11-17 14:19:53	--	irc: connecting to server 127.0.0.1/6667...
+2022-11-17 14:19:53	--	irc: connected to 127.0.0.1/6667 (127.0.0.1)
+2022-11-17 14:19:53	--	Welcome to the 127.0.0.1 Network, llethuil
+2022-11-17 14:19:53	--	Your host is 127.0.0.1, running version 1
+2022-11-17 14:19:53	--	This server was created Thu Nov 17 14:18:23 2022
+2022-11-17 14:19:53	--	127.0.0.1 1 oOr RO
+2022-11-17 14:20:13	=!=	irc: command "475#test" not found: "475#test :Cannot join channel (+k)"
+2022-11-17 14:20:24	--	MODE: Unknown command
+2022-11-17 14:20:53	--	PING: Unknown command
+2022-11-17 14:21:31	--	irc: disconnected from server
+2022-11-17 14:39:24	=!=	irc: not connected to server "test"!

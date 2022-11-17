@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/16 16:49:36 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/17 14:40:19 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,13 @@ class Server
 		/* constructors													*/
 							Server(void);
 							Server(
-									int					port,
+									int			port,
 									std::string	passwd,
-									int					addressFamily,
-									int					socketType,
-									int					socketFlag,
-									int					socketBlockingMode,
-									int					protocol,
+									int			addressFamily,
+									int			socketType,
+									int			socketFlag,
+									int			socketBlockingMode,
+									int			protocol,
 									const char*	internetHostAddr
 								  );
 
@@ -109,6 +109,9 @@ class Server
 		void				addChannel(Channel &channel, std::string name);
 
 		void				execTopic(User &user, std::vector<std::string> &cmdTokens);
+		void				replyTopic(User &user, std::string channelName);
+		void				clearTopic(std::string channelName);
+		void				setTopic(std::string channelName, std::string topic);
 
 		void				execNames(User &user, std::vector<std::string> &cmdTokens);
 

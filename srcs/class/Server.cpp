@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/17 11:29:59 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/17 14:33:07 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -329,12 +329,8 @@ void	Server::logoutUser(User &user)
 				_channels.erase(toErase);
 			}
 			else
-			{
 				++it;
-				continue;
-			}
 		}
-		++it;
 	}
 	this->_users.erase(user._socket);
 }
@@ -460,16 +456,8 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 				cmdReply(user, "JOIN", channelNames[i]);
 
 				// GIVE TOPIC
-				if (_channels[channelNames[i]]._topicIsSet == true)
-				{
-					topicMsg += " " + _channels[channelNames[i]]._topic;
-					numericReply(user, num.RPL_TOPIC, topicMsg);
-				}
-				else
-				{
-					topicMsg = " " + user._nickname + " " + channelNames[i];
-					numericReply(user, num.RPL_NOTOPIC, topicMsg, num.MSG_RPL_NOTOPIC);
-				}
+				replyTopic(user, channelNames[i]);
+
 				// CALL NAME FUNCTION
 				execNames(user, cmdTokens);
 			}
@@ -493,8 +481,7 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 				cmdReply(user, "JOIN", channelNames[i]);
 
 				// GIVE TOPIC
-				topicMsg = " " + user._nickname + " " + channelNames[i];
-				numericReply(user, num.RPL_NOTOPIC, topicMsg, num.MSG_RPL_NOTOPIC);
+				replyTopic(user, channelNames[i]);
 
 				// CALL NAME FUNCTION
 				execNames(user, cmdTokens);
@@ -525,42 +512,64 @@ void	Server::execTopic(User &user, std::vector<std::string> &cmdTokens)
 	- Clients joining the channel in the future will receive a RPL_TOPIC numeric (or lack thereof) accordingly.
 	*/
 
-	std::string	channel	= cmdTokens[1];
-	std::string	topic;
-	std::string	topicMsg = " " + user._nickname + " " + channel;
+	std::string	channelName	= cmdTokens[1];
+	std::string	topic		= "";
+
 
 	if (cmdTokens[2].empty() == false)
 		topic = cmdTokens[2];
 
 	// IF USER NOT IN CHANNEL
-	if (user._locations.find(channel) == user._locations.end())
+	if (user._locations.find(channelName) == user._locations.end())
 	{
-		numericReply(user, num.ERR_NOTONCHANNEL, topicMsg, num.MSG_ERR_NOTONCHANNEL);
+		std::string	notInChannelMsg = " " + user._nickname + " " + channelName;
+		numericReply(user, num.ERR_NOTONCHANNEL, notInChannelMsg, num.MSG_ERR_NOTONCHANNEL);
 		return ;
 	}
 	// IF NO TOPIC GIVEN BY THE USER AND TOPIC NOT ALREADY SET IN CHANNEL
-	if (topic.empty() && _channels[channel]._topicIsSet == false)
+	if (topic.empty() && _channels[channelName]._topicIsSet == false)
 	{
-		numericReply(user, num.RPL_NOTOPIC, topicMsg, num.MSG_RPL_NOTOPIC);
+		std::cout << "HERE" << std::endl;
+		replyTopic(user, channelName);
 		return ;
 	}
-	// IF TOPIC ARGUMENT IS EMPTY, CLEAR THE TOPIC
 	if (topic == "::")
 	{
-		_channels[channel]._topic.clear();
-		_channels[channel]._topicIsSet = false;
+		clearTopic(channelName);
 		return ;
 	}
-	// IF TOPIC IS NOT SET, SET IT
-	if (_channels[channel]._topicIsSet == false)
-	{
-		_channels[channel]._topic		= topic.erase(0, 1);
-		_channels[channel]._topicIsSet	= true;
-	}
-	// REPLY TO CLIENT
-	topicMsg += " " + _channels[channel]._topic;
-	numericReply(user, num.RPL_TOPIC, topicMsg);
+	if (_channels[channelName]._topicIsSet == false)
+		setTopic(channelName, topic);
+	replyTopic(user, channelName);
 
+	return ;
+}
+
+void	Server::replyTopic(User& user, std::string channelName)
+{
+	std::string topicMsg = " " + user._nickname + " " + channelName;
+
+	if (_channels[channelName]._topicIsSet == true)
+	{
+		topicMsg += " " + _channels[channelName]._topic;
+		numericReply(user, num.RPL_TOPIC, topicMsg);
+	}
+	else
+		numericReply(user, num.RPL_NOTOPIC, topicMsg, num.MSG_RPL_NOTOPIC);
+	return ;
+}
+
+void	Server::clearTopic(std::string channelName)
+{
+	_channels[channelName]._topic.clear();
+	_channels[channelName]._topicIsSet = false;
+	return ;
+}
+
+void	Server::setTopic(std::string channelName, std::string topic)
+{
+	_channels[channelName]._topic		= topic.erase(0, 1);
+	_channels[channelName]._topicIsSet	= true;
 	return ;
 }
 
