@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/17 15:19:34 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/17 17:22:15 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,18 +40,19 @@
 # define CAP					1
 # define NICK					2
 # define USER					3
-# define PONG					4
-# define QUIT					5
-# define JOIN					6
-# define PART					7
-# define TOPIC					8
-# define NAMES					9
-# define LIST					10
-# define INVITE					11
-# define KICK					12
-# define MODE					13
-# define PRIVMSG				14
-# define NOTICE					15
+# define PING					4
+# define PONG					5
+# define QUIT					6
+# define JOIN					7
+# define PART					8
+# define TOPIC					9
+# define NAMES					10
+# define LIST					11
+# define INVITE					12
+# define KICK					13
+# define MODE					14
+# define PRIVMSG				15
+# define NOTICE					16
 
 # define FAILED					-1
 # define SUCCESS				0

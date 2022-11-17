@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/17 17:16:46 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/17 17:54:32 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,7 +174,7 @@ void	Server::searchForData(void)
 			if (fd == this->_socket)
 				this->acceptNewUser();
 			else
-				this->handleClientData(&fd);
+				this->handleClientData(fd);
 		}
 	}
 }
@@ -216,7 +216,7 @@ void	Server::acceptNewUser(void)
 	}
 }
 
-void	Server::handleClientData(int* currentFd)
+void	Server::handleClientData(int &currentFd)
 {
 	char						buffer[256]	= {0};
 	int							byteCount	= 0;
@@ -225,12 +225,15 @@ void	Server::handleClientData(int* currentFd)
 	std::vector<std::string>	cmdTokens;
 
 
-	byteCount = recv(*currentFd, buffer, 256, 0);
+	byteCount = recv(currentFd, buffer, 256, 0);
 	if (byteCount <= 0)
 	{
-		this->printRecvError(byteCount, *currentFd);
-		close(*currentFd);
-		FD_CLR(*currentFd, &this->clientFdList.master);
+
+		this->printRecvError(byteCount, currentFd);
+		if (_users.find(currentFd) != _users.end())
+			logoutUser(_users[currentFd]);
+		close(currentFd);
+		FD_CLR(currentFd, &this->clientFdList.master);
 	}
 	else
 	{
@@ -240,15 +243,13 @@ void	Server::handleClientData(int* currentFd)
 		for(size_t i = 0; i < cmds.size(); i ++)
 		{
 			tokenizer(cmds[i], " ", cmdTokens);
-			this->execCmd(this->_users[*currentFd], cmdTokens);
+			this->execCmd(this->_users[currentFd], cmdTokens);
 		}
 	}
 }
 
 void	Server::printRecvError(int byteCount, int currentFd)
 {
-	if (this->_users.find(currentFd) != this->_users.end())
-		logoutUser(this->_users[currentFd]);
 	if (byteCount == 0)
 	{
 		std::cerr << "Socket " << currentFd << " hung up !" << std::endl;
@@ -259,13 +260,14 @@ void	Server::printRecvError(int byteCount, int currentFd)
 
 int		Server::findCmdToExecute(std::string &cmd)
 {
-	const int	nCmd	= 16;
+	const int	nCmd	= 17;
 	std::string cmdList[nCmd]	= {
-								"PASS"	, "CAP"		, "NICK"	, "USER",
-								"PONG"	, "QUIT"	, "JOIN"	, "PART",
-								"TOPIC"	, "NAMES"	, "LIST"	, "INVITE",
-								"KICK"	, "MODE"	, "PRIVMSG"	, "NOTICE"
-								  };
+								"PASS" 	, "CAP"		, "NICK"   	, "USER" 		,
+								"PING" 	, "PONG" 	, "QUIT"		, "JOIN"  	,
+								"PART" 	, "TOPIC"	, "NAMES"		, "LIST"  	,
+								"INVITE",	"KICK" 	, "MODE"		, "PRIVMSG"	,
+								"NOTICE"
+							 };
 
 	for (size_t i = 0; i < nCmd; i++)
 		if (cmd == cmdList[i])
@@ -294,7 +296,7 @@ void	Server::execCmd(User &user, std::vector<std::string> &cmdTokens)
 			this->execUser(user, cmdTokens);
 			break;
 		case QUIT:
-			this->execUser(user, cmdTokens);
+			this->execQuit(user, cmdTokens);
 			break;
 		case JOIN:
 			this->execJoin(user, cmdTokens);
@@ -333,6 +335,15 @@ void	Server::logoutUser(User &user)
 		}
 	}
 	this->_users.erase(user._socket);
+}
+
+void	Server::execQuit(User &user, std::vector<std::string> &cmdTokens)
+{
+	std::string msg = "Quit: ";
+	for (size_t i = 1; i < cmdTokens.size(); i++)
+		msg.append(cmdTokens[i]);
+
+	cmdReply(user, "QUIT", msg);
 }
 
 void	Server::execPass(User &user, std::vector<std::string> &cmdTokens)
@@ -482,27 +493,12 @@ void	Server::addChannel(Channel &channel, std::string channelName)
 
 void	Server::execTopic(User &user, std::vector<std::string> &cmdTokens)
 {
-	/*
-	Command		: TOPIC
-	Parameters	: <channel> [<topic>]
-
-	- If the protected topic mode is set on a channel,
-	then clients MUST have appropriate channel permissions to modify the topic of that channel.
-	- If a client does not have appropriate channel permissions and tries to change the topic,
-	the ERR_CHANOPRIVSNEEDED (482) numeric is returned and the command will fail.
-	- If the topic of a channel is changed or cleared,
-	every client in that channel (including the author of the topic change) will receive a TOPIC command
-	with the new topic as argument (or an empty argument if the topic was cleared) alerting them to how the topic has changed.
-	- Clients joining the channel in the future will receive a RPL_TOPIC numeric (or lack thereof) accordingly.
-	*/
-
 	std::string	channelName	= cmdTokens[1];
 	std::string	topic		= "";
 
-	if (cmdTokens[2].empty() == false)
+	if (cmdTokens.size() > 2)
 		topic = cmdTokens[2];
 
-	// IF USER NOT IN CHANNEL
 	if (user._locations.find(channelName) == user._locations.end())
 	{
 		std::string	notInChannelMsg = " " + user._nickname + " " + channelName;
@@ -512,15 +508,17 @@ void	Server::execTopic(User &user, std::vector<std::string> &cmdTokens)
 	if (topic == "::")
 	{
 		clearTopic(channelName);
+		cmdReply(user, "TOPIC", channelName + " :");
 		return ;
 	}
 	if (topic.empty() == false)
 	{
 		clearTopic(channelName);
 		setTopic(channelName, topic);
+		cmdReply(user, "TOPIC", channelName + " :" + _channels[channelName]._topic);
+		return ;
 	}
 	replyTopic(user, channelName);
-
 	return ;
 }
 
@@ -626,7 +624,6 @@ void	Server::numericReply(User &user, std::string num, std::string firstParam, s
 void	Server::cmdReply(User &user, std::string cmd, std::string param)
 {
 	std::string finalMsg = ":" + user._nickname + " " + cmd + " " + param + "\r\n";
-
 
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
 		if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
