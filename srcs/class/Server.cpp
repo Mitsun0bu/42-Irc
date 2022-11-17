@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/17 15:47:59 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/17 16:34:01 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,12 +260,13 @@ void	Server::printRecvError(int byteCount, int currentFd)
 
 int		Server::findCmdToExecute(std::string &cmd)
 {
-	const int	nCmd	= 16;
+	const int	nCmd	= 17;
 	std::string cmdList[nCmd]	= {
-								"PASS" , "NICK"   , "USER"   , "PONG"  ,
-								"QUIT" , "JOIN"   , "PART"   , "TOPIC" ,
-								"NAMES", "LIST"   , "INVITE" , "KICK"  ,
-								"MODE" , "PRIVMSG", "NOTICE", "CAP"
+								"PASS" 	, "CAP"		, "NICK"   	, "USER" 		,
+								"PING" 	, "PONG" 	, "QUIT"		, "JOIN"  	,
+								"PART" 	, "TOPIC"	, "NAMES"		, "LIST"  	,
+								"INVITE",	"KICK" 	, "MODE"		, "PRIVMSG"	,
+								"NOTICE"
 							 };
 
 	for (size_t i = 0; i < nCmd; i++)
