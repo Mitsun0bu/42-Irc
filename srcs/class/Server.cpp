@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/18 12:14:10 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/18 14:16:55 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -492,40 +492,19 @@ int		Server::checkChannelName(std::string channelName)
 void	Server::addChannel(Channel &channel, std::string &channelName)
 {
 	_channels[channelName] = channel;
-
-	// DEBUG
-	// DIFFERENCE ?
-	// _channels.insert(std::pair<std::string, Channel>(channelName, channel));
-
 	return ;
 }
 
 void	Server::execPart(User &user, std::vector<std::string> &cmdTokens)
 {
-	std::cout << "~~~ DEBUG START ~~~" << std::endl << std::endl;
-
-	std::cout << "Printing cmdTokens :" << std::endl;
-	for(size_t i = 0; i < cmdTokens.size(); i ++)
-		std::cout << "token #" << i << " = " << cmdTokens[i] << std::endl;
-
 	std::vector<std::string>	channelNames;
-	std::string					reason = "no reason";
+	std::string					reason = "";
 	std::map<std::string, Channel>::iterator it;
 
 	tokenizer(cmdTokens[1], ",", channelNames);
 	if(cmdTokens.size() == 3)
 		reason = cmdTokens[2];
 
-
-	std::cout << "-----------------------------------" << std::endl;
-	std::cout << "Printing channelNames :" << std::endl;
-	for(size_t i = 0; i < channelNames.size(); i ++)
-		std::cout << "name #" << i << " = " << channelNames[i] << std::endl;
-	std::cout << "-----------------------------------" << std::endl;
-	std::cout << "Printing reason :" << std::endl;
-	std::cout << "reason = " << reason << std::endl;
-
-	// FOR EACH channel given in parameters
 	for (size_t i = 0; i < channelNames.size(); i++)
 	{
 		std::cout << "TURN #" << i << std::endl;
@@ -536,50 +515,39 @@ void	Server::execPart(User &user, std::vector<std::string> &cmdTokens)
 			continue;
 		}
 
-		// FOR EACH channel in the server
-		for(it = _channels.begin(); it != _channels.end(); it++)
+		for(it = _channels.begin(); it != _channels.end(); ++it)
 		{
-			std::cout << "IN THE SECOND FOR LOOP" << std::endl;
-
 			// HANDLE OPERATORS
 			// if (it->second._operators.find(user._socket) != it->second._operators.end())
 			// 	it->second._operators.erase(user._socket);
 
-			// IF server channel name = channel name given in parameters
 			if (it->first == channelNames[i])
 			{
-				std::cout << "YOU ASKED FOR LEAVING " << it->first << std::endl;
-				// IF user is not member of the channel
-				// if (it->second._members.find(user._socket) == it->second._members.end())
 				if (user._locations.find(channelNames[i]) == user._locations.end())
 				{
 					std::string	notInChannelMsg = " " + user._nickname + " " + channelNames[i];
 					numericReply(user, num.ERR_NOTONCHANNEL, notInChannelMsg, num.MSG_ERR_NOTONCHANNEL);
 					continue ;
 				}
-				std::cout << "YOU ARE MEMBER OF THIS CHANNEL " << it->first << std::endl;
-				// ELSE
-				// Remove user from the channel members set
+
 				it->second._members.erase(user._socket);
-				// Remove the channel from user locations set
 				user._locations.erase(channelNames[i]);
-				cmdReply(user, "PART", channelNames[i] + reason);
-				// NOT LEAVING ????!!!!!!
+				cmdReply(user, "PART", channelNames[i] + " " + reason);
 
-
-				// THIS SEGFAULT !!!!!!!!!!!!!!!!
-
-				// IF no more members in the channel, delete the channel
-				// if (it->second._members.size() == 0)
-				// {
-				// 	std::map<std::string, Channel>::iterator toErase = it;
-				// 	it++;
-				// 	_channels.erase(toErase);
-				// }
+				if (it->second._members.size() == 0)
+				{
+					std::map<std::string, Channel>::iterator toErase;
+					toErase = it;
+					_channels.erase(toErase);
+					if (_channels.size() == 0)
+					{
+						_channels.clear();
+						return ;
+					}
+				}
 			}
 		}
 	}
-	std::cout << "~~~ DEBUG END ~~~" << std::endl;
 }
 
 void	Server::execTopic(User &user, std::vector<std::string> &cmdTokens)
@@ -715,6 +683,8 @@ void	Server::numericReply(User &user, std::string num, std::string firstParam, s
 void	Server::cmdReply(User &user, std::string cmd, std::string param)
 {
 	std::string finalMsg = ":" + user._nickname + " " + cmd + " " + param + "\r\n";
+
+	std::cout << finalMsg << std::endl;
 
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
 		if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)

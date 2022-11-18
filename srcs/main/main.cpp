@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:32:28 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/17 14:09:00 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/18 14:05:45 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
 		PONG message
 
 	CHANNEL OPERATIONS
-		PART message
 		LIST message
 		INVITE message
 		KICK message
