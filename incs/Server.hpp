@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/18 11:55:27 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/18 14:38:44 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,28 +99,30 @@ class	Server
 
 		int								checkChannelName(std::string channelName);
 
-		void							execQuit(User &user, std::vector<std::string> &cmdTokens);
-		void							execPass(User &user, std::vector<std::string> &cmdTokens);
+		void							handleQuitCmd(User &user, std::vector<std::string> &cmdTokens);
+		void							handlePassCmd(User &user, std::vector<std::string> &cmdTokens);
 
-		void							execNick(User &user, std::vector<std::string> &cmdTokens);
+		void							handleNickCmd(User &user, std::vector<std::string> &cmdTokens);
 
-		void							execUser(User &user, std::vector<std::string> &cmdTokens);
+		void							handleUserCmd(User &user, std::vector<std::string> &cmdTokens);
 
 		void							execPong(User &user, std::vector<std::string> &cmdTokens);
 
-		void							execJoin(User &user, std::vector<std::string> &cmdTokens);
+		void							handleJoinCmd(User &user, std::vector<std::string> &cmdTokens);
 		int								joinExistingChannel(User &user, std::string channelName, std::string channelKey);
 		void							joinNewChannel(User &user, std::string channelName, std::string channelKey);
 		void							addChannel(Channel &channel, std::string &name);
 
-		void							execPart(User &user, std::vector<std::string> &cmdTokens);
+		void							handlePartCmd(User &user, std::vector<std::string> &cmdTokens);
 
-		void							execTopic(User &user, std::vector<std::string> &cmdTokens);
+		void							handleTopicCmd(User &user, std::vector<std::string> &cmdTokens);
 		void							replyTopic(User &user, std::string channelName);
 		void							clearTopic(std::string channelName);
 		void							setTopic(std::string channelName, std::string topic);
 
-		void							execNames(User &user, std::vector<std::string> &cmdTokens);
+		void							handleNamesCmd(User &user, std::vector<std::string> &cmdTokens);
+
+		void							handleListCmd(User &user, std::vector<std::string> &cmdTokens);
 
 		void							numericReply(User &user, std::string num, std::string msg);
 		void							numericReply(User &user, std::string num, std::string firstParam, std::string msg);

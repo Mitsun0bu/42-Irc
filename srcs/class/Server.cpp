@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/18 14:16:55 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/18 16:45:41 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -285,30 +285,33 @@ void	Server::execCmd(User &user, std::vector<std::string> &cmdTokens)
 	switch(cmdToExecute)
 	{
 		case PASS:
-			this->execPass(user, cmdTokens);
+			this->handlePassCmd(user, cmdTokens);
 			break;
 		case CAP:
 			break;
 		case NICK:
-			this->execNick(user, cmdTokens);
+			this->handleNickCmd(user, cmdTokens);
 			break;
 		case USER:
-			this->execUser(user, cmdTokens);
+			this->handleUserCmd(user, cmdTokens);
 			break;
 		case QUIT:
-			this->execQuit(user, cmdTokens);
+			this->handleQuitCmd(user, cmdTokens);
 			break;
 		case JOIN:
-			this->execJoin(user, cmdTokens);
+			this->handleJoinCmd(user, cmdTokens);
 			break;
 		case PART:
-			this->execPart(user, cmdTokens);
+			this->handlePartCmd(user, cmdTokens);
 			break;
 		case TOPIC:
-			this->execTopic(user, cmdTokens);
+			this->handleTopicCmd(user, cmdTokens);
 			break;
 		case NAMES:
-			this->execNames(user, cmdTokens);
+			this->handleNamesCmd(user, cmdTokens);
+			break;
+		case LIST:
+			this->handleListCmd(user, cmdTokens);
 			break;
 		default:
 			this->numericReply(user, num.ERR_UNKNOWNCOMMAND, cmdTokens[0], num.MSG_ERR_UNKNOWNCOMMAND);
@@ -340,7 +343,7 @@ void	Server::logoutUser(User &user)
 	this->_users.erase(user._socket);
 }
 
-void	Server::execQuit(User &user, std::vector<std::string> &cmdTokens)
+void	Server::handleQuitCmd(User &user, std::vector<std::string> &cmdTokens)
 {
 	std::string msg = "Quit: ";
 	for (size_t i = 1; i < cmdTokens.size(); i++)
@@ -349,7 +352,7 @@ void	Server::execQuit(User &user, std::vector<std::string> &cmdTokens)
 	cmdReply(user, "QUIT", msg);
 }
 
-void	Server::execPass(User &user, std::vector<std::string> &cmdTokens)
+void	Server::handlePassCmd(User &user, std::vector<std::string> &cmdTokens)
 {
 	if (user._isAuthenticated)
 		this->numericReply(user, num.ERR_ALREADYREGISTERED, num.MSG_ERR_ALREADYREGISTERED);
@@ -364,7 +367,7 @@ void	Server::execPass(User &user, std::vector<std::string> &cmdTokens)
 		user._validPasswd = true;
 }
 
-void	Server::execNick(User &user, std::vector<std::string> &cmdTokens)
+void	Server::handleNickCmd(User &user, std::vector<std::string> &cmdTokens)
 {
 	if (!user._validPasswd)
 		return ;
@@ -409,7 +412,7 @@ bool	Server::parseNick(std::string &nickname)
 	return (true);
 }
 
-void	Server::execUser(User &user, std::vector<std::string> &cmdTokens)
+void	Server::handleUserCmd(User &user, std::vector<std::string> &cmdTokens)
 {
 	if (!user._validPasswd)
 		return ;
@@ -434,7 +437,7 @@ void	Server::registerUser(User &user)
 	this->numericReply(user, num.RPL_MYINFO, user._nickname, num.MSG_RPL_MYINFO);
 }
 
-void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
+void	Server::handleJoinCmd(User &user, std::vector<std::string> &cmdTokens)
 {
 	size_t						i		= 0;
 	std::vector<std::string>	channelNames;
@@ -477,7 +480,7 @@ void	Server::execJoin(User &user, std::vector<std::string> &cmdTokens)
 		user.addLocation(channelNames[i]);
 		cmdReply(user, "JOIN", channelNames[i]);
 		replyTopic(user, channelNames[i]);
-		execNames(user, cmdTokens);
+		handleNamesCmd(user, cmdTokens);
 	}
 }
 
@@ -495,7 +498,7 @@ void	Server::addChannel(Channel &channel, std::string &channelName)
 	return ;
 }
 
-void	Server::execPart(User &user, std::vector<std::string> &cmdTokens)
+void	Server::handlePartCmd(User &user, std::vector<std::string> &cmdTokens)
 {
 	std::vector<std::string>	channelNames;
 	std::string					reason = "";
@@ -550,7 +553,7 @@ void	Server::execPart(User &user, std::vector<std::string> &cmdTokens)
 	}
 }
 
-void	Server::execTopic(User &user, std::vector<std::string> &cmdTokens)
+void	Server::handleTopicCmd(User &user, std::vector<std::string> &cmdTokens)
 {
 	std::string	channelName	= cmdTokens[1];
 	std::string	topic		= "";
@@ -609,7 +612,7 @@ void	Server::setTopic(std::string channelName, std::string topic)
 	return ;
 }
 
-void	Server::execNames(User &user, std::vector<std::string> &cmdTokens)
+void	Server::handleNamesCmd(User &user, std::vector<std::string> &cmdTokens)
 {
 	std::vector<std::string>	channelNames;
 	tokenizer(cmdTokens[1], ",", channelNames);
@@ -634,6 +637,33 @@ void	Server::execNames(User &user, std::vector<std::string> &cmdTokens)
 		}
 		this->numericReply(user, num.RPL_ENDOFNAMES, user._nickname + " " + channelNames[i], num.MSG_RPL_ENDOFNAMES);
 	}
+}
+
+void	Server::handleListCmd(User &user, std::vector<std::string> &cmdTokens)
+{
+	std::vector<std::string>	channelNames;
+
+	if (cmdTokens.size() == 1)
+	{
+		for (std::map<std::string, Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
+		{
+			std::string	memberCount	= intToStr(it->second._members.size());
+			std::string	listMsg		= " " + user._nickname + " " + it->second._name + " " + memberCount + " :" + it->second._topic;
+			numericReply(user, num.RPL_LIST, listMsg);
+		}
+	}
+	else
+	{
+		tokenizer(cmdTokens[1], ",", channelNames);
+		for(size_t i = 0; i < channelNames.size(); i++)
+		{
+			std::string	memberCount	= intToStr(_channels[channelNames[i]]._members.size());
+			std::string	listMsg		= _channels[channelNames[i]]._topic;
+			std::string	listMsg		= " " + user._nickname + " " + channelNames[i] + " " + memberCount + " :" + topic;
+			numericReply(user, num.RPL_LIST, listMsg);
+		}
+	}
+	numericReply(user, num.RPL_LISTEND, "", num.MSG_RPL_LISTEND);
 }
 
 void	Server::sendError(User &user, std::string reason)
@@ -729,6 +759,8 @@ void	Server::initNum(void)
 
 	num.RPL_CREATED					= "003";
 	num.RPL_ENDOFNAMES				= "366";
+	num.RPL_LIST					= "322";
+	num.RPL_LISTEND					= "323";
 	num.RPL_MYINFO					= "004";
 	num.RPL_NAMREPLY				= "353";
 	num.RPL_NOTOPIC					= "331";
@@ -739,6 +771,7 @@ void	Server::initNum(void)
 
 	num.MSG_RPL_CREATED				= " :This server was created ";
 	num.MSG_RPL_ENDOFNAMES			= " :End of /NAMES list";
+	num.MSG_RPL_LISTEND				= " :End of /LIST";
 	num.MSG_RPL_MYINFO				= " 127.0.0.1 1 oOr RO";
 	num.MSG_RPL_NOTOPIC				= "  :No topic is set";
 	num.MSG_RPL_TOPICWHOTIME		= "";

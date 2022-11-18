@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/17 17:22:15 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/18 15:53:17 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,6 +128,8 @@ typedef struct s_num
 
 	std::string	RPL_CREATED;
 	std::string	RPL_ENDOFNAMES;
+	std::string	RPL_LIST;
+	std::string	RPL_LISTEND;
 	std::string	RPL_MYINFO;
 	std::string	RPL_NAMREPLY;
 	std::string	RPL_NOTOPIC;
@@ -138,6 +140,7 @@ typedef struct s_num
 
 	std::string	MSG_RPL_CREATED;
 	std::string	MSG_RPL_ENDOFNAMES;
+	std::string	MSG_RPL_LISTEND;
 	std::string	MSG_RPL_MYINFO;
 	std::string	MSG_RPL_NOTOPIC;
 	std::string	MSG_RPL_TOPICWHOTIME;
