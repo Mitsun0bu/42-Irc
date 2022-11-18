@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/18 16:45:41 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/18 17:53:39 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -312,6 +312,9 @@ void	Server::execCmd(User &user, std::vector<std::string> &cmdTokens)
 			break;
 		case LIST:
 			this->handleListCmd(user, cmdTokens);
+			break;
+		case MODE:
+			this->handleModeCmd(user, cmdTokens);
 			break;
 		default:
 			this->numericReply(user, num.ERR_UNKNOWNCOMMAND, cmdTokens[0], num.MSG_ERR_UNKNOWNCOMMAND);
@@ -658,12 +661,24 @@ void	Server::handleListCmd(User &user, std::vector<std::string> &cmdTokens)
 		for(size_t i = 0; i < channelNames.size(); i++)
 		{
 			std::string	memberCount	= intToStr(_channels[channelNames[i]]._members.size());
-			std::string	listMsg		= _channels[channelNames[i]]._topic;
+			std::string	topic		= _channels[channelNames[i]]._topic;
 			std::string	listMsg		= " " + user._nickname + " " + channelNames[i] + " " + memberCount + " :" + topic;
 			numericReply(user, num.RPL_LIST, listMsg);
 		}
 	}
 	numericReply(user, num.RPL_LISTEND, "", num.MSG_RPL_LISTEND);
+}
+
+void	Server::handleModeCmd(User& user, std::vector<std::string> &cmdTokens)
+{
+	std::cout << "~~~ TEST - HANDLE MODE CMD - START ~~~" << std::endl;
+
+	(void)user;
+
+	for(size_t i = 0; i < cmdTokens.size(); i++)
+		std::cout << cmdTokens[i] << std::endl;
+
+	std::cout << "~~~ TEST - HANDLE MODE CMD - END ~~~" << std::endl;
 }
 
 void	Server::sendError(User &user, std::string reason)
