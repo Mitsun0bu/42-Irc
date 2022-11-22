@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:25:31 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/22 10:44:22 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/22 17:32:24 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,14 +89,28 @@ Channel&	Channel::operator=(Channel const & src)
 
 void	Channel::addMember(User &user)
 {
-	this->_members.insert(user._socket);
+	_members.insert(user._socket);
+}
+
+void	Channel::addOperator(User &user)
+{
+	_operators.insert(user._socket);
 }
 
 void	Channel::setKey(std::string key)
 {
-	this->_key			= key;
-	this->_requiresKey	= true;
-	this->_mode			= "+k";
+	_key			= key;
+	_requiresKey	= true;
+	_mode			= "+k";
+
+	return ;
+}
+
+void	Channel::unsetKey()
+{
+	_key.clear();
+	_requiresKey	= false;
+	_mode			= "-k";
 
 	return ;
 }

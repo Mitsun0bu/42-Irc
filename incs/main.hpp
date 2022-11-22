@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/22 11:59:05 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/22 18:09:10 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,7 @@ typedef struct s_num
 	std::string	ERR_BADCHANNELKEY;
 	std::string	ERR_BANNEDFROMCHAN;
 	std::string	ERR_CHANNELISFULL;
+	std::string	ERR_CHANOPRIVSNEEDED;
 	std::string	ERR_ERRONEUSNICKNAME;
 	std::string	ERR_INVITEONLYCHAN;
 	std::string	ERR_NEEDMOREPARAMS;
@@ -115,6 +116,7 @@ typedef struct s_num
 	std::string	MSG_ERR_BADCHANNELKEY;
 	std::string	MSG_ERR_BANNEDFROMCHAN;
 	std::string	MSG_ERR_CHANNELISFULL;
+	std::string	MSG_ERR_CHANOPRIVSNEEDED;
 	std::string	MSG_ERR_ERRONEUSNICKNAME;
 	std::string	MSG_ERR_INVITEONLYCHAN;
 	std::string	MSG_ERR_NEEDMOREPARAMS;
