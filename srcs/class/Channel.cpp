@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:25:31 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/18 17:46:24 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/22 10:44:22 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ Channel::Channel(void)
 }
 
 Channel::Channel(std::string name) :
-	_name(name), _key(), _requiresKey(), _topic(), _topicIsSet(false), _members(), _operators(), _mode(), _modeIsSet(false)
+	_name(name), _key(), _requiresKey(), _topic(), _topicIsSet(false), _members(), _operators(), _mode("-k")
 {
 	std::cout	<< BLUE
 				<< "[CONSTRUCTOR] : "
@@ -77,7 +77,6 @@ Channel&	Channel::operator=(Channel const & src)
 	this->_members		= src._members;
 	this->_operators	= src._operators;
 	this->_mode			= src._mode;
-	this->_modeIsSet	= src._modeIsSet;
 
 	return (*this);
 }
@@ -98,7 +97,6 @@ void	Channel::setKey(std::string key)
 	this->_key			= key;
 	this->_requiresKey	= true;
 	this->_mode			= "+k";
-	this->_modeIsSet	= true;
 
 	return ;
 }

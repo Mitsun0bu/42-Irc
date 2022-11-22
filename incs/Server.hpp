@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/18 17:32:31 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/22 11:38:14 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,8 @@ class	Server
 
 		void							handleListCmd(User &user, std::vector<std::string> &cmdTokens);
 
-		void							handleModeCmd(User &user, std::vector<std::string> &cmdTokens);
+		void							handleUserMode(User &user, std::vector<std::string> &cmdTokens);
+		void							handleChannelMode(User &user, std::vector<std::string> &cmdTokens);
 
 		void							numericReply(User &user, std::string num, std::string msg);
 		void							numericReply(User &user, std::string num, std::string firstParam, std::string msg);

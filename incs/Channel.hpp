@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:23:07 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/18 17:44:53 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/22 10:40:13 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ class Channel
 		std::set<int>	_members;
 		std::set<int>	_operators;
 		std::string		_mode;
-		bool			_modeIsSet;
 
 
 		/* operator overload											*/

@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/18 17:53:39 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/22 12:02:53 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -314,7 +314,8 @@ void	Server::execCmd(User &user, std::vector<std::string> &cmdTokens)
 			this->handleListCmd(user, cmdTokens);
 			break;
 		case MODE:
-			this->handleModeCmd(user, cmdTokens);
+			this->handleUserMode(user, cmdTokens);
+			this->handleChannelMode(user, cmdTokens);
 			break;
 		default:
 			this->numericReply(user, num.ERR_UNKNOWNCOMMAND, cmdTokens[0], num.MSG_ERR_UNKNOWNCOMMAND);
@@ -464,7 +465,8 @@ void	Server::handleJoinCmd(User &user, std::vector<std::string> &cmdTokens)
 			if (_channels[channelNames[i]]._members.find(user._socket) != _channels[channelNames[i]]._members.end())
 				return ;
 			// IF THE CHANNEL REQUIRES A KEY AND KEY IS WRONG
-			if(_channels[channelNames[i]]._requiresKey == true && _channels[channelNames[i]]._key != channelKeys[i])
+			if(_channels[channelNames[i]]._requiresKey == true
+			&& (channelKeys.size() == 0 || _channels[channelNames[i]]._key != channelKeys[i]))
 			{
 				numericReply(user, num.ERR_BADCHANNELKEY, channelNames[i], num.MSG_ERR_BADCHANNELKEY);
 				return ;
@@ -476,6 +478,7 @@ void	Server::handleJoinCmd(User &user, std::vector<std::string> &cmdTokens)
 
 			if (channelKeys.empty() == false && channelKeys[i].length())
 				newChannel.setKey(channelKeys[i]);
+			user._mode = "+o";
 			newChannel.addMember(user);
 			addChannel(newChannel, channelNames[i]);
 		}
@@ -669,15 +672,101 @@ void	Server::handleListCmd(User &user, std::vector<std::string> &cmdTokens)
 	numericReply(user, num.RPL_LISTEND, "", num.MSG_RPL_LISTEND);
 }
 
-void	Server::handleModeCmd(User& user, std::vector<std::string> &cmdTokens)
+void	Server::handleUserMode(User& user, std::vector<std::string> &cmdTokens)
 {
-	std::cout << "~~~ TEST - HANDLE MODE CMD - START ~~~" << std::endl;
-
-	(void)user;
+	std::cout << "~~~ TEST - HANDLE USER MODE - START ~~~" << std::endl;
 
 	for(size_t i = 0; i < cmdTokens.size(); i++)
 		std::cout << cmdTokens[i] << std::endl;
 
+	std::string	target = cmdTokens[1];
+
+	// IF TARGET IS A CHANNEL DO NOTHING
+	if (checkChannelName(target) == SUCCESS)
+		return ;
+
+	/*
+	Command: MODE
+	Parameters: <target> [<modestring> [<mode arguments>...]]
+
+	- If <target> is a nickname that does not exist on the network,
+	the ERR_NOSUCHNICK (401) numeric is returned.
+	- If <target> is a different nick than the user who sent the command,
+	the ERR_USERSDONTMATCH (502) numeric is returned.
+
+	- If <modestring> is not given,
+	the RPL_UMODEIS (221) numeric is sent back containing the current modes of the target user.
+	- If <modestring> is given,
+	the supplied modes will be applied, and a MODE message will be sent to the user containing the changed modes.
+
+	If one or more modes sent are not implemented on the server, the server MUST apply the modes that are implemented, and then send the ERR_UMODEUNKNOWNFLAG (501) in reply along with the MODE message.
+	*/
+
+	std::map<int, User>::iterator it;
+	for(it = _users.begin(); it != _users.end(); ++it)
+		if (target == it->second._nickname)
+			break;
+	if (it == _users.end())
+		numericReply(user, num.ERR_NOSUCHNICK, user._nickname, target, num.MSG_ERR_NOSUCHNICK);
+
+
+	// // IF TARGET IS NOT A CHANNEL AND NO MODESTRING IS GIVEN
+	// if (cmdTokens.size() == 2)
+	// 	numericReply(user, num.RPL_CHANNELMODEIS, " " + target + " " + _channels[target]._mode);
+
+	// // IF TARGET IS A CHANNEL AND MODESTRING IS GIVEN
+	// if (cmdTokens.size() >= 3)
+	// {
+	// 	std::string					modestring = cmdTokens[2];
+	// 	std::vector<std::string>	modearguments;
+	// 	if (cmdTokens.size() > 3)
+	// 		tokenizer(cmdTokens[3], " ", modearguments);
+
+	// 	if (modestring == "-k")
+	// 	{
+	// 		_channels[target]._mode = "-k";
+	// 		_channels[target]._key.clear();
+	// 		_channels[target]._requiresKey = false;
+	// 		numericReply(user, num.RPL_CHANNELMODEIS, " " + target + " " + _channels[target]._mode);
+	// 	}
+	// }
+
+	std::cout << "~~~ TEST - HANDLE USER MODE - END ~~~" << std::endl;
+}
+
+void	Server::handleChannelMode(User& user, std::vector<std::string> &cmdTokens)
+{
+	std::cout << "~~~ TEST - HANDLE CHANNEL MODE - START ~~~" << std::endl;
+
+	for(size_t i = 0; i < cmdTokens.size(); i++)
+		std::cout << cmdTokens[i] << std::endl;
+
+	std::string	target = cmdTokens[1];
+
+	// IF TARGET IS NOT A CHANNEL DO NOTHING
+	if (checkChannelName(target) == FAILED)
+		return ;
+
+	// IF NO MODESTRING IS GIVEN
+	if (cmdTokens.size() == 2)
+		numericReply(user, num.RPL_CHANNELMODEIS, " " + target + " " + _channels[target]._mode);
+
+	// IF MODESTRING IS GIVEN
+	if (cmdTokens.size() >= 3)
+	{
+		std::string					modestring = cmdTokens[2];
+		std::vector<std::string>	modearguments;
+		if (cmdTokens.size() > 3)
+			tokenizer(cmdTokens[3], " ", modearguments);
+
+		if (modestring == "-k")
+		{
+			_channels[target]._mode = "-k";
+			_channels[target]._key.clear();
+			_channels[target]._requiresKey = false;
+			numericReply(user, num.RPL_CHANNELMODEIS, " " + target + " " + _channels[target]._mode);
+		}
+	}
 	std::cout << "~~~ TEST - HANDLE MODE CMD - END ~~~" << std::endl;
 }
 
@@ -749,6 +838,7 @@ void	Server::initNum(void)
 	num.ERR_NICKNAMEINUSE			= "433";
 	num.ERR_NONICKNAMEGIVEN			= "431";
 	num.ERR_NOSUCHCHANNEL			= "403";
+	num.ERR_NOSUCHNICK				= "401";
 	num.ERR_NOTONCHANNEL			= "442";
 	num.ERR_NOTREGISTERED			= "451";
 	num.ERR_PASSWDMISMATCH			= "464";
@@ -765,6 +855,7 @@ void	Server::initNum(void)
 	num.MSG_ERR_NEEDMOREPARAMS		= " :Not enough parameters";
 	num.MSG_ERR_NICKNAMEINUSE		= " :Nickname is already in use";
 	num.MSG_ERR_NONICKNAMEGIVEN		= " :No nickname given";
+	num.MSG_ERR_NOSUCHNICK			= " :No such nick/channel";
 	num.MSG_ERR_NOSUCHCHANNEL		= " :No such channel";
 	num.MSG_ERR_NOTONCHANNEL		= " :You're not on that channel";
 	num.MSG_ERR_NOTREGISTERED		= " :You have not registered";
@@ -773,6 +864,7 @@ void	Server::initNum(void)
 	num.MSG_ERR_UNKNOWNCOMMAND		= " :Unknown command";
 
 	num.RPL_CREATED					= "003";
+	num.RPL_CHANNELMODEIS			= "324";
 	num.RPL_ENDOFNAMES				= "366";
 	num.RPL_LIST					= "322";
 	num.RPL_LISTEND					= "323";

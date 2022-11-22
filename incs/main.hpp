@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/18 15:53:17 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/22 11:59:05 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,7 @@ typedef struct s_num
 	std::string	ERR_NICKNAMEINUSE;
 	std::string	ERR_NONICKNAMEGIVEN;
 	std::string	ERR_NOSUCHCHANNEL;
+	std::string	ERR_NOSUCHNICK;
 	std::string	ERR_NOTONCHANNEL;
 	std::string ERR_NOTREGISTERED;
 	std::string	ERR_PASSWDMISMATCH;
@@ -120,6 +121,7 @@ typedef struct s_num
 	std::string	MSG_ERR_NICKNAMEINUSE;
 	std::string	MSG_ERR_NONICKNAMEGIVEN;
 	std::string	MSG_ERR_NOSUCHCHANNEL;
+	std::string	MSG_ERR_NOSUCHNICK;
 	std::string	MSG_ERR_NOTONCHANNEL;
 	std::string MSG_ERR_NOTREGISTERED;
 	std::string	MSG_ERR_PASSWDMISMATCH;
@@ -127,6 +129,7 @@ typedef struct s_num
 	std::string MSG_ERR_UNKNOWNCOMMAND;
 
 	std::string	RPL_CREATED;
+	std::string	RPL_CHANNELMODEIS;
 	std::string	RPL_ENDOFNAMES;
 	std::string	RPL_LIST;
 	std::string	RPL_LISTEND;
