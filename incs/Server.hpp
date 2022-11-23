@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/17 15:37:57 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/23 01:25:59 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,25 +95,26 @@ class Server
 		void				printRecvError(int byteCount, int currentFd);
 
 		int					findCmdToExecute(std::string &cmd);
-		void				execCmd(User &user, std::vector<std::string> &cmd);
-		void				execQuit(User &user, std::vector<std::string> &cmdTokens);
-		void				execPass(User &user, std::vector<std::string> &cmdTokens);
-		void				execNick(User &user, std::vector<std::string> &cmdTokens);
-		void				execUser(User &user, std::vector<std::string> &cmdTokens);
-		void				execPong(User &user, std::vector<std::string> &cmdTokens);
-		void				execJoin(User &user, std::vector<std::string> &cmdTokens);
+		void				handleCmd(User &user, std::vector<std::string> &cmd);
+		void				handlePing(User &user, std::vector<std::string> &cmdTokens);
+		void				handleQuit(User &user, std::vector<std::string> &cmdTokens);
+		void				handlePass(User &user, std::vector<std::string> &cmdTokens);
+		void				handleNick(User &user, std::vector<std::string> &cmdTokens);
+		void				handleUser(User &user, std::vector<std::string> &cmdTokens);
+		void				handleJoin(User &user, std::vector<std::string> &cmdTokens);
 		void				addChannel(Channel &channel, std::string name);
 
-		void				execNames(User &user, std::vector<std::string> &cmdTokens);
+		void				handleNames(User &user, std::vector<std::string> &cmdTokens);
 
 		void				numericReply(User &user, std::string num, std::string msg);
 		void				numericReply(User &user, std::string num, std::string firstParam, std::string msg);
 		void				numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string msg);
 		void				numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string thirdParam, std::string msg);
-		void				cmdReply(User &user, std::string cmd, std::string param);
+		void				cmdReply(User &user, std::string cmd, std::string firstParam);
+		void				sendCmd(User &from, std::string cmd, User &target, std::string msg);
 
 		void				logoutUser(User &user);
-		void				sendError(User &user, std::string reason);
+		void				errorReply(User &user, std::string reason);
 		bool				isNickAvailable(std::string &nickname);
 		bool				parseNick(std::string &nickname);
 		void				registerUser(User &user);
