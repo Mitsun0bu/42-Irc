@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/23 18:38:45 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/23 18:47:35 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,7 +243,7 @@ void	Server::handleClientData(int &currentFd)
 		for(size_t i = 0; i < cmds.size(); i ++)
 		{
 			tokenizer(cmds[i], " ", cmdTokens);
-			this->execCmd(this->_users[currentFd], cmdTokens);
+			this->handleCmd(this->_users[currentFd], cmdTokens);
 		}
 	}
 }
@@ -260,13 +260,12 @@ void	Server::printRecvError(int byteCount, int currentFd)
 
 int		Server::findCmdToExecute(std::string &cmd)
 {
-	const int	nCmd	= 17;
+	const int	nCmd	= 16;
 	std::string cmdList[nCmd]	= {
-								"PASS" 	, "CAP"		, "NICK"   	, "USER" 		,
-								"PING" 	, "PONG" 	, "QUIT"		, "JOIN"  	,
-								"PART" 	, "TOPIC"	, "NAMES"		, "LIST"  	,
-								"INVITE",	"KICK" 	, "MODE"		, "PRIVMSG"	,
-								"NOTICE"
+								"PASS" 	, "CAP"		, "NICK"   	, "USER" 	,
+								"PING" 	, "QUIT"	, "JOIN"  	, "PART" 	,
+								"TOPIC"	, "NAMES"	, "LIST"  	, "INVITE",
+								"KICK" 	, "MODE"	, "PRIVMSG"	,"NOTICE"
 							 };
 
 	for (size_t i = 0; i < nCmd; i++)
@@ -275,7 +274,7 @@ int		Server::findCmdToExecute(std::string &cmd)
 	return (FAILED);
 }
 
-void	Server::execCmd(User &user, std::vector<std::string> &cmdTokens)
+void	Server::handleCmd(User &user, std::vector<std::string> &cmdTokens)
 {
 	int	cmdToExecute = this->findCmdToExecute(cmdTokens[0]);
 
@@ -285,18 +284,21 @@ void	Server::execCmd(User &user, std::vector<std::string> &cmdTokens)
 	switch(cmdToExecute)
 	{
 		case PASS:
-			this->handlePassCmd(user, cmdTokens);
+			this->handlePass(user, cmdTokens);
 			break;
 		case CAP:
 			break;
 		case NICK:
-			this->handleNickCmd(user, cmdTokens);
+			this->handleNick(user, cmdTokens);
 			break;
 		case USER:
-			this->handleUserCmd(user, cmdTokens);
+			this->handleUser(user, cmdTokens);
+			break;
+		case PING:
+			this->handlePing(user, cmdTokens);
 			break;
 		case QUIT:
-			this->handleQuitCmd(user, cmdTokens);
+			this->handleQuit(user, cmdTokens);
 			break;
 		case JOIN:
 			this->handleJoinCmd(user, cmdTokens);
@@ -319,7 +321,15 @@ void	Server::execCmd(User &user, std::vector<std::string> &cmdTokens)
 		default:
 			this->numericReply(user, num.ERR_UNKNOWNCOMMAND, cmdTokens[0], num.MSG_ERR_UNKNOWNCOMMAND);
 	}
+}
 
+void	Server::handlePing(User &user, std::vector<std::string> &cmdTokens)
+{
+	if (cmdTokens.size() < 2)
+		this->numericReply(user, num.ERR_NEEDMOREPARAMS, cmdTokens[0], num.MSG_ERR_NEEDMOREPARAMS);
+
+	std::string host = _internetHostAddr;
+	cmdReply(user, "PONG", host + " " + cmdTokens[1]);
 }
 
 void	Server::logoutUser(User &user)
@@ -346,16 +356,16 @@ void	Server::logoutUser(User &user)
 	this->_users.erase(user._socket);
 }
 
-void	Server::handleQuitCmd(User &user, std::vector<std::string> &cmdTokens)
+void	Server::handleQuit(User &user, std::vector<std::string> &cmdTokens)
 {
 	std::string msg = "Quit: ";
+
 	for (size_t i = 1; i < cmdTokens.size(); i++)
 		msg.append(cmdTokens[i]);
-
 	cmdReply(user, "QUIT", msg);
 }
 
-void	Server::handlePassCmd(User &user, std::vector<std::string> &cmdTokens)
+void	Server::handlePass(User &user, std::vector<std::string> &cmdTokens)
 {
 	if (user._isAuthenticated)
 		this->numericReply(user, num.ERR_ALREADYREGISTERED, num.MSG_ERR_ALREADYREGISTERED);
@@ -364,13 +374,13 @@ void	Server::handlePassCmd(User &user, std::vector<std::string> &cmdTokens)
 	else if (cmdTokens[1] != this->_passwd)
 	{
 		this->numericReply(user, num.ERR_PASSWDMISMATCH, cmdTokens[1], num.MSG_ERR_PASSWDMISMATCH);
-		this->sendError(user, "Authentication failed");
+		this->errorReply(user, "Authentication failed");
 	}
 	else
 		user._validPasswd = true;
 }
 
-void	Server::handleNickCmd(User &user, std::vector<std::string> &cmdTokens)
+void	Server::handleNick(User &user, std::vector<std::string> &cmdTokens)
 {
 	if (!user._validPasswd)
 		return ;
@@ -406,7 +416,6 @@ bool	Server::parseNick(std::string &nickname)
 
 	if (nickname.size() > 9)
 		return (false);
-
 	for (size_t i = 0; i < nickname.size(); i++)
 	{
 		if (!isalnum(nickname[i]) && validSpecialCharset.find(nickname[i]) == std::string::npos)
@@ -415,7 +424,7 @@ bool	Server::parseNick(std::string &nickname)
 	return (true);
 }
 
-void	Server::handleUserCmd(User &user, std::vector<std::string> &cmdTokens)
+void	Server::handleUser(User &user, std::vector<std::string> &cmdTokens)
 {
 	if (!user._validPasswd)
 		return ;
@@ -775,7 +784,7 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 	return ;
 }
 
-void	Server::sendError(User &user, std::string reason)
+void	Server::errorReply(User &user, std::string reason)
 {
 	std::string cmd = "Error :" + reason + "\r\n";
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
@@ -828,12 +837,23 @@ void	Server::cmdReply(User &user, std::string cmd, std::string param)
 			perror("send()");
 }
 
+void	Server::sendCmd(User &from, std::string cmd, User &target, std::string msg)
+{
+    std::string finalMsg = ":" + from._nickname + " " + cmd + " " + target._nickname + " " + msg + "\r\n";
+
+    if (FD_ISSET(target._socket, &this->clientFdList.write))
+        if (send(target._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
+            perror("send()");
+}
+
 void	Server::initNum(void)
 {
-	num.ERR_ALREADYREGISTERED		= "462";
+	num.ERR_ALREADYREGISTERED	= "462";
 	num.ERR_BADCHANMASK				= "476";
 	num.ERR_BADCHANNELKEY			= "475";
-	num.ERR_BANNEDFROMCHAN			= "474";
+	num.ERR_BANNEDFROMCHAN		= "474";
+	num.ERR_CANNOTSENDTOCHAN 	= "404";
+
 	num.ERR_CHANNELISFULL			= "471";
 	num.ERR_CHANOPRIVSNEEDED		= "482 ";
 	num.ERR_ERRONEUSNICKNAME		= "432";
@@ -843,16 +863,24 @@ void	Server::initNum(void)
 	num.ERR_NONICKNAMEGIVEN			= "431";
 	num.ERR_NOSUCHCHANNEL			= "403";
 	num.ERR_NOSUCHNICK				= "401";
+	num.ERR_NORECIPIENT = "411";
+	num.ERR_NOSUCHNICK = "401";
+	num.ERR_NOSUCHSERVER = "402";
+	num.ERR_NOTEXTTOSEND = "412";
 	num.ERR_NOTONCHANNEL			= "442";
+	num.ERR_NOTOPLEVEL = "413";
 	num.ERR_NOTREGISTERED			= "451";
 	num.ERR_PASSWDMISMATCH			= "464";
 	num.ERR_TOOMANYCHANNELS			= "405";
+	num.ERR_TOOMANYTARGETS = "407";
 	num.ERR_UNKNOWNCOMMAND			= "421";
+	num.ERR_WILDTOPLEVEL = "414";
 
 	num.MSG_ERR_ALREADYREGISTERED	= " :You may not reregister";
-	num.MSG_ERR_BADCHANMASK			= "";
+	num.MSG_ERR_BADCHANMASK			= " :Bad Channel Mask";
 	num.MSG_ERR_BADCHANNELKEY		= " :Cannot join channel (+k)";
 	num.MSG_ERR_BANNEDFROMCHAN		= "";
+	num.MSG_ERR_CANNOTSENDTOCHAN = " :Cannot send to channel";
 	num.MSG_ERR_CHANNELISFULL		= "";
 	num.MSG_ERR_CHANOPRIVSNEEDED	= " :You're not channel operator";
 	num.MSG_ERR_ERRONEUSNICKNAME	= " :Erroneus nickname";
@@ -861,13 +889,21 @@ void	Server::initNum(void)
 	num.MSG_ERR_NICKNAMEINUSE		= " :Nickname is already in use";
 	num.MSG_ERR_NONICKNAMEGIVEN		= " :No nickname given";
 	num.MSG_ERR_NOSUCHNICK			= " :No such nick/channel";
+	num.MSG_ERR_NOORIGIN = " :No origin specified";
 	num.MSG_ERR_NOSUCHCHANNEL		= " :No such channel";
+	num.MSG_ERR_NORECIPIENT = " :No recipient given";
+	num.MSG_ERR_NOSUCHNICK = " :No such nick/channel";
+	num.MSG_ERR_NOSUCHSERVER = " :No such server";
+	num.MSG_ERR_NOTEXTTOSEND = " :No text to send";
 	num.MSG_ERR_NOTONCHANNEL		= " :You're not on that channel";
 	num.MSG_ERR_NOTREGISTERED		= " :You have not registered";
 	num.MSG_ERR_PASSWDMISMATCH		= " :Password incorrect";
 	num.MSG_ERR_TOOMANYCHANNELS		= "";
+	num.MSG_MSG_ERR_TOOMANYTARGETS = " :Duplicate recipients. No message delivered";
 	num.MSG_ERR_UNKNOWNCOMMAND		= " :Unknown command";
+	num.MSG_ERR_WILDTOPLEVEL = " :Wildcard in toplevel domain";
 
+	num.RPL_AWAY = "301";
 	num.RPL_CREATED					= "003";
 	num.RPL_CHANNELMODEIS			= "324";
 	num.RPL_ENDOFNAMES				= "366";
@@ -881,6 +917,7 @@ void	Server::initNum(void)
 	num.RPL_WELCOME					= "001";
 	num.RPL_YOURHOST				= "002";
 
+	num.MSG_RPL_AWAY = "";
 	num.MSG_RPL_CREATED				= " :This server was created ";
 	num.MSG_RPL_ENDOFNAMES			= " :End of /NAMES list";
 	num.MSG_RPL_LISTEND				= " :End of /LIST";

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/22 18:09:10 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/23 01:54:51 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,23 +36,22 @@
 # define BYELLOW				"\x1B[93m"
 # define END					"\033[0m"
 
-# define PASS					0
-# define CAP					1
-# define NICK					2
-# define USER					3
-# define PING					4
-# define PONG					5
-# define QUIT					6
-# define JOIN					7
-# define PART					8
-# define TOPIC					9
-# define NAMES					10
-# define LIST					11
-# define INVITE					12
-# define KICK					13
-# define MODE					14
-# define PRIVMSG				15
-# define NOTICE					16
+# define PASS			0
+# define CAP			1
+# define NICK			2
+# define USER			3
+# define PING			4
+# define QUIT			5
+# define JOIN			6
+# define PART			7
+# define TOPIC		8
+# define NAMES		9
+# define LIST			10
+# define INVITE		11
+# define KICK			12
+# define MODE			13
+# define PRIVMSG	14
+# define NOTICE		15
 
 # define FAILED					-1
 # define SUCCESS				0
@@ -96,6 +95,7 @@ typedef struct s_num
 	std::string	ERR_BADCHANMASK;
 	std::string	ERR_BADCHANNELKEY;
 	std::string	ERR_BANNEDFROMCHAN;
+	std::string	ERR_CANNOTSENDTOCHAN;
 	std::string	ERR_CHANNELISFULL;
 	std::string	ERR_CHANOPRIVSNEEDED;
 	std::string	ERR_ERRONEUSNICKNAME;
@@ -104,17 +104,24 @@ typedef struct s_num
 	std::string	ERR_NICKNAMEINUSE;
 	std::string	ERR_NONICKNAMEGIVEN;
 	std::string	ERR_NOSUCHCHANNEL;
+	std::string	ERR_NORECIPIENT;
 	std::string	ERR_NOSUCHNICK;
+	std::string	ERR_NOSUCHSERVER;
+	std::string	ERR_NOTEXTTOSEND;
 	std::string	ERR_NOTONCHANNEL;
+	std::string	ERR_NOTOPLEVEL;
 	std::string ERR_NOTREGISTERED;
 	std::string	ERR_PASSWDMISMATCH;
 	std::string	ERR_TOOMANYCHANNELS;
+	std::string	ERR_TOOMANYTARGETS;
 	std::string ERR_UNKNOWNCOMMAND;
+	std::string	ERR_WILDTOPLEVEL;
 
 	std::string	MSG_ERR_ALREADYREGISTERED;
 	std::string	MSG_ERR_BADCHANMASK;
 	std::string	MSG_ERR_BADCHANNELKEY;
 	std::string	MSG_ERR_BANNEDFROMCHAN;
+	std::string	MSG_ERR_CANNOTSENDTOCHAN;
 	std::string	MSG_ERR_CHANNELISFULL;
 	std::string	MSG_ERR_CHANOPRIVSNEEDED;
 	std::string	MSG_ERR_ERRONEUSNICKNAME;
@@ -122,14 +129,21 @@ typedef struct s_num
 	std::string	MSG_ERR_NEEDMOREPARAMS;
 	std::string	MSG_ERR_NICKNAMEINUSE;
 	std::string	MSG_ERR_NONICKNAMEGIVEN;
-	std::string	MSG_ERR_NOSUCHCHANNEL;
+	std::string MSG_ERR_NOORIGIN;
+	std::string MSG_ERR_NOSUCHCHANNEL;
+	std::string	MSG_ERR_NORECIPIENT;
 	std::string	MSG_ERR_NOSUCHNICK;
+	std::string	MSG_ERR_NOSUCHSERVER;
+	std::string	MSG_ERR_NOTEXTTOSEND;
 	std::string	MSG_ERR_NOTONCHANNEL;
 	std::string MSG_ERR_NOTREGISTERED;
 	std::string	MSG_ERR_PASSWDMISMATCH;
 	std::string	MSG_ERR_TOOMANYCHANNELS;
+	std::string	MSG_MSG_ERR_TOOMANYTARGETS;
 	std::string MSG_ERR_UNKNOWNCOMMAND;
+	std::string	MSG_ERR_WILDTOPLEVEL;
 
+	std::string	RPL_AWAY;
 	std::string	RPL_CREATED;
 	std::string	RPL_CHANNELMODEIS;
 	std::string	RPL_ENDOFNAMES;
@@ -143,6 +157,7 @@ typedef struct s_num
 	std::string	RPL_WELCOME;
 	std::string	RPL_YOURHOST;
 
+	std::string	MSG_RPL_AWAY;
 	std::string	MSG_RPL_CREATED;
 	std::string	MSG_RPL_ENDOFNAMES;
 	std::string	MSG_RPL_LISTEND;
