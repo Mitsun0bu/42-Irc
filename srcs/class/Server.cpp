@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/23 18:47:35 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/24 00:08:24 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,15 +220,14 @@ void	Server::handleClientData(int &currentFd)
 {
 	char						buffer[256]	= {0};
 	int							byteCount	= 0;
-	std::string					bufferStr;
 	std::vector<std::string>	cmds;
 	std::vector<std::string>	cmdTokens;
-
+	User &currentUser = _users[currentFd];
 
 	byteCount = recv(currentFd, buffer, 256, 0);
+	currentUser._cmd += buffer;
 	if (byteCount <= 0)
 	{
-
 		this->printRecvError(byteCount, currentFd);
 		if (_users.find(currentFd) != _users.end())
 			logoutUser(_users[currentFd]);
@@ -237,13 +236,14 @@ void	Server::handleClientData(int &currentFd)
 	}
 	else
 	{
-		bufferStr = buffer;
-		tokenizer(bufferStr, "\r\n", cmds);
+		if (currentUser._cmd[currentUser._cmd.length() - 1] != '\n')
+			return ;
+		tokenizer(currentUser._cmd, "\r\n", cmds);
 
 		for(size_t i = 0; i < cmds.size(); i ++)
 		{
 			tokenizer(cmds[i], " ", cmdTokens);
-			this->handleCmd(this->_users[currentFd], cmdTokens);
+			this->handleCmd(currentUser, cmdTokens);
 		}
 	}
 }
@@ -321,6 +321,8 @@ void	Server::handleCmd(User &user, std::vector<std::string> &cmdTokens)
 		default:
 			this->numericReply(user, num.ERR_UNKNOWNCOMMAND, cmdTokens[0], num.MSG_ERR_UNKNOWNCOMMAND);
 	}
+
+	user._cmd.clear();
 }
 
 void	Server::handlePing(User &user, std::vector<std::string> &cmdTokens)
