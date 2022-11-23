@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/23 04:07:41 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/24 00:15:06 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,15 +220,14 @@ void	Server::handleClientData(int &currentFd)
 {
 	char						buffer[256]	= {0};
 	int							byteCount	= 0;
-	std::string					bufferStr;
 	std::vector<std::string>	cmds;
 	std::vector<std::string>	cmdTokens;
-
+	User &currentUser = _users[currentFd];
 
 	byteCount = recv(currentFd, buffer, 256, 0);
+	currentUser._cmd += buffer;
 	if (byteCount <= 0)
 	{
-
 		this->printRecvError(byteCount, currentFd);
 		if (_users.find(currentFd) != _users.end())
 			logoutUser(_users[currentFd]);
@@ -237,13 +236,14 @@ void	Server::handleClientData(int &currentFd)
 	}
 	else
 	{
-		bufferStr = buffer;
-		tokenizer(bufferStr, "\r\n", cmds);
+		if (currentUser._cmd[currentUser._cmd.length() - 1] != '\n')
+			return ;
+		tokenizer(currentUser._cmd, "\r\n", cmds);
 
 		for(size_t i = 0; i < cmds.size(); i ++)
 		{
 			tokenizer(cmds[i], " ", cmdTokens);
-			this->handleCmd(this->_users[currentFd], cmdTokens);
+			this->handleCmd(currentUser, cmdTokens);
 		}
 	}
 }
@@ -263,8 +263,8 @@ int		Server::findCmdToExecute(std::string &cmd)
 	const int	nCmd	= 16;
 	std::string cmdList[nCmd]	= {
 								"PASS" 	, "CAP"		, "NICK"   	, "USER" 	,
-								"PING" 	, "QUIT"	, "JOIN"  	, "PART" 	, 
-								"TOPIC"	, "NAMES"	, "LIST"  	, "INVITE",	
+								"PING" 	, "QUIT"	, "JOIN"  	, "PART" 	,
+								"TOPIC"	, "NAMES"	, "LIST"  	, "INVITE",
 								"KICK" 	, "MODE"	, "PRIVMSG"	,"NOTICE"
 							 };
 
@@ -324,6 +324,8 @@ void	Server::handleCmd(User &user, std::vector<std::string> &cmdTokens)
 		default:
 			this->numericReply(user, num.ERR_UNKNOWNCOMMAND, cmdTokens[0], num.MSG_ERR_UNKNOWNCOMMAND);
 	}
+
+	user._cmd.clear();
 }
 
 void	Server::handlePrivmsg(User &user, std::vector<std::string> &cmdTokens)
@@ -412,7 +414,7 @@ void	Server::handlePing(User &user, std::vector<std::string> &cmdTokens)
 {
 	if (cmdTokens.size() < 2)
 		this->numericReply(user, num.ERR_NEEDMOREPARAMS, cmdTokens[0], num.MSG_ERR_NEEDMOREPARAMS);
-	
+
 	std::string host = _internetHostAddr;
 	cmdReply(user, "PONG", host + " " + cmdTokens[1]);
 }
@@ -552,6 +554,7 @@ void	Server::handleJoinCmd(User &user, std::vector<std::string> &cmdTokens)
 			numericReply(user, num.ERR_NOSUCHCHANNEL, channelNames[i], num.MSG_ERR_NOSUCHCHANNEL);
 			continue ;
 		}
+		// IF CHANNEL ALREADY EXISTS
 		else if (_channels.find(channelNames[i]) != _channels.end())
 		{
 			// IF USER IS ALREADY IN CHANNEL
@@ -565,6 +568,7 @@ void	Server::handleJoinCmd(User &user, std::vector<std::string> &cmdTokens)
 				return ;
 			}
 		}
+		// IF CHANNEL DOES NOT EXIST
 		else
 		{
 			Channel	newChannel(channelNames[i]);
@@ -597,6 +601,22 @@ int		Server::checkChannelName(std::string channelName)
 void	Server::addChannel(Channel &channel, std::string &channelName)
 {
 	_channels[channelName] = channel;
+	return ;
+}
+
+void	Server::deleteChannel(std::string &channelName)
+{
+	std::map<std::string, Channel>::iterator	channelIterator;
+
+	for(channelIterator = _channels.begin(); channelIterator != _channels.end(); ++channelIterator)
+	{
+		if (channelIterator->first == channelName)
+		{
+			_channels.erase(channelName);
+			return ;
+		}
+	}
+
 	return ;
 }
 
@@ -716,15 +736,17 @@ void	Server::setTopic(std::string channelName, std::string topic)
 
 void	Server::handleNamesCmd(User &user, std::vector<std::string> &cmdTokens)
 {
+	std::string					nick = user._nickname;
 	std::vector<std::string>	channelNames;
 	tokenizer(cmdTokens[1], ",", channelNames);
+
 
 	for(size_t i = 0; i < channelNames.size(); i++)
 	{
 		//IF CHANNEL NAME IS INVALID
 		if (checkChannelName(channelNames[i]) == FAILED)
 		{
-			this->numericReply(user, num.RPL_ENDOFNAMES, user._nickname + " " + channelNames[i], num.MSG_RPL_ENDOFNAMES);
+			this->numericReply(user, num.RPL_ENDOFNAMES, nick + " " + channelNames[i], num.MSG_RPL_ENDOFNAMES);
 			continue ;
 		}
 		// IF CHANNEL EXISTS
@@ -734,10 +756,15 @@ void	Server::handleNamesCmd(User &user, std::vector<std::string> &cmdTokens)
 			// ADD CHANNEL MEMBERS' NICKNAME TO MESSAGE
 			std::set<int>	members = this->_channels[channelNames[i]]._members;
 			for (std::set<int>::iterator fd = members.begin(); fd != members.end(); fd++)
-				namesMsg += this->_users[*fd]._nickname;
+			{
+				if (_channels[channelNames[i]]._operators.find(*fd) != _channels[channelNames[i]]._operators.end())
+					namesMsg += "@" + this->_users[*fd]._nickname;
+				else
+					namesMsg += this->_users[*fd]._nickname;
+			}
 			this->numericReply(user, num.RPL_NAMREPLY, namesMsg);
 		}
-		this->numericReply(user, num.RPL_ENDOFNAMES, user._nickname + " " + channelNames[i], num.MSG_RPL_ENDOFNAMES);
+		this->numericReply(user, num.RPL_ENDOFNAMES, nick + " " + channelNames[i], num.MSG_RPL_ENDOFNAMES);
 	}
 }
 
@@ -770,8 +797,6 @@ void	Server::handleListCmd(User &user, std::vector<std::string> &cmdTokens)
 
 void	Server::handleChannelMode(User& user, std::vector<std::string> &cmdTokens)
 {
-	std::cout << "~~~ TEST - HANDLE CHANNEL MODE - START ~~~" << std::endl;
-
 	for(size_t i = 0; i < cmdTokens.size(); i++)
 		std::cout << cmdTokens[i] << std::endl;
 
@@ -787,18 +812,25 @@ void	Server::handleChannelMode(User& user, std::vector<std::string> &cmdTokens)
 
 	if (cmdTokens.size() >= 3)
 		handleModeString(user, cmdTokens, _channels[target]);
-
-	std::cout << "~~~ TEST - HANDLE MODE CMD - END ~~~" << std::endl;
 }
 
 int		Server::handleChannelModeError(User& user, std::string& channelName)
 {
+	// CHECK IF MODE ARGUMENT IS A CHANNEL
 	if (checkChannelName(channelName) == FAILED)
 		return (FAILED);
 
+	// CHECK IF MODE ARGUMENT IS A CHANNEL THAT EXISTS IN THE SERVER
 	if (_channels.find(channelName) == _channels.end())
 	{
 		numericReply(user, num.ERR_NOSUCHCHANNEL, channelName, num.MSG_ERR_NOSUCHCHANNEL);
+		return (FAILED);
+	}
+
+	// CHECK IF THE USER IS AN OPERATOR
+	if (user.isOperator(_channels[channelName]._operators) == false)
+	{
+		numericReply(user, num.ERR_CHANOPRIVSNEEDED, channelName, num.MSG_ERR_CHANOPRIVSNEEDED);
 		return (FAILED);
 	}
 
@@ -808,6 +840,7 @@ int		Server::handleChannelModeError(User& user, std::string& channelName)
 void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, Channel& channel)
 {
 	std::string					modestring = cmdTokens[2];
+
 	std::vector<std::string>	modearguments;
 	if (cmdTokens.size() > 3)
 		tokenizer(cmdTokens[3], " ", modearguments);
@@ -822,20 +855,19 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 		channel.setKey(modearguments[0]);
 		numericReply(user, num.RPL_CHANNELMODEIS, " " + channel._name + " " + channel._mode);
 	}
-	else if (modestring == "-o" && modearguments[0].length() == 0)
+	else if (modestring == "-o" && modearguments[0].length() != 0)
 	{
-		if (channel._operators.find(user._socket) == channel._operators.end())
-			numericReply(user, num.ERR_CHANOPRIVSNEEDED, channel._name, num.MSG_ERR_CHANOPRIVSNEEDED);
-		// else
-		// 	channel.removeOperator(modearguments[0])
+		channel.removeOperator(user);
+		if (channel._operators.size() == 0)
+			deleteChannel(channel._name);
+		cmdReply(user, "MODE", channel._name + " " + modestring + " " + user._nickname);
 	}
 	else if (modestring == "+o" && modearguments[0].length() != 0)
 	{
-		if (channel._operators.find(user._socket) == channel._operators.end())
-			numericReply(user, num.ERR_CHANOPRIVSNEEDED, channel._name, num.MSG_ERR_CHANOPRIVSNEEDED);
-		// else
-		// 	channel.addOperator(modearguments[0]);
+		channel.addOperator(user);
+		cmdReply(user, "MODE", channel._name + " " + modestring + " " + user._nickname);
 	}
+
 	return ;
 }
 
@@ -886,8 +918,6 @@ void	Server::numericReply(User &user, std::string num, std::string firstParam, s
 void	Server::cmdReply(User &user, std::string cmd, std::string param)
 {
 	std::string finalMsg = ":" + user._nickname + " " + cmd + " " + param + "\r\n";
-
-	std::cout << finalMsg << std::endl;
 
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
 		if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
