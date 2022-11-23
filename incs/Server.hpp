@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/23 02:02:14 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/23 03:44:59 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,14 @@ class	Server
 		void							handleNamesCmd(User &user, std::vector<std::string> &cmdTokens);
 
 		void							handleListCmd(User &user, std::vector<std::string> &cmdTokens);
-		void							handleCmd(User &user, std::vector<std::string> &cmd);
+		void							handleCmd(User &user, std::vector<std::string> &cmd);		
+		void							handlePrivmsg(User &user, std::vector<std::string> &cmdTokens);
+		void							sendMsgToChannel(User &sender, std::string &target, std::string &msg);
+		void							sendMsgToUser(User &sender, std::string &target, std::string &msg);
+
+		bool							checkUserPermissions(User &user, Channel &channel);
+		bool							parseTargetPrefix(const std::string &target);
+		int								getUser(std::string &nick);
 		void							handlePing(User &user, std::vector<std::string> &cmdTokens);
 		void							handleQuit(User &user, std::vector<std::string> &cmdTokens);
 		void							handlePass(User &user, std::vector<std::string> &cmdTokens);
@@ -141,7 +148,9 @@ class	Server
 		void							numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string msg);
 		void							numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string thirdParam, std::string msg);
 		void							cmdReply(User &user, std::string cmd, std::string firstParam);
-		void							sendCmd(User &from, std::string cmd, User &target, std::string msg);
+		void							sendCmdToUser(User &from, std::string cmd, User &target, std::string msg);
+		void							sendCmdToChannel(User &from, std::string cmd, std::set<int> &targets, std::string channel, std::string msg);
+
 
 		void							logoutUser(User &user);
 		void							errorReply(User &user, std::string reason);

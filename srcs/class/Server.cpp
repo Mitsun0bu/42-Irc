@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/23 02:04:43 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/23 04:07:41 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -318,9 +318,94 @@ void	Server::handleCmd(User &user, std::vector<std::string> &cmdTokens)
 		case MODE:
 			this->handleChannelMode(user, cmdTokens);
 			break;
+		case PRIVMSG:
+			this->handlePrivmsg(user, cmdTokens);
+			break;
 		default:
 			this->numericReply(user, num.ERR_UNKNOWNCOMMAND, cmdTokens[0], num.MSG_ERR_UNKNOWNCOMMAND);
 	}
+}
+
+void	Server::handlePrivmsg(User &user, std::vector<std::string> &cmdTokens)
+{
+	// forcer les ':' avant le msg ?
+	// Parsing de channelName -> '#' possible a l'intérieur du nom ?
+	// _users peuvent ils être away ?
+
+	std::vector<std::string> targets;
+	std::string msg;
+
+	for (size_t i = 2; i < cmdTokens.size(); i++)
+		msg.append(cmdTokens[i]);
+
+	tokenizer(cmdTokens[1], ",", targets);
+	for (size_t i = 0; i < targets.size(); i++)
+	{
+		if (targets[i].find("#") != std::string::npos)
+			sendMsgToChannel(user, targets[i], msg);
+		else
+			sendMsgToUser(user, targets[i], msg);
+	}
+}
+
+void	Server::sendMsgToUser(User &sender, std::string &target, std::string &msg)
+{
+	int targetSocket = getUser(target);
+
+	if (targetSocket == FAILED)
+		numericReply(sender, num.ERR_NOSUCHNICK, target, num.MSG_ERR_NOSUCHNICK);
+	else
+	{
+		sendCmdToUser(sender, "PRIVMSG", _users[targetSocket], msg);
+	}
+}
+
+void	Server::sendMsgToChannel(User &sender, std::string &target, std::string &msg)
+{
+	std::string channelName = target.substr(target.find("#"), std::string::npos);
+
+	if (_channels.find(channelName) == _channels.end())
+		return(numericReply(sender, num.ERR_NOSUCHNICK, target, num.MSG_ERR_NOSUCHNICK));
+
+	Channel &channel = _channels[channelName];
+	if	(!parseTargetPrefix(target) || !checkUserPermissions(sender, channel))
+		return(numericReply(sender, num.ERR_CANNOTSENDTOCHAN, target, num.MSG_ERR_CANNOTSENDTOCHAN));
+
+	if (target[0] == '@')
+		sendCmdToChannel(sender, "PRIVMSG", channel._operators, channelName, msg);
+	else
+		sendCmdToChannel(sender, "PRIVMSG", channel._members, channelName, msg);
+}
+
+bool	Server::checkUserPermissions(User &user, Channel &channel)
+{
+	if (channel._bannedMembers.find(user._socket) != channel._bannedMembers.end() ||
+			channel._members.find(user._socket) == channel._members.end())
+		return (true);
+	return (false);
+}
+
+bool	Server::parseTargetPrefix(const std::string &target)
+{
+	size_t pos = target.find("#");
+	
+	if (pos > 1)
+		return (false);
+	if (pos == 1 && target[0] != '@')
+		return (false);
+	return (true);
+}
+
+int	Server::getUser(std::string &nickname)
+{
+	std::map<int, User>::iterator it;
+
+	for (it = _users.begin(); it != _users.end(); it++)
+	{
+		if (it->second._nickname == nickname)
+			return (it->second._socket);
+	}
+	return (FAILED);
 }
 
 void	Server::handlePing(User &user, std::vector<std::string> &cmdTokens)
@@ -809,13 +894,26 @@ void	Server::cmdReply(User &user, std::string cmd, std::string param)
 			perror("send()");
 }
 
-void	Server::sendCmd(User &from, std::string cmd, User &target, std::string msg)
+void	Server::sendCmdToUser(User &from, std::string cmd, User &target, std::string msg)
 {
     std::string finalMsg = ":" + from._nickname + " " + cmd + " " + target._nickname + " " + msg + "\r\n";
 
     if (FD_ISSET(target._socket, &this->clientFdList.write))
-        if (send(target._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
-            perror("send()");
+      if (send(target._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
+        perror("send()");
+}
+
+void	Server::sendCmdToChannel(User &from, std::string cmd, std::set<int> &targets, std::string channel, std::string msg)
+{
+	std::string finalMsg = ":" + from._nickname + " " + cmd + " " + channel + " " + msg + "\r\n";
+	std::set<int>::iterator it;
+
+	for (it = targets.begin(); it != targets.end(); ++it)
+	{
+		if (_users[*it]._socket != from._socket && FD_ISSET(_users[*it]._socket, &this->clientFdList.write))
+			if (send(_users[*it]._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
+				perror("send()");
+	}
 }
 
 void	Server::initNum(void)
