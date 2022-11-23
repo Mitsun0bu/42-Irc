@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/23 01:48:33 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/23 02:02:14 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,15 +76,15 @@ class	Server
 
 
 		/* destructor													*/
-										~Server(void);
+											~Server(void);
 
 	private :
 
 		/* copy constructor												*/
-										Server(const Server& src);
+											Server(const Server& src);
 
 		/* operator overload											*/
-		Server							&operator=(const Server& src);
+		Server						&operator=(const Server& src);
 
 		/* private attributes											*/
 
@@ -123,27 +123,25 @@ class	Server
 		void							handleNamesCmd(User &user, std::vector<std::string> &cmdTokens);
 
 		void							handleListCmd(User &user, std::vector<std::string> &cmdTokens);
-		int					findCmdToExecute(std::string &cmd);
-		void				handleCmd(User &user, std::vector<std::string> &cmd);
-		void				handlePing(User &user, std::vector<std::string> &cmdTokens);
-		void				handleQuit(User &user, std::vector<std::string> &cmdTokens);
-		void				handlePass(User &user, std::vector<std::string> &cmdTokens);
-		void				handleNick(User &user, std::vector<std::string> &cmdTokens);
-		void				handleUser(User &user, std::vector<std::string> &cmdTokens);
-		void				handleJoin(User &user, std::vector<std::string> &cmdTokens);
-		void				addChannel(Channel &channel, std::string name);
+		void							handleCmd(User &user, std::vector<std::string> &cmd);
+		void							handlePing(User &user, std::vector<std::string> &cmdTokens);
+		void							handleQuit(User &user, std::vector<std::string> &cmdTokens);
+		void							handlePass(User &user, std::vector<std::string> &cmdTokens);
+		void							handleNick(User &user, std::vector<std::string> &cmdTokens);
+		void							handleUser(User &user, std::vector<std::string> &cmdTokens);
+		void							handleJoin(User &user, std::vector<std::string> &cmdTokens);
 
 		void							handleChannelMode(User &user, std::vector<std::string> &cmdTokens);
 		int								handleChannelModeError(User& user, std::string& channelName);
 		void							handleModeString(User &user, std::vector<std::string> &cmdTokens, Channel& channel);
-		void				handleNames(User &user, std::vector<std::string> &cmdTokens);
+		void							handleNames(User &user, std::vector<std::string> &cmdTokens);
 
 		void							numericReply(User &user, std::string num, std::string msg);
 		void							numericReply(User &user, std::string num, std::string firstParam, std::string msg);
 		void							numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string msg);
 		void							numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string thirdParam, std::string msg);
 		void							cmdReply(User &user, std::string cmd, std::string firstParam);
-		void				sendCmd(User &from, std::string cmd, User &target, std::string msg);
+		void							sendCmd(User &from, std::string cmd, User &target, std::string msg);
 
 		void							logoutUser(User &user);
 		void							errorReply(User &user, std::string reason);

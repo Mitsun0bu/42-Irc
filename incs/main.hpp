@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/23 01:45:29 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/23 01:54:51 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,6 @@ typedef struct s_num
 	std::string	ERR_NOSUCHNICK;
 	std::string	ERR_NOSUCHSERVER;
 	std::string	ERR_NOTEXTTOSEND;
-	std::string	ERR_NOSUCHNICK;
 	std::string	ERR_NOTONCHANNEL;
 	std::string	ERR_NOTOPLEVEL;
 	std::string ERR_NOTREGISTERED;
@@ -136,7 +135,6 @@ typedef struct s_num
 	std::string	MSG_ERR_NOSUCHNICK;
 	std::string	MSG_ERR_NOSUCHSERVER;
 	std::string	MSG_ERR_NOTEXTTOSEND;
-	std::string	MSG_ERR_NOSUCHNICK;
 	std::string	MSG_ERR_NOTONCHANNEL;
 	std::string MSG_ERR_NOTREGISTERED;
 	std::string	MSG_ERR_PASSWDMISMATCH;

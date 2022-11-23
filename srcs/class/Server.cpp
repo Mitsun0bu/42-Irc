@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/23 01:53:57 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/23 02:04:43 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -288,8 +288,6 @@ void	Server::handleCmd(User &user, std::vector<std::string> &cmdTokens)
 			break;
 		case CAP:
 			break;
-		case CAP:
-			break;
 		case NICK:
 			this->handleNick(user, cmdTokens);
 			break;
@@ -303,7 +301,7 @@ void	Server::handleCmd(User &user, std::vector<std::string> &cmdTokens)
 			this->handleQuit(user, cmdTokens);
 			break;
 		case JOIN:
-			this->handleJoin(user, cmdTokens);
+			this->handleJoinCmd(user, cmdTokens);
 			break;
 		case PART:
 			this->handlePartCmd(user, cmdTokens);
@@ -312,7 +310,7 @@ void	Server::handleCmd(User &user, std::vector<std::string> &cmdTokens)
 			this->handleTopicCmd(user, cmdTokens);
 			break;
 		case NAMES:
-			this->handleNames(user, cmdTokens);
+			this->handleNamesCmd(user, cmdTokens);
 			break;
 		case LIST:
 			this->handleListCmd(user, cmdTokens);
@@ -451,7 +449,6 @@ void	Server::registerUser(User &user)
 	this->numericReply(user, num.RPL_MYINFO, user._nickname, num.MSG_RPL_MYINFO);
 }
 
-void	Server::handleJoin(User &user, std::vector<std::string> &cmdTokens)
 void	Server::handleJoinCmd(User &user, std::vector<std::string> &cmdTokens)
 {
 	size_t						i		= 0;
@@ -757,7 +754,7 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 	return ;
 }
 
-void	Server::sendError(User &user, std::string reason)
+void	Server::errorReply(User &user, std::string reason)
 {
 	std::string cmd = "Error :" + reason + "\r\n";
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
@@ -810,15 +807,6 @@ void	Server::cmdReply(User &user, std::string cmd, std::string param)
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
 		if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
 			perror("send()");
-}
-
-void	Server::sendCmd(User &from, std::string cmd, User &target, std::string msg)
-{
-    std::string finalMsg = ":" + from._nickname + " " + cmd + " " + target._nickname + " " + msg + "\r\n";
-
-    if (FD_ISSET(target._socket, &this->clientFdList.write))
-        if (send(target._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
-            perror("send()");
 }
 
 void	Server::sendCmd(User &from, std::string cmd, User &target, std::string msg)
