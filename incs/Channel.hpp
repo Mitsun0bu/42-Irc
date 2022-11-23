@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:23:07 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/22 18:04:41 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/23 14:33:15 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,12 @@ class Channel
 		Channel			&operator=(const Channel& src);
 
 		/* member functions												*/
-		void				addMember(User &user);
-		void				addOperator(User &user);
-		void				setKey(std::string key);
-		void				unsetKey(void);
-		void				addOperator();
-		void				removeOperator();
+		void			addMember(User &user);
+		void			addOperator(User &user);
+		void			removeOperator(User &user);
+		void			setKey(std::string key);
+		void			unsetKey(void);
+
 		// void				addMember(int userSocket);
 		// void				deleteMember(User &user);
 		// void				deleteMember(int userSocket);

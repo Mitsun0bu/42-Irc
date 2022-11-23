@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:24:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/16 16:15:54 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/23 14:29:10 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,13 @@ void	User::addLocation(std::string channelName)
 {
 	_locations.insert(channelName);
 	return ;
+}
+
+bool	User::isOperator(std::set<int>	operatorSet)
+{
+	if (operatorSet.find(_socket) != operatorSet.end())
+		return (true);
+	return (false);
 }
 
 /* ************************************************************************** */

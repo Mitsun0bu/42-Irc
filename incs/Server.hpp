@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/22 18:07:32 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/23 15:18:55 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,8 @@ class	Server
 		void							handleJoinCmd(User &user, std::vector<std::string> &cmdTokens);
 		int								joinExistingChannel(User &user, std::string channelName, std::string channelKey);
 		void							joinNewChannel(User &user, std::string channelName, std::string channelKey);
-		void							addChannel(Channel &channel, std::string &name);
+		void							addChannel(Channel &channel, std::string &channelName);
+		void							deleteChannel(std::string &channelName);
 
 		void							handlePartCmd(User &user, std::vector<std::string> &cmdTokens);
 

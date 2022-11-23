@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:23:53 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/22 11:39:52 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/23 14:29:57 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ class User
 		socklen_t				_socketAddrSize;
 		char					_remoteIP[INET6_ADDRSTRLEN];
 		const void*				_inAddr;
-		// std::string			_hostname;
 		bool					_validPasswd;
 		bool					_isAuthenticated;
 		std::set<std::string>	_locations;
@@ -58,6 +57,7 @@ class User
 		/* member functions												*/
 		void					setIp(void);
 		void					addLocation(std::string channelName);
+		bool					isOperator(std::set<int> operatorSet);
 
 		/* destructor													*/
 								~User(void);

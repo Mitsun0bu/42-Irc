@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:25:31 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/22 17:32:24 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/23 18:23:18 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,21 @@ void	Channel::addMember(User &user)
 void	Channel::addOperator(User &user)
 {
 	_operators.insert(user._socket);
+}
+
+void	Channel::removeOperator(User &user)
+{
+	std::set<int>::iterator operatorIterator;
+
+	for(operatorIterator = _operators.begin(); operatorIterator != _operators.end(); ++operatorIterator)
+	{
+		if(*operatorIterator == user._socket)
+		{
+			_operators.erase(user._socket);
+			return ;
+		}
+	}
+	return ;
 }
 
 void	Channel::setKey(std::string key)
