@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/19 03:06:42 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/23 01:45:29 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,8 @@
 # define PRIVMSG	14
 # define NOTICE		15
 
-# define FAILED		-1
+# define FAILED					-1
+# define SUCCESS				0
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -96,6 +97,7 @@ typedef struct s_num
 	std::string	ERR_BANNEDFROMCHAN;
 	std::string	ERR_CANNOTSENDTOCHAN;
 	std::string	ERR_CHANNELISFULL;
+	std::string	ERR_CHANOPRIVSNEEDED;
 	std::string	ERR_ERRONEUSNICKNAME;
 	std::string	ERR_INVITEONLYCHAN;
 	std::string	ERR_NEEDMOREPARAMS;
@@ -106,6 +108,7 @@ typedef struct s_num
 	std::string	ERR_NOSUCHNICK;
 	std::string	ERR_NOSUCHSERVER;
 	std::string	ERR_NOTEXTTOSEND;
+	std::string	ERR_NOSUCHNICK;
 	std::string	ERR_NOTONCHANNEL;
 	std::string	ERR_NOTOPLEVEL;
 	std::string ERR_NOTREGISTERED;
@@ -121,6 +124,7 @@ typedef struct s_num
 	std::string	MSG_ERR_BANNEDFROMCHAN;
 	std::string	MSG_ERR_CANNOTSENDTOCHAN;
 	std::string	MSG_ERR_CHANNELISFULL;
+	std::string	MSG_ERR_CHANOPRIVSNEEDED;
 	std::string	MSG_ERR_ERRONEUSNICKNAME;
 	std::string	MSG_ERR_INVITEONLYCHAN;
 	std::string	MSG_ERR_NEEDMOREPARAMS;
@@ -132,6 +136,7 @@ typedef struct s_num
 	std::string	MSG_ERR_NOSUCHNICK;
 	std::string	MSG_ERR_NOSUCHSERVER;
 	std::string	MSG_ERR_NOTEXTTOSEND;
+	std::string	MSG_ERR_NOSUCHNICK;
 	std::string	MSG_ERR_NOTONCHANNEL;
 	std::string MSG_ERR_NOTREGISTERED;
 	std::string	MSG_ERR_PASSWDMISMATCH;
@@ -142,7 +147,10 @@ typedef struct s_num
 
 	std::string	RPL_AWAY;
 	std::string	RPL_CREATED;
+	std::string	RPL_CHANNELMODEIS;
 	std::string	RPL_ENDOFNAMES;
+	std::string	RPL_LIST;
+	std::string	RPL_LISTEND;
 	std::string	RPL_MYINFO;
 	std::string	RPL_NAMREPLY;
 	std::string	RPL_NOTOPIC;
@@ -154,6 +162,7 @@ typedef struct s_num
 	std::string	MSG_RPL_AWAY;
 	std::string	MSG_RPL_CREATED;
 	std::string	MSG_RPL_ENDOFNAMES;
+	std::string	MSG_RPL_LISTEND;
 	std::string	MSG_RPL_MYINFO;
 	std::string	MSG_RPL_NOTOPIC;
 	std::string	MSG_RPL_TOPICWHOTIME;
@@ -190,12 +199,12 @@ typedef struct s_fdList
 class Server;
 class User;
 
-int													main(int argc, char** av);
-void												launchServer(Server &s);
-int													sendMsg(const int socket, std::string msg);
+int							main(int argc, char** av);
+void						launchServer(Server &s);
+int							sendMsg(const int socket, std::string msg);
 std::pair<int, std::string>	parseArguments(int ac, char** av);
-void												tokenizer(std::string str, const char *del, std::vector<std::string> &tokens);
-std::string									intToStr (int n);
-std::string									getDate(void);
+void						tokenizer(std::string str, const char *del, std::vector<std::string> &tokens);
+std::string					intToStr (int n);
+std::string					getDate(void);
 
 # endif

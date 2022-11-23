@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:32:28 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/14 17:29:43 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/22 11:22:19 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,29 +16,20 @@
 	LISTE DES COMMANDES A CODER :
 
 	CONNECTION
-		CAP message
-		AUTHENTICATE message
-		PASS message
-		NICK message
-		USER message
-		PONG message
-		QUIT message
+		AUTHENTICATE
+		USER
+		PONG
 
 	CHANNEL OPERATIONS
-		JOIN message
-		PART message
-		TOPIC message
-		NAMES message
-		LIST message
-		INVITE message
-		KICK message
+		INVITE
+		KICK
 
 	SERVER QUERIES AND COMMANDS
-		MODE message (gerer l'operateur)
+		MODE (gerer l'operateur)
 
 	SENDING MESSAGES
-		PRIVMSG message
-		NOTICE message
+		PRIVMSG
+		NOTICE
 */
 
 int	main(int ac, char** av)

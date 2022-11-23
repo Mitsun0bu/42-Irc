@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/23 01:25:59 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/23 01:48:33 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,24 +27,24 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-class User;
-class Channel;
+class	User;
+class	Channel;
 
-class Server
+class	Server
 {
 	public :
 		/* constructors													*/
-							Server(void);
-							Server(
-									int					port,
-									std::string	passwd,
-									int					addressFamily,
-									int					socketType,
-									int					socketFlag,
-									int					socketBlockingMode,
-									int					protocol,
-									const char*	internetHostAddr
-								  );
+										Server(void);
+										Server(
+													int			port,
+													std::string	passwd,
+													int			addressFamily,
+													int			socketType,
+													int			socketFlag,
+													int			socketBlockingMode,
+													int			protocol,
+													const char*	internetHostAddr
+											  );
 
 		/* public attributes											*/
 		int								_port;
@@ -65,35 +65,64 @@ class Server
 		std::map<std::string, Channel>	_channels;
 
 		/* member functions												*/
-		int					bindSocket(int serverSocket, struct sockaddr_in& socketAddr);
-		void				setSocketAddr(struct sockaddr_in& socketAddr, const char* internetHostAddr, int port);
-		int					setSocket(void);
-		void				clientFdListInit(void);
-		void				selectClientSocket(void);
-		void				searchForData(void);
-		void				initNum(void);
+		int								bindSocket(int serverSocket, struct sockaddr_in& socketAddr);
+		void							setSocketAddr(struct sockaddr_in& socketAddr, const char* internetHostAddr, int port);
+		int								setSocket(void);
+		void							clientFdListInit(void);
+		void							selectClientSocket(void);
+		void							searchForData(void);
+		void							initNum(void);
 
 
 
 		/* destructor													*/
-							~Server(void);
+										~Server(void);
 
 	private :
 
 		/* copy constructor												*/
-							Server(const Server& src);
+										Server(const Server& src);
 
 		/* operator overload											*/
-		Server				&operator=(const Server& src);
+		Server							&operator=(const Server& src);
 
 		/* private attributes											*/
 
 		/* private methods												*/
-		void				acceptNewUser();
+		void							acceptNewUser();
 
-		void				handleClientData(int &currentFd);
-		void				printRecvError(int byteCount, int currentFd);
+		void							handleClientData(int &currentFd);
+		void							printRecvError(int byteCount, int currentFd);
 
+		int								findCmdToExecute(std::string &cmd);
+		void							execCmd(User &user, std::vector<std::string> &cmd);
+
+		int								checkChannelName(std::string channelName);
+
+		void							handleQuitCmd(User &user, std::vector<std::string> &cmdTokens);
+		void							handlePassCmd(User &user, std::vector<std::string> &cmdTokens);
+
+		void							handleNickCmd(User &user, std::vector<std::string> &cmdTokens);
+
+		void							handleUserCmd(User &user, std::vector<std::string> &cmdTokens);
+
+		void							execPong(User &user, std::vector<std::string> &cmdTokens);
+
+		void							handleJoinCmd(User &user, std::vector<std::string> &cmdTokens);
+		int								joinExistingChannel(User &user, std::string channelName, std::string channelKey);
+		void							joinNewChannel(User &user, std::string channelName, std::string channelKey);
+		void							addChannel(Channel &channel, std::string &name);
+
+		void							handlePartCmd(User &user, std::vector<std::string> &cmdTokens);
+
+		void							handleTopicCmd(User &user, std::vector<std::string> &cmdTokens);
+		void							replyTopic(User &user, std::string channelName);
+		void							clearTopic(std::string channelName);
+		void							setTopic(std::string channelName, std::string topic);
+
+		void							handleNamesCmd(User &user, std::vector<std::string> &cmdTokens);
+
+		void							handleListCmd(User &user, std::vector<std::string> &cmdTokens);
 		int					findCmdToExecute(std::string &cmd);
 		void				handleCmd(User &user, std::vector<std::string> &cmd);
 		void				handlePing(User &user, std::vector<std::string> &cmdTokens);
@@ -104,20 +133,23 @@ class Server
 		void				handleJoin(User &user, std::vector<std::string> &cmdTokens);
 		void				addChannel(Channel &channel, std::string name);
 
+		void							handleChannelMode(User &user, std::vector<std::string> &cmdTokens);
+		int								handleChannelModeError(User& user, std::string& channelName);
+		void							handleModeString(User &user, std::vector<std::string> &cmdTokens, Channel& channel);
 		void				handleNames(User &user, std::vector<std::string> &cmdTokens);
 
-		void				numericReply(User &user, std::string num, std::string msg);
-		void				numericReply(User &user, std::string num, std::string firstParam, std::string msg);
-		void				numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string msg);
-		void				numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string thirdParam, std::string msg);
-		void				cmdReply(User &user, std::string cmd, std::string firstParam);
+		void							numericReply(User &user, std::string num, std::string msg);
+		void							numericReply(User &user, std::string num, std::string firstParam, std::string msg);
+		void							numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string msg);
+		void							numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string thirdParam, std::string msg);
+		void							cmdReply(User &user, std::string cmd, std::string firstParam);
 		void				sendCmd(User &from, std::string cmd, User &target, std::string msg);
 
-		void				logoutUser(User &user);
-		void				errorReply(User &user, std::string reason);
-		bool				isNickAvailable(std::string &nickname);
-		bool				parseNick(std::string &nickname);
-		void				registerUser(User &user);
+		void							logoutUser(User &user);
+		void							errorReply(User &user, std::string reason);
+		bool							isNickAvailable(std::string &nickname);
+		bool							parseNick(std::string &nickname);
+		void							registerUser(User &user);
 };
 
 # endif

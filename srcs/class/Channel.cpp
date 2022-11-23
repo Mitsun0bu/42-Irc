@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:25:31 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/11 11:45:45 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/22 17:32:24 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ Channel::Channel(void)
 }
 
 Channel::Channel(std::string name) :
-	_name(name), _key(), _requiresKey(), _topic(), _topicIsSet(false), _members(), _operators(), _mode()
+	_name(name), _key(), _requiresKey(), _topic(), _topicIsSet(false), _members(), _operators(), _mode("-k")
 {
 	std::cout	<< BLUE
 				<< "[CONSTRUCTOR] : "
@@ -89,61 +89,31 @@ Channel&	Channel::operator=(Channel const & src)
 
 void	Channel::addMember(User &user)
 {
-	this->_members.insert(user._socket);
+	_members.insert(user._socket);
+}
+
+void	Channel::addOperator(User &user)
+{
+	_operators.insert(user._socket);
 }
 
 void	Channel::setKey(std::string key)
 {
-	this->_key			= key;
-	this->_requiresKey	= true;
+	_key			= key;
+	_requiresKey	= true;
+	_mode			= "+k";
 
 	return ;
 }
 
-// void	Channel::addMember(int userSocket)
-// {
-// 	_members.insert(userSocket);
-// }
+void	Channel::unsetKey()
+{
+	_key.clear();
+	_requiresKey	= false;
+	_mode			= "-k";
 
-// void	Channel::deleteMember(User &user)
-// {
-// 	_members.erase(user._socket);
-// }
-
-// void	Channel::deleteMember(int userSocket)
-// {
-// 	_members.erase(userSocket);
-// }
-
-// void	Channel::addOperator(User &user)
-// {
-// 	_operators.insert(user._socket);
-// }
-
-// void	Channel::addOperator(int userSocket)
-// {
-// 	_operators.insert(userSocket);
-// }
-
-// void	Channel::deleteOperator(User &user)
-// {
-// 	_operators.erase(user._socket);
-// }
-
-// void	Channel::deleteOperator(int userSocket)
-// {
-// 	_operators.erase(userSocket);
-// }
-
-// void	Channel::sendMsgToMembers(const std::string &msg, int currentSocket) const
-// {
-// 	std::set<int>::const_iterator	it	= this->_members.begin();
-// 	std::set<int>::const_iterator	end	= this->_members.end();
-
-// 	for (it; it != end; ++it)
-// 		if (*it != currentSocket)
-// 			sendMsg(*it, msg);
-// }
+	return ;
+}
 
 /* ************************************************************************** */
 /*                                                                            */

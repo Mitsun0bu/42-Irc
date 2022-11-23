@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/23 01:31:19 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/23 01:53:57 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -288,6 +288,8 @@ void	Server::handleCmd(User &user, std::vector<std::string> &cmdTokens)
 			break;
 		case CAP:
 			break;
+		case CAP:
+			break;
 		case NICK:
 			this->handleNick(user, cmdTokens);
 			break;
@@ -303,8 +305,20 @@ void	Server::handleCmd(User &user, std::vector<std::string> &cmdTokens)
 		case JOIN:
 			this->handleJoin(user, cmdTokens);
 			break;
+		case PART:
+			this->handlePartCmd(user, cmdTokens);
+			break;
+		case TOPIC:
+			this->handleTopicCmd(user, cmdTokens);
+			break;
 		case NAMES:
 			this->handleNames(user, cmdTokens);
+			break;
+		case LIST:
+			this->handleListCmd(user, cmdTokens);
+			break;
+		case MODE:
+			this->handleChannelMode(user, cmdTokens);
 			break;
 		default:
 			this->numericReply(user, num.ERR_UNKNOWNCOMMAND, cmdTokens[0], num.MSG_ERR_UNKNOWNCOMMAND);
@@ -438,112 +452,312 @@ void	Server::registerUser(User &user)
 }
 
 void	Server::handleJoin(User &user, std::vector<std::string> &cmdTokens)
+void	Server::handleJoinCmd(User &user, std::vector<std::string> &cmdTokens)
 {
-	char						prefix	= '0';
 	size_t						i		= 0;
-	std::vector<std::string>	names;
-	std::vector<std::string>	keys;
+	std::vector<std::string>	channelNames;
+	std::vector<std::string>	channelKeys;
+	std::string					topicMsg;
 
-	tokenizer(cmdTokens[1], ",", names);
-	tokenizer(cmdTokens[2], ",", keys);
+	tokenizer(cmdTokens[1], ",", channelNames);
+	if(cmdTokens.size() > 2)
+		tokenizer(cmdTokens[2], ",", channelKeys);
 
-	for(i = 0; i < names.size(); i++)
+	for (i = 0; i < channelNames.size(); i++)
 	{
-		// CHECK IF CHANNEL NAME IS VALID
-		prefix = names[i][0];
-		if (prefix != '#')
-			this->numericReply(user, num.ERR_NOSUCHCHANNEL, names[i] + " :No such channel");
+		if (checkChannelName(channelNames[i]) == FAILED)
+		{
+			numericReply(user, num.ERR_NOSUCHCHANNEL, channelNames[i], num.MSG_ERR_NOSUCHCHANNEL);
+			continue ;
+		}
+		else if (_channels.find(channelNames[i]) != _channels.end())
+		{
+			// IF USER IS ALREADY IN CHANNEL
+			if (_channels[channelNames[i]]._members.find(user._socket) != _channels[channelNames[i]]._members.end())
+				return ;
+			// IF THE CHANNEL REQUIRES A KEY AND KEY IS WRONG
+			if(_channels[channelNames[i]]._requiresKey == true
+			&& (channelKeys.size() == 0 || _channels[channelNames[i]]._key != channelKeys[i]))
+			{
+				numericReply(user, num.ERR_BADCHANNELKEY, channelNames[i], num.MSG_ERR_BADCHANNELKEY);
+				return ;
+			}
+		}
 		else
 		{
-			// IF CHANNEL EXISTS
-			if (this->_channels.find(names[i]) != this->_channels.end())
+			Channel	newChannel(channelNames[i]);
+
+			user._mode = "+o";
+
+			if (channelKeys.empty() == false && channelKeys[i].length())
+				newChannel.setKey(channelKeys[i]);
+			newChannel.addMember(user);
+			newChannel.addOperator(user);
+
+			addChannel(newChannel, channelNames[i]);
+		}
+
+		user.addLocation(channelNames[i]);
+		cmdReply(user, "JOIN", channelNames[i]);
+		replyTopic(user, channelNames[i]);
+		handleNamesCmd(user, cmdTokens);
+	}
+}
+
+int		Server::checkChannelName(std::string channelName)
+{
+	char prefix = channelName[0];
+	if (prefix != '#')
+		return (FAILED);
+	return (SUCCESS);
+}
+
+void	Server::addChannel(Channel &channel, std::string &channelName)
+{
+	_channels[channelName] = channel;
+	return ;
+}
+
+void	Server::handlePartCmd(User &user, std::vector<std::string> &cmdTokens)
+{
+	std::vector<std::string>	channelNames;
+	std::string					reason = "";
+	std::map<std::string, Channel>::iterator it;
+
+	tokenizer(cmdTokens[1], ",", channelNames);
+	if(cmdTokens.size() == 3)
+		reason = cmdTokens[2];
+
+	for (size_t i = 0; i < channelNames.size(); i++)
+	{
+		std::cout << "TURN #" << i << std::endl;
+
+		if (_channels.find(channelNames[i]) == _channels.end())
+		{
+			numericReply(user, num.ERR_NOSUCHCHANNEL, channelNames[i], num.MSG_ERR_NOSUCHCHANNEL);
+			continue;
+		}
+
+		for(it = _channels.begin(); it != _channels.end(); ++it)
+		{
+			// HANDLE OPERATORS
+			// if (it->second._operators.find(user._socket) != it->second._operators.end())
+			// 	it->second._operators.erase(user._socket);
+
+			if (it->first == channelNames[i])
 			{
-				// IF USER IS NOT ALREADY IN CHANNEL
-				if (this->_channels[names[i]]._members.find(user._socket) == this->_channels[names[i]]._members.end())
+				if (user._locations.find(channelNames[i]) == user._locations.end())
 				{
-					// IF THE CHANNEL REQUIRES A KEY
-					if(this->_channels[names[i]]._requiresKey == true)
+					std::string	notInChannelMsg = " " + user._nickname + " " + channelNames[i];
+					numericReply(user, num.ERR_NOTONCHANNEL, notInChannelMsg, num.MSG_ERR_NOTONCHANNEL);
+					continue ;
+				}
+
+				it->second._members.erase(user._socket);
+				user._locations.erase(channelNames[i]);
+				cmdReply(user, "PART", channelNames[i] + " " + reason);
+
+				if (it->second._members.size() == 0)
+				{
+					std::map<std::string, Channel>::iterator toErase;
+					toErase = it;
+					_channels.erase(toErase);
+					if (_channels.size() == 0)
 					{
-						// CHECK IF KEY IS VALID
-						if (this->_channels[names[i]]._key == keys[i])
-						{
-							// JOIN CHANNEL
-								// std::string joinMsg = ":" + user._nickname + " JOIN" + names[i];
-							// TOPIC
-								// "<client> <channel> :<topic>"
-						}
-						else
-							this->numericReply(user, num.ERR_BADCHANNELKEY, names[i] + " :Cannot join channel (+k)");
-					}
-					// IF THE CHANNEL DOES NOT REQUIRE A KEY
-					else
-					{
-						// JOIN CHANNEL
-						this->cmdReply(user, "JOIN", names[i]);
-						// TOPIC
-							// "<client> <channel> :<topic>"
+						_channels.clear();
+						return ;
 					}
 				}
-			}
-			// IF CHANNEL DOES NOT EXIST
-			else
-			{
-				// INSTANTIATE NEW CHANNEL
-				Channel	newChannel(names[i]);
-
-				if (keys.empty() == false && keys[i].length())
-					newChannel.setKey(keys[i]);
-
-				// ADD USER TO THE CHANNEL
-				newChannel.addMember(user);
-
-				// ADD NEW CHANNEL TO SERVER CHANNEL MAP
-				this->addChannel(newChannel, names[i]);
-
-				// JOIN CHANNEL
-				this->cmdReply(user, "JOIN", names[i]);
-
-				// CALL NAMES FUNCTION
-				this->handleNames(user, cmdTokens);
 			}
 		}
 	}
 }
 
-void	Server::addChannel(Channel &channel, std::string name)
+void	Server::handleTopicCmd(User &user, std::vector<std::string> &cmdTokens)
 {
-	this->_channels[name] = channel;
+	std::string	channelName	= cmdTokens[1];
+	std::string	topic		= "";
 
+	if (cmdTokens.size() > 2)
+		topic = cmdTokens[2];
+
+	if (user._locations.find(channelName) == user._locations.end())
+	{
+		std::string	notInChannelMsg = " " + user._nickname + " " + channelName;
+		numericReply(user, num.ERR_NOTONCHANNEL, notInChannelMsg, num.MSG_ERR_NOTONCHANNEL);
+		return ;
+	}
+
+	if (topic.empty() == true)
+		replyTopic(user, channelName);
+	else if (topic.empty() == false && topic == "::")
+	{
+		clearTopic(channelName);
+		cmdReply(user, "TOPIC", channelName + " :");
+	}
+	else if (topic.empty() == false)
+	{
+		clearTopic(channelName);
+		setTopic(channelName, topic);
+		cmdReply(user, "TOPIC", channelName + " :" + _channels[channelName]._topic);
+	}
 	return ;
 }
 
-void	Server::handleNames(User &user, std::vector<std::string> &cmdTokens)
+void	Server::replyTopic(User& user, std::string channelName)
 {
-	std::vector<std::string>	names;
-	tokenizer(cmdTokens[1], ",", names);
-	char						prefix		= '0';
+	std::string topicMsg = " " + user._nickname + " " + channelName;
 
-	for(size_t i = 0; i < names.size(); i++)
+	if (_channels[channelName]._topicIsSet == true)
+	{
+		topicMsg += " " + _channels[channelName]._topic;
+		numericReply(user, num.RPL_TOPIC, topicMsg);
+	}
+	else
+		numericReply(user, num.RPL_NOTOPIC, topicMsg, num.MSG_RPL_NOTOPIC);
+	return ;
+}
+
+void	Server::clearTopic(std::string channelName)
+{
+	_channels[channelName]._topic.clear();
+	_channels[channelName]._topicIsSet = false;
+	return ;
+}
+
+void	Server::setTopic(std::string channelName, std::string topic)
+{
+	_channels[channelName]._topic		= topic.erase(0, 1);
+	_channels[channelName]._topicIsSet	= true;
+	return ;
+}
+
+void	Server::handleNamesCmd(User &user, std::vector<std::string> &cmdTokens)
+{
+	std::vector<std::string>	channelNames;
+	tokenizer(cmdTokens[1], ",", channelNames);
+
+	for(size_t i = 0; i < channelNames.size(); i++)
 	{
 		//IF CHANNEL NAME IS INVALID
-		prefix = names[i][0];
-		if (prefix != '#')
-			this->numericReply(user, num.RPL_ENDOFNAMES, user._nickname + " " + names[i], num.MSG_RPL_ENDOFNAMES);
-		// IF CHANNEL EXISTS
-		if(this->_channels.find(names[i]) != this->_channels.end())
+		if (checkChannelName(channelNames[i]) == FAILED)
 		{
-			std::string namesMsg = " = " + names[i] + " :";
+			this->numericReply(user, num.RPL_ENDOFNAMES, user._nickname + " " + channelNames[i], num.MSG_RPL_ENDOFNAMES);
+			continue ;
+		}
+		// IF CHANNEL EXISTS
+		if(this->_channels.find(channelNames[i]) != this->_channels.end())
+		{
+			std::string namesMsg = " = " + channelNames[i] + " :";
 			// ADD CHANNEL MEMBERS' NICKNAME TO MESSAGE
-			std::set<int>	members = this->_channels[names[i]]._members;
+			std::set<int>	members = this->_channels[channelNames[i]]._members;
 			for (std::set<int>::iterator fd = members.begin(); fd != members.end(); fd++)
 				namesMsg += this->_users[*fd]._nickname;
 			this->numericReply(user, num.RPL_NAMREPLY, namesMsg);
 		}
-		this->numericReply(user, num.RPL_ENDOFNAMES, user._nickname + " " + names[i], num.MSG_RPL_ENDOFNAMES);
+		this->numericReply(user, num.RPL_ENDOFNAMES, user._nickname + " " + channelNames[i], num.MSG_RPL_ENDOFNAMES);
 	}
 }
 
-void	Server::errorReply(User &user, std::string reason)
+void	Server::handleListCmd(User &user, std::vector<std::string> &cmdTokens)
+{
+	std::vector<std::string>	channelNames;
+
+	if (cmdTokens.size() == 1)
+	{
+		for (std::map<std::string, Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
+		{
+			std::string	memberCount	= intToStr(it->second._members.size());
+			std::string	listMsg		= " " + user._nickname + " " + it->second._name + " " + memberCount + " :" + it->second._topic;
+			numericReply(user, num.RPL_LIST, listMsg);
+		}
+	}
+	else
+	{
+		tokenizer(cmdTokens[1], ",", channelNames);
+		for(size_t i = 0; i < channelNames.size(); i++)
+		{
+			std::string	memberCount	= intToStr(_channels[channelNames[i]]._members.size());
+			std::string	topic		= _channels[channelNames[i]]._topic;
+			std::string	listMsg		= " " + user._nickname + " " + channelNames[i] + " " + memberCount + " :" + topic;
+			numericReply(user, num.RPL_LIST, listMsg);
+		}
+	}
+	numericReply(user, num.RPL_LISTEND, "", num.MSG_RPL_LISTEND);
+}
+
+void	Server::handleChannelMode(User& user, std::vector<std::string> &cmdTokens)
+{
+	std::cout << "~~~ TEST - HANDLE CHANNEL MODE - START ~~~" << std::endl;
+
+	for(size_t i = 0; i < cmdTokens.size(); i++)
+		std::cout << cmdTokens[i] << std::endl;
+
+	std::string	target = cmdTokens[1];
+
+	// IF TARGET IS NOT A VALID/EXISTING CHANNEL
+	if (handleChannelModeError(user, target) == FAILED)
+		return ;
+
+	// IF NO MODESTRING IS GIVEN
+	if (cmdTokens.size() == 2)
+		numericReply(user, num.RPL_CHANNELMODEIS, " " + target + " " + _channels[target]._mode);
+
+	if (cmdTokens.size() >= 3)
+		handleModeString(user, cmdTokens, _channels[target]);
+
+	std::cout << "~~~ TEST - HANDLE MODE CMD - END ~~~" << std::endl;
+}
+
+int		Server::handleChannelModeError(User& user, std::string& channelName)
+{
+	if (checkChannelName(channelName) == FAILED)
+		return (FAILED);
+
+	if (_channels.find(channelName) == _channels.end())
+	{
+		numericReply(user, num.ERR_NOSUCHCHANNEL, channelName, num.MSG_ERR_NOSUCHCHANNEL);
+		return (FAILED);
+	}
+
+	return (SUCCESS);
+}
+
+void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, Channel& channel)
+{
+	std::string					modestring = cmdTokens[2];
+	std::vector<std::string>	modearguments;
+	if (cmdTokens.size() > 3)
+		tokenizer(cmdTokens[3], " ", modearguments);
+
+	if (modestring == "-k" && modearguments[0].length() == 0)
+	{
+		channel.unsetKey();
+		numericReply(user, num.RPL_CHANNELMODEIS, " " + channel._name + " " + channel._mode);
+	}
+	else if (modestring == "+k" && modearguments[0].length() != 0)
+	{
+		channel.setKey(modearguments[0]);
+		numericReply(user, num.RPL_CHANNELMODEIS, " " + channel._name + " " + channel._mode);
+	}
+	else if (modestring == "-o" && modearguments[0].length() == 0)
+	{
+		if (channel._operators.find(user._socket) == channel._operators.end())
+			numericReply(user, num.ERR_CHANOPRIVSNEEDED, channel._name, num.MSG_ERR_CHANOPRIVSNEEDED);
+		// else
+		// 	channel.removeOperator(modearguments[0])
+	}
+	else if (modestring == "+o" && modearguments[0].length() != 0)
+	{
+		if (channel._operators.find(user._socket) == channel._operators.end())
+			numericReply(user, num.ERR_CHANOPRIVSNEEDED, channel._name, num.MSG_ERR_CHANOPRIVSNEEDED);
+		// else
+		// 	channel.addOperator(modearguments[0]);
+	}
+	return ;
+}
+
+void	Server::sendError(User &user, std::string reason)
 {
 	std::string cmd = "Error :" + reason + "\r\n";
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
@@ -587,12 +801,23 @@ void	Server::numericReply(User &user, std::string num, std::string firstParam, s
     	perror("send()");
 }
 
-void	Server::cmdReply(User &user, std::string cmd, std::string firstParam)	
+void	Server::cmdReply(User &user, std::string cmd, std::string param)
 {
-    std::string finalMsg = ":" + user._nickname + " " + cmd + " " + firstParam + "\r\n";
+	std::string finalMsg = ":" + user._nickname + " " + cmd + " " + param + "\r\n";
 
-    if (FD_ISSET(user._socket, &this->clientFdList.write))
-        if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
+	std::cout << finalMsg << std::endl;
+
+	if (FD_ISSET(user._socket, &this->clientFdList.write))
+		if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
+			perror("send()");
+}
+
+void	Server::sendCmd(User &from, std::string cmd, User &target, std::string msg)
+{
+    std::string finalMsg = ":" + from._nickname + " " + cmd + " " + target._nickname + " " + msg + "\r\n";
+
+    if (FD_ISSET(target._socket, &this->clientFdList.write))
+        if (send(target._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
             perror("send()");
 }
 
@@ -614,12 +839,14 @@ void	Server::initNum(void)
 	num.ERR_CANNOTSENDTOCHAN 	= "404";
 
 	num.ERR_CHANNELISFULL			= "471";
+	num.ERR_CHANOPRIVSNEEDED		= "482 ";
 	num.ERR_ERRONEUSNICKNAME		= "432";
 	num.ERR_INVITEONLYCHAN			= "473";
 	num.ERR_NEEDMOREPARAMS			= "461";
 	num.ERR_NICKNAMEINUSE			= "433";
 	num.ERR_NONICKNAMEGIVEN			= "431";
 	num.ERR_NOSUCHCHANNEL			= "403";
+	num.ERR_NOSUCHNICK				= "401";
 	num.ERR_NORECIPIENT = "411";
 	num.ERR_NOSUCHNICK = "401";
 	num.ERR_NOSUCHSERVER = "402";
@@ -639,11 +866,13 @@ void	Server::initNum(void)
 	num.MSG_ERR_BANNEDFROMCHAN		= "";
 	num.MSG_ERR_CANNOTSENDTOCHAN = " :Cannot send to channel";
 	num.MSG_ERR_CHANNELISFULL		= "";
+	num.MSG_ERR_CHANOPRIVSNEEDED	= " :You're not channel operator";
 	num.MSG_ERR_ERRONEUSNICKNAME	= " :Erroneus nickname";
 	num.MSG_ERR_INVITEONLYCHAN		= "";
 	num.MSG_ERR_NEEDMOREPARAMS		= " :Not enough parameters";
 	num.MSG_ERR_NICKNAMEINUSE		= " :Nickname is already in use";
 	num.MSG_ERR_NONICKNAMEGIVEN		= " :No nickname given";
+	num.MSG_ERR_NOSUCHNICK			= " :No such nick/channel";
 	num.MSG_ERR_NOORIGIN = " :No origin specified";
 	num.MSG_ERR_NOSUCHCHANNEL		= " :No such channel";
 	num.MSG_ERR_NORECIPIENT = " :No recipient given";
@@ -660,7 +889,10 @@ void	Server::initNum(void)
 
 	num.RPL_AWAY = "301";
 	num.RPL_CREATED					= "003";
+	num.RPL_CHANNELMODEIS			= "324";
 	num.RPL_ENDOFNAMES				= "366";
+	num.RPL_LIST					= "322";
+	num.RPL_LISTEND					= "323";
 	num.RPL_MYINFO					= "004";
 	num.RPL_NAMREPLY				= "353";
 	num.RPL_NOTOPIC					= "331";
@@ -672,12 +904,12 @@ void	Server::initNum(void)
 	num.MSG_RPL_AWAY = "";
 	num.MSG_RPL_CREATED				= " :This server was created ";
 	num.MSG_RPL_ENDOFNAMES			= " :End of /NAMES list";
+	num.MSG_RPL_LISTEND				= " :End of /LIST";
 	num.MSG_RPL_MYINFO				= " 127.0.0.1 1 oOr RO";
 	num.MSG_RPL_NOTOPIC				= "  :No topic is set";
 	num.MSG_RPL_TOPICWHOTIME		= "";
 	num.MSG_RPL_WELCOME				= " :Welcome to the 127.0.0.1 Network, ";
 	num.MSG_RPL_YOURHOST			= " :Your host is 127.0.0.1, running version 1";
-
 }
 
 /* ************************************************************************** */
