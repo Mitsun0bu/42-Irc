@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:23:07 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/24 00:13:35 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/24 15:38:53 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ class Channel
 		/* member functions												*/
 		void			addMember(User &user);
 		void			addOperator(User &user);
+		void			addOperator(int socket);
 		void			removeOperator(User &user);
 		void			setKey(std::string key);
 		void			unsetKey(void);

@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/24 15:09:21 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/24 15:44:02 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -763,7 +763,9 @@ void	Server::handleNamesCmd(User &user, std::vector<std::string> &cmdTokens)
 					namesMsg += "@" + this->_users[*fd]._nickname;
 				else
 					namesMsg += this->_users[*fd]._nickname;
+				namesMsg += " ";
 			}
+			std::cout << "namesMsg: " << namesMsg << std::endl;
 			this->numericReply(user, num.RPL_NAMREPLY, namesMsg);
 		}
 		this->numericReply(user, num.RPL_ENDOFNAMES, nick + " " + channelNames[i], num.MSG_RPL_ENDOFNAMES);
@@ -866,8 +868,8 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 	}
 	else if (modestring == "+o" && modearguments[0].length() != 0)
 	{
-		channel.addOperator(user);
-		cmdReply(user, "MODE", channel._name + " " + modestring + " " + user._nickname);
+		channel.addOperator(getUser(modearguments[0]));
+		cmdReply(user, "MODE", channel._name + " " + modestring + " " + modearguments[0]);
 	}
 
 	return ;

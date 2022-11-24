@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:25:31 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/23 18:23:18 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/24 15:38:29 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,11 @@ Channel&	Channel::operator=(Channel const & src)
 void	Channel::addMember(User &user)
 {
 	_members.insert(user._socket);
+}
+
+void	Channel::addOperator(int socket)
+{
+	_operators.insert(socket);
 }
 
 void	Channel::addOperator(User &user)
