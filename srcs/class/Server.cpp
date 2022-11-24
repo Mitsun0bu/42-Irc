@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/24 15:44:02 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/24 18:22:12 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -352,7 +352,7 @@ void	Server::handlePrivmsg(User &user, std::vector<std::string> &cmdTokens)
 
 void	Server::sendMsgToUser(User &sender, std::string &target, std::string &msg)
 {
-	int targetSocket = getUser(target);
+	int targetSocket = getUserSocket(target);
 
 	if (targetSocket == FAILED)
 		numericReply(sender, num.ERR_NOSUCHNICK, target, num.MSG_ERR_NOSUCHNICK);
@@ -390,7 +390,7 @@ bool	Server::checkUserPermissions(User &user, Channel &channel)
 bool	Server::parseTargetPrefix(const std::string &target)
 {
 	size_t pos = target.find("#");
-	
+
 	if (pos > 1)
 		return (false);
 	if (pos == 1 && target[0] != '@')
@@ -398,7 +398,7 @@ bool	Server::parseTargetPrefix(const std::string &target)
 	return (true);
 }
 
-int	Server::getUser(std::string &nickname)
+int	Server::getUserSocket(std::string &nickname)
 {
 	std::map<int, User>::iterator it;
 
@@ -597,6 +597,10 @@ int		Server::checkChannelName(std::string channelName)
 	char prefix = channelName[0];
 	if (prefix != '#')
 		return (FAILED);
+
+	// Parsing de channelName -> ‘#’ possible a l’intérieur du nom ?
+
+
 	return (SUCCESS);
 }
 
@@ -841,34 +845,46 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 	std::vector<std::string>	modearguments;
 	if (cmdTokens.size() > 3)
 		tokenizer(cmdTokens[3], " ", modearguments);
-	
+
 	// CHECK IF THE USER IS AN OPERATOR
 	if (user.isOperator(channel._operators) == false)
 	{
 		numericReply(user, num.ERR_CHANOPRIVSNEEDED, channel._name, num.MSG_ERR_CHANOPRIVSNEEDED);
 		return ;
 	}
-	
-	if (modestring == "-k" && modearguments[0].length() == 0)
+
+	// CHECK IF THE MODESTRING IS VALID
+	if (modestring.size() != 2 && (modestring[0] != '-' || modestring[0] != '+'))
+		return ;
+
+	// HANDLE CHANNEL KEY MODE
+	if (modestring[1] == 'k')
 	{
-		channel.unsetKey();
+		if ((modestring[0] == '-' && modearguments.size() != 0)
+		||	(modestring[0] == '+' && modearguments.size() == 0))
+			return ;
+
+		if (modestring[0] == '-' && modearguments.size() == 0)
+			channel.unsetKey();
+		else if (modestring[0] == '+' && modearguments.size() != 0)
+			channel.setKey(modearguments[0]);
+
 		numericReply(user, num.RPL_CHANNELMODEIS, " " + channel._name + " " + channel._mode);
 	}
-	else if (modestring == "+k" && modearguments[0].length() != 0)
+
+	// HANDLE CHANNEL OPERATOR MODE
+	if (modestring[1] == 'o' && modearguments[0].length() != 0)
 	{
-		channel.setKey(modearguments[0]);
-		numericReply(user, num.RPL_CHANNELMODEIS, " " + channel._name + " " + channel._mode);
-	}
-	else if (modestring == "-o" && modearguments[0].length() != 0)
-	{
-		channel.removeOperator(user);
-		if (channel._operators.size() == 0)
-			deleteChannel(channel._name);
-		cmdReply(user, "MODE", channel._name + " " + modestring + " " + user._nickname);
-	}
-	else if (modestring == "+o" && modearguments[0].length() != 0)
-	{
-		channel.addOperator(getUser(modearguments[0]));
+		if (channel.isMember(getUserSocket(modearguments[0])) == false)
+			return ;
+		if (modestring[0] == '-')
+		{
+			channel.removeOperator(getUserSocket(modearguments[0]));
+			if (channel._operators.size() == 0)
+				deleteChannel(channel._name);
+		}
+		else if (modestring[0] == '+')
+			channel.addOperator(getUserSocket(modearguments[0]));
 		cmdReply(user, "MODE", channel._name + " " + modestring + " " + modearguments[0]);
 	}
 

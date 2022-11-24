@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/24 00:14:46 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/24 16:45:54 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,14 +124,14 @@ class	Server
 		void							handleNamesCmd(User &user, std::vector<std::string> &cmdTokens);
 
 		void							handleListCmd(User &user, std::vector<std::string> &cmdTokens);
-		void							handleCmd(User &user, std::vector<std::string> &cmd);		
+		void							handleCmd(User &user, std::vector<std::string> &cmd);
 		void							handlePrivmsg(User &user, std::vector<std::string> &cmdTokens);
 		void							sendMsgToChannel(User &sender, std::string &target, std::string &msg);
 		void							sendMsgToUser(User &sender, std::string &target, std::string &msg);
 
 		bool							checkUserPermissions(User &user, Channel &channel);
 		bool							parseTargetPrefix(const std::string &target);
-		int								getUser(std::string &nick);
+		int								getUserSocket(std::string &nick);
 		void							handlePing(User &user, std::vector<std::string> &cmdTokens);
 		void							handleQuit(User &user, std::vector<std::string> &cmdTokens);
 		void							handlePass(User &user, std::vector<std::string> &cmdTokens);

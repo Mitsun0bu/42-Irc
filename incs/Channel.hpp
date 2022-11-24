@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:23:07 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/24 15:38:53 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/24 16:52:34 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,17 +54,17 @@ class Channel
 
 		/* member functions												*/
 		void			addMember(User &user);
+		bool			isMember(int userSocket);
+		void			addOperator(int userSocket);
 		void			addOperator(User &user);
-		void			addOperator(int socket);
-		void			removeOperator(User &user);
+		void			removeOperator(int userSocket);
+		// void			removeOperator(User &user);
 		void			setKey(std::string key);
 		void			unsetKey(void);
 
 		// void				addMember(int userSocket);
 		// void				deleteMember(User &user);
 		// void				deleteMember(int userSocket);
-		// void				deleteOperator(User &user);
-		// void	sendMsgToMembers(const std::string &content, int socketException) const;
 
 		/* exceptions													*/
 

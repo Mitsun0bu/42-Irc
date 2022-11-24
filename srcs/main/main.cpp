@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:32:28 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/22 11:22:19 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/24 16:17:27 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,21 +15,14 @@
 /*
 	LISTE DES COMMANDES A CODER :
 
-	CONNECTION
-		AUTHENTICATE
-		USER
-		PONG
-
 	CHANNEL OPERATIONS
 		INVITE
 		KICK
 
-	SERVER QUERIES AND COMMANDS
-		MODE (gerer l'operateur)
-
 	SENDING MESSAGES
-		PRIVMSG
 		NOTICE
+
+	Parsing de channelName -> ‘#’ possible a l’intérieur du nom ?
 */
 
 int	main(int ac, char** av)
