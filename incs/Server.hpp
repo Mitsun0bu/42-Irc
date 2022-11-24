@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/24 16:45:54 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/24 19:29:50 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,15 +76,15 @@ class	Server
 
 
 		/* destructor													*/
-											~Server(void);
+										~Server(void);
 
 	private :
 
 		/* copy constructor												*/
-											Server(const Server& src);
+										Server(const Server& src);
 
 		/* operator overload											*/
-		Server						&operator=(const Server& src);
+		Server							&operator=(const Server& src);
 
 		/* private attributes											*/
 
@@ -95,9 +95,12 @@ class	Server
 		void							printRecvError(int byteCount, int currentFd);
 
 		int								findCmdToExecute(std::string &cmd);
-		void							execCmd(User &user, std::vector<std::string> &cmd);
+
+		void							handleCmd(User &user, std::vector<std::string> &cmd);
 
 		int								checkChannelName(std::string channelName);
+
+		bool							channelExists(std::string channelName);
 
 		void							handleQuitCmd(User &user, std::vector<std::string> &cmdTokens);
 		void							handlePassCmd(User &user, std::vector<std::string> &cmdTokens);
@@ -124,7 +127,10 @@ class	Server
 		void							handleNamesCmd(User &user, std::vector<std::string> &cmdTokens);
 
 		void							handleListCmd(User &user, std::vector<std::string> &cmdTokens);
-		void							handleCmd(User &user, std::vector<std::string> &cmd);
+
+		void							handleInviteCmd(User &user, std::vector<std::string> &cmdTokens);
+		void							sendInvitation(std::string userToInvite, std::string channelName);
+
 		void							handlePrivmsg(User &user, std::vector<std::string> &cmdTokens);
 		void							sendMsgToChannel(User &sender, std::string &target, std::string &msg);
 		void							sendMsgToUser(User &sender, std::string &target, std::string &msg);

@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/24 18:22:12 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/24 19:30:33 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -315,6 +315,9 @@ void	Server::handleCmd(User &user, std::vector<std::string> &cmdTokens)
 		case LIST:
 			this->handleListCmd(user, cmdTokens);
 			break;
+		case INVITE:
+			this->handleInviteCmd(user, cmdTokens);
+			break;
 		case MODE:
 			this->handleChannelMode(user, cmdTokens);
 			break;
@@ -398,7 +401,7 @@ bool	Server::parseTargetPrefix(const std::string &target)
 	return (true);
 }
 
-int	Server::getUserSocket(std::string &nickname)
+int		Server::getUserSocket(std::string &nickname)
 {
 	std::map<int, User>::iterator it;
 
@@ -604,6 +607,14 @@ int		Server::checkChannelName(std::string channelName)
 	return (SUCCESS);
 }
 
+bool	Server::channelExists(std::string channelName)
+{
+	if (_channels.find(channelName) != _channels.end())
+		return (true);
+	else
+		return (false);
+}
+
 void	Server::addChannel(Channel &channel, std::string &channelName)
 {
 	_channels[channelName] = channel;
@@ -803,6 +814,76 @@ void	Server::handleListCmd(User &user, std::vector<std::string> &cmdTokens)
 	numericReply(user, num.RPL_LISTEND, "", num.MSG_RPL_LISTEND);
 }
 
+void	Server::handleInviteCmd(User &user, std::vector<std::string> &cmdTokens)
+{
+
+	// DEBUG BLOCK
+	std::cout << "~~~ HANDLE INVITE - START ~~~" << std::endl;
+
+	for(size_t i = 0; i < cmdTokens.size(); i++)
+		std::cout << cmdTokens[i] << std::endl;
+	// DEBUG BLOCK
+
+	if (cmdTokens.size() != 3)
+		return ;
+
+	std::string	userToInvite	= cmdTokens[1];
+	std::string	channelName		= cmdTokens[2];
+
+	// IF CHANNEL DOES NOT EXIST
+	if (channelExists(channelName) == false)
+	{
+		numericReply(user, num.ERR_NOSUCHCHANNEL, channelName, num.MSG_ERR_NOSUCHCHANNEL);
+		return ;
+	}
+
+	// IF INVITING USER IS NOT A CHANNEL MEMBER
+	if (_channels[channelName].isMember(user._socket) == false)
+	{
+		std::string	notInChannelMsg = " " + user._nickname + " " + channelName;
+		numericReply(user, num.ERR_NOTONCHANNEL, notInChannelMsg, num.MSG_ERR_NOTONCHANNEL);
+		return ;
+	}
+
+	// CHECK INVITE-ONLY MODE
+
+	// Servers MAY reject the command with the ERR_CHANOPRIVSNEEDED numeric.
+	// They SHOULD reject it when the channel has invite-only mode set,
+	// and the user is not a channel operator.
+
+	// IF USER TO INVITE IS ALREADY A CHANNEL MEMBER
+	if (_channels[channelName].isMember(getUserSocket(userToInvite)) == true)
+	{
+		// ERR_USERONCHANNEL
+		// "<client> <nick> <channel> :is already on channel"
+		std::string	inChannelMsg = " " + userToInvite + " " + channelName;
+		numericReply(user, num.ERR_USERONCHANNEL, inChannelMsg, num.MSG_ERR_USERONCHANNEL);
+		return ;
+	}
+
+	// When the invite is successful, the server MUST send a RPL_INVITING numeric to the command issuer,
+	// and an INVITE message, with the issuer as <source>, to the target user.
+	// Other channel members SHOULD NOT be notified.
+
+	numericReply(user, num.RPL_INVITING, user._nickname + " " + userToInvite + " " + channelName);
+	sendInvitation(userToInvite, channelName);
+
+	// DEBUG BLOCK
+	std::cout << "~~~ HANDLE INVITE - END ~~~" << std::endl;
+	// DEBUG BLOCK
+}
+
+void	Server::sendInvitation(std::string userToInvite, std::string channelName)
+{
+	std::string	invitationMsg = "INVITE " + userToInvite + " " + channelName + "\r\n";
+	int	socket = getUserSocket(userToInvite);
+
+	if (FD_ISSET(socket, &this->clientFdList.write))
+		if (send(socket, invitationMsg.c_str(), invitationMsg.size(), 0) == FAILED)
+			perror("send()");
+}
+
+
 void	Server::handleChannelMode(User& user, std::vector<std::string> &cmdTokens)
 {
 	for(size_t i = 0; i < cmdTokens.size(); i++)
@@ -931,8 +1012,8 @@ void	Server::numericReply(User &user, std::string num, std::string firstParam, s
 	std::string finalMsg = num + " " + firstParam + " " + secondParam + " " + thirdParam + msg + "\r\n";
 
 	if (FD_ISSET(user._socket, &this->clientFdList.write))
-    if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
-    	perror("send()");
+		if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
+			perror("send()");
 }
 
 void	Server::cmdReply(User &user, std::string cmd, std::string param)
@@ -946,11 +1027,11 @@ void	Server::cmdReply(User &user, std::string cmd, std::string param)
 
 void	Server::sendCmdToUser(User &from, std::string cmd, User &target, std::string msg)
 {
-    std::string finalMsg = ":" + from._nickname + " " + cmd + " " + target._nickname + " " + msg + "\r\n";
+	std::string finalMsg = ":" + from._nickname + " " + cmd + " " + target._nickname + " " + msg + "\r\n";
 
-    if (FD_ISSET(target._socket, &this->clientFdList.write))
-      if (send(target._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
-        perror("send()");
+	if (FD_ISSET(target._socket, &this->clientFdList.write))
+		if (send(target._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
+			perror("send()");
 }
 
 void	Server::sendCmdToChannel(User &from, std::string cmd, std::set<int> &targets, std::string channel, std::string msg)
@@ -968,11 +1049,11 @@ void	Server::sendCmdToChannel(User &from, std::string cmd, std::set<int> &target
 
 void	Server::initNum(void)
 {
-	num.ERR_ALREADYREGISTERED	= "462";
+	num.ERR_ALREADYREGISTERED		= "462";
 	num.ERR_BADCHANMASK				= "476";
 	num.ERR_BADCHANNELKEY			= "475";
-	num.ERR_BANNEDFROMCHAN		= "474";
-	num.ERR_CANNOTSENDTOCHAN 	= "404";
+	num.ERR_BANNEDFROMCHAN			= "474";
+	num.ERR_CANNOTSENDTOCHAN		= "404";
 
 	num.ERR_CHANNELISFULL			= "471";
 	num.ERR_CHANOPRIVSNEEDED		= "482 ";
@@ -983,24 +1064,25 @@ void	Server::initNum(void)
 	num.ERR_NONICKNAMEGIVEN			= "431";
 	num.ERR_NOSUCHCHANNEL			= "403";
 	num.ERR_NOSUCHNICK				= "401";
-	num.ERR_NORECIPIENT = "411";
-	num.ERR_NOSUCHNICK = "401";
-	num.ERR_NOSUCHSERVER = "402";
-	num.ERR_NOTEXTTOSEND = "412";
+	num.ERR_NORECIPIENT				= "411";
+	num.ERR_NOSUCHNICK				= "401";
+	num.ERR_NOSUCHSERVER			= "402";
+	num.ERR_NOTEXTTOSEND			= "412";
 	num.ERR_NOTONCHANNEL			= "442";
-	num.ERR_NOTOPLEVEL = "413";
+	num.ERR_NOTOPLEVEL				= "413";
 	num.ERR_NOTREGISTERED			= "451";
 	num.ERR_PASSWDMISMATCH			= "464";
 	num.ERR_TOOMANYCHANNELS			= "405";
-	num.ERR_TOOMANYTARGETS = "407";
+	num.ERR_TOOMANYTARGETS			= "407";
 	num.ERR_UNKNOWNCOMMAND			= "421";
-	num.ERR_WILDTOPLEVEL = "414";
+	num.ERR_USERONCHANNEL			= "443";
+	num.ERR_WILDTOPLEVEL 			= "414";
 
 	num.MSG_ERR_ALREADYREGISTERED	= " :You may not reregister";
 	num.MSG_ERR_BADCHANMASK			= " :Bad Channel Mask";
 	num.MSG_ERR_BADCHANNELKEY		= " :Cannot join channel (+k)";
 	num.MSG_ERR_BANNEDFROMCHAN		= "";
-	num.MSG_ERR_CANNOTSENDTOCHAN = " :Cannot send to channel";
+	num.MSG_ERR_CANNOTSENDTOCHAN	= " :Cannot send to channel";
 	num.MSG_ERR_CHANNELISFULL		= "";
 	num.MSG_ERR_CHANOPRIVSNEEDED	= " :You're not channel operator";
 	num.MSG_ERR_ERRONEUSNICKNAME	= " :Erroneus nickname";
@@ -1009,24 +1091,26 @@ void	Server::initNum(void)
 	num.MSG_ERR_NICKNAMEINUSE		= " :Nickname is already in use";
 	num.MSG_ERR_NONICKNAMEGIVEN		= " :No nickname given";
 	num.MSG_ERR_NOSUCHNICK			= " :No such nick/channel";
-	num.MSG_ERR_NOORIGIN = " :No origin specified";
+	num.MSG_ERR_NOORIGIN			= " :No origin specified";
 	num.MSG_ERR_NOSUCHCHANNEL		= " :No such channel";
-	num.MSG_ERR_NORECIPIENT = " :No recipient given";
-	num.MSG_ERR_NOSUCHNICK = " :No such nick/channel";
-	num.MSG_ERR_NOSUCHSERVER = " :No such server";
-	num.MSG_ERR_NOTEXTTOSEND = " :No text to send";
+	num.MSG_ERR_NORECIPIENT			= " :No recipient given";
+	num.MSG_ERR_NOSUCHNICK			= " :No such nick/channel";
+	num.MSG_ERR_NOSUCHSERVER		= " :No such server";
+	num.MSG_ERR_NOTEXTTOSEND		= " :No text to send";
 	num.MSG_ERR_NOTONCHANNEL		= " :You're not on that channel";
 	num.MSG_ERR_NOTREGISTERED		= " :You have not registered";
 	num.MSG_ERR_PASSWDMISMATCH		= " :Password incorrect";
 	num.MSG_ERR_TOOMANYCHANNELS		= "";
-	num.MSG_MSG_ERR_TOOMANYTARGETS = " :Duplicate recipients. No message delivered";
+	num.MSG_MSG_ERR_TOOMANYTARGETS	= " :Duplicate recipients. No message delivered";
 	num.MSG_ERR_UNKNOWNCOMMAND		= " :Unknown command";
-	num.MSG_ERR_WILDTOPLEVEL = " :Wildcard in toplevel domain";
+	num.MSG_ERR_USERONCHANNEL		= " :is already on channel";
+	num.MSG_ERR_WILDTOPLEVEL		= " :Wildcard in toplevel domain";
 
-	num.RPL_AWAY = "301";
+	num.RPL_AWAY					= "301";
 	num.RPL_CREATED					= "003";
 	num.RPL_CHANNELMODEIS			= "324";
 	num.RPL_ENDOFNAMES				= "366";
+	num.RPL_INVITING				= "341";
 	num.RPL_LIST					= "322";
 	num.RPL_LISTEND					= "323";
 	num.RPL_MYINFO					= "004";
@@ -1037,7 +1121,7 @@ void	Server::initNum(void)
 	num.RPL_WELCOME					= "001";
 	num.RPL_YOURHOST				= "002";
 
-	num.MSG_RPL_AWAY = "";
+	num.MSG_RPL_AWAY				= "";
 	num.MSG_RPL_CREATED				= " :This server was created ";
 	num.MSG_RPL_ENDOFNAMES			= " :End of /NAMES list";
 	num.MSG_RPL_LISTEND				= " :End of /LIST";

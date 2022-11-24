@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/23 01:54:51 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/24 19:14:24 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,7 @@ typedef struct s_num
 	std::string	ERR_TOOMANYCHANNELS;
 	std::string	ERR_TOOMANYTARGETS;
 	std::string ERR_UNKNOWNCOMMAND;
+	std::string ERR_USERONCHANNEL;
 	std::string	ERR_WILDTOPLEVEL;
 
 	std::string	MSG_ERR_ALREADYREGISTERED;
@@ -141,12 +142,14 @@ typedef struct s_num
 	std::string	MSG_ERR_TOOMANYCHANNELS;
 	std::string	MSG_MSG_ERR_TOOMANYTARGETS;
 	std::string MSG_ERR_UNKNOWNCOMMAND;
+	std::string MSG_ERR_USERONCHANNEL;
 	std::string	MSG_ERR_WILDTOPLEVEL;
 
 	std::string	RPL_AWAY;
 	std::string	RPL_CREATED;
 	std::string	RPL_CHANNELMODEIS;
 	std::string	RPL_ENDOFNAMES;
+	std::string	RPL_INVITING;
 	std::string	RPL_LIST;
 	std::string	RPL_LISTEND;
 	std::string	RPL_MYINFO;
