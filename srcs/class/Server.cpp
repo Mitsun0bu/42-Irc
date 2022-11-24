@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/24 00:15:06 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/24 15:09:21 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -383,8 +383,8 @@ bool	Server::checkUserPermissions(User &user, Channel &channel)
 {
 	if (channel._bannedMembers.find(user._socket) != channel._bannedMembers.end() ||
 			channel._members.find(user._socket) == channel._members.end())
-		return (true);
-	return (false);
+		return (false);
+	return (true);
 }
 
 bool	Server::parseTargetPrefix(const std::string &target)
@@ -567,6 +567,7 @@ void	Server::handleJoinCmd(User &user, std::vector<std::string> &cmdTokens)
 				numericReply(user, num.ERR_BADCHANNELKEY, channelNames[i], num.MSG_ERR_BADCHANNELKEY);
 				return ;
 			}
+			_channels[channelNames[i]]._members.insert(user._socket);
 		}
 		// IF CHANNEL DOES NOT EXIST
 		else
@@ -585,6 +586,7 @@ void	Server::handleJoinCmd(User &user, std::vector<std::string> &cmdTokens)
 
 		user.addLocation(channelNames[i]);
 		cmdReply(user, "JOIN", channelNames[i]);
+		sendCmdToChannel(user, "JOIN", _channels[channelNames[i]]._members, channelNames[i], "");
 		replyTopic(user, channelNames[i]);
 		handleNamesCmd(user, cmdTokens);
 	}
@@ -827,13 +829,6 @@ int		Server::handleChannelModeError(User& user, std::string& channelName)
 		return (FAILED);
 	}
 
-	// CHECK IF THE USER IS AN OPERATOR
-	if (user.isOperator(_channels[channelName]._operators) == false)
-	{
-		numericReply(user, num.ERR_CHANOPRIVSNEEDED, channelName, num.MSG_ERR_CHANOPRIVSNEEDED);
-		return (FAILED);
-	}
-
 	return (SUCCESS);
 }
 
@@ -844,7 +839,14 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 	std::vector<std::string>	modearguments;
 	if (cmdTokens.size() > 3)
 		tokenizer(cmdTokens[3], " ", modearguments);
-
+	
+	// CHECK IF THE USER IS AN OPERATOR
+	if (user.isOperator(channel._operators) == false)
+	{
+		numericReply(user, num.ERR_CHANOPRIVSNEEDED, channel._name, num.MSG_ERR_CHANOPRIVSNEEDED);
+		return ;
+	}
+	
 	if (modestring == "-k" && modearguments[0].length() == 0)
 	{
 		channel.unsetKey();
