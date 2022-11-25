@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/23 01:54:51 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/25 02:45:11 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@
 # define BGREEN					"\x1B[92m"
 # define BMAGENTA				"\x1B[95m"
 # define BRED					"\x1B[91m"
-# define BYELLOW				"\x1B[93m"
+# define BYELLOW			"\x1B[93m"
 # define END					"\033[0m"
 
 # define PASS			0
@@ -52,6 +52,8 @@
 # define MODE			13
 # define PRIVMSG	14
 # define NOTICE		15
+
+# define NCMD		16
 
 # define FAILED					-1
 # define SUCCESS				0
@@ -115,7 +117,9 @@ typedef struct s_num
 	std::string	ERR_TOOMANYCHANNELS;
 	std::string	ERR_TOOMANYTARGETS;
 	std::string ERR_UNKNOWNCOMMAND;
+	std::string ERR_USERNOTINCHANNEL;
 	std::string	ERR_WILDTOPLEVEL;
+
 
 	std::string	MSG_ERR_ALREADYREGISTERED;
 	std::string	MSG_ERR_BADCHANMASK;
@@ -141,6 +145,7 @@ typedef struct s_num
 	std::string	MSG_ERR_TOOMANYCHANNELS;
 	std::string	MSG_MSG_ERR_TOOMANYTARGETS;
 	std::string MSG_ERR_UNKNOWNCOMMAND;
+	std::string MSG_ERR_USERNOTINCHANNEL;
 	std::string	MSG_ERR_WILDTOPLEVEL;
 
 	std::string	RPL_AWAY;

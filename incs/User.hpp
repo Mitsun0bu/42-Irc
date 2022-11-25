@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:23:53 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/23 21:09:49 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/24 16:43:20 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,8 @@ class User
 		std::string 						_username;
 		std::string 						_realname;
 		std::string							_mode;
-		std::string							_cmd;
+		std::string							_cmdReceived;
+		int											_cmdToExecute;
 
 		/* member functions												*/
 		void					setIp(void);

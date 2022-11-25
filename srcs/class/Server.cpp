@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/24 15:44:02 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/25 04:04:42 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,16 @@ Server::Server(int port, std::string passwd, int addressFamily, int socketType, 
 	this->_date = ctime(&t);
 	this->_date.pop_back();
 	initNum();
+
+	std::string cmdNames[NCMD]	= {
+						"PASS" 	, "CAP"		, "NICK"   	, "USER" 	,
+						"PING" 	, "QUIT"	, "JOIN"  	, "PART" 	,
+						"TOPIC"	, "NAMES"	, "LIST"  	, "INVITE",
+						"KICK" 	, "MODE"	, "PRIVMSG"	, "NOTICE"
+						};
+
+	for (int i = 0; i < NCMD; i++)
+		_cmdMap.insert(std::pair<int,std::string>(i, cmdNames[i]));
 
 	std::cout	<< BLUE
 				<< "[CONSTRUCTOR] : "
@@ -225,7 +235,7 @@ void	Server::handleClientData(int &currentFd)
 	User &currentUser = _users[currentFd];
 
 	byteCount = recv(currentFd, buffer, 256, 0);
-	currentUser._cmd += buffer;
+	currentUser._cmdReceived += buffer;
 	if (byteCount <= 0)
 	{
 		this->printRecvError(byteCount, currentFd);
@@ -236,10 +246,11 @@ void	Server::handleClientData(int &currentFd)
 	}
 	else
 	{
-		if (currentUser._cmd[currentUser._cmd.length() - 1] != '\n')
+		if (currentUser._cmdReceived[currentUser._cmdReceived.length() - 1] != '\n')
 			return ;
-		tokenizer(currentUser._cmd, "\r\n", cmds);
-
+		tokenizer(currentUser._cmdReceived, "\r\n", cmds);
+		currentUser._cmdReceived.clear();
+		
 		for(size_t i = 0; i < cmds.size(); i ++)
 		{
 			tokenizer(cmds[i], " ", cmdTokens);
@@ -260,28 +271,25 @@ void	Server::printRecvError(int byteCount, int currentFd)
 
 int		Server::findCmdToExecute(std::string &cmd)
 {
-	const int	nCmd	= 16;
-	std::string cmdList[nCmd]	= {
-								"PASS" 	, "CAP"		, "NICK"   	, "USER" 	,
-								"PING" 	, "QUIT"	, "JOIN"  	, "PART" 	,
-								"TOPIC"	, "NAMES"	, "LIST"  	, "INVITE",
-								"KICK" 	, "MODE"	, "PRIVMSG"	,"NOTICE"
-							 };
+	std::map<int, std::string>::iterator it;
 
-	for (size_t i = 0; i < nCmd; i++)
-		if (cmd == cmdList[i])
-			return (i);
+	for (it = _cmdMap.begin(); it != _cmdMap.end(); it++)
+	{
+		if (cmd == it->second)
+			return it->first;
+	}
 	return (FAILED);
+	
 }
 
 void	Server::handleCmd(User &user, std::vector<std::string> &cmdTokens)
 {
-	int	cmdToExecute = this->findCmdToExecute(cmdTokens[0]);
+	user._cmdToExecute = this->findCmdToExecute(cmdTokens[0]);
 
-	if (!user._isAuthenticated && cmdToExecute > 4)
+	if (!user._isAuthenticated && user._cmdToExecute > 4)
 		return(this->numericReply(user, num.ERR_NOTREGISTERED, cmdTokens[0], num.MSG_ERR_NOTREGISTERED));
 
-	switch(cmdToExecute)
+	switch(user._cmdToExecute)
 	{
 		case PASS:
 			this->handlePass(user, cmdTokens);
@@ -315,25 +323,55 @@ void	Server::handleCmd(User &user, std::vector<std::string> &cmdTokens)
 		case LIST:
 			this->handleListCmd(user, cmdTokens);
 			break;
+		case KICK:
+			this->handleKick(user, cmdTokens);
+			break;
 		case MODE:
 			this->handleChannelMode(user, cmdTokens);
 			break;
 		case PRIVMSG:
+		case NOTICE:
 			this->handlePrivmsg(user, cmdTokens);
 			break;
 		default:
 			this->numericReply(user, num.ERR_UNKNOWNCOMMAND, cmdTokens[0], num.MSG_ERR_UNKNOWNCOMMAND);
 	}
+}
 
-	user._cmd.clear();
+void	Server::handleKick(User &user, std::vector<std::string> &cmdTokens)
+{
+	std::string msg = cmdTokens[2];
+
+	if (cmdTokens.size() > 3)
+		for (size_t i = 3; i < cmdTokens.size(); i++)
+			msg.append(" " + cmdTokens[i]);
+
+	if (_channels.find(cmdTokens[1]) == _channels.end())
+		numericReply(user, num.ERR_NOSUCHCHANNEL, cmdTokens[1], num.MSG_ERR_NOSUCHCHANNEL);
+	else if (_channels[cmdTokens[1]]._operators.find(user._socket) == _channels[cmdTokens[1]]._operators.end())
+		numericReply(user, num.ERR_CHANOPRIVSNEEDED, cmdTokens[1], num.MSG_ERR_CHANOPRIVSNEEDED);
+	else if (isNickAvailable(cmdTokens[2]))
+		numericReply(user, num.ERR_NOSUCHNICK, cmdTokens[2], num.MSG_ERR_NOSUCHNICK);
+	else if (_channels[cmdTokens[1]]._members.find(getUserSocket(cmdTokens[2])) == _channels[cmdTokens[1]]._members.end())
+		numericReply(user, num.ERR_USERNOTINCHANNEL, cmdTokens[2], num.MSG_ERR_USERNOTINCHANNEL);
+	else
+	{		
+		cmdReply(user, "KICK", cmdTokens[1] + " " + msg);
+		sendCmdToChannel(user, "KICK", _channels[cmdTokens[1]]._members, cmdTokens[1], msg);
+		removeUserFromChannel(_users[getUserSocket(cmdTokens[2])], _channels[cmdTokens[1]]);
+	}
+}
+
+void	Server::removeUserFromChannel(User &user, Channel &channel)
+{
+	if (channel._members.find(user._socket) != channel._members.end())
+		channel._members.erase(user._socket);
+	if (channel._operators.find(user._socket) != channel._operators.end())
+		channel._operators.erase(user._socket);
 }
 
 void	Server::handlePrivmsg(User &user, std::vector<std::string> &cmdTokens)
 {
-	// forcer les ':' avant le msg ?
-	// Parsing de channelName -> '#' possible a l'intérieur du nom ?
-	// _users peuvent ils être away ?
-
 	std::vector<std::string> targets;
 	std::string msg;
 
@@ -352,31 +390,30 @@ void	Server::handlePrivmsg(User &user, std::vector<std::string> &cmdTokens)
 
 void	Server::sendMsgToUser(User &sender, std::string &target, std::string &msg)
 {
-	int targetSocket = getUser(target);
+	int targetSocket = getUserSocket(target);
 
-	if (targetSocket == FAILED)
+	if (targetSocket == FAILED && _cmdMap[sender._cmdToExecute] == "PRIVMSG")
 		numericReply(sender, num.ERR_NOSUCHNICK, target, num.MSG_ERR_NOSUCHNICK);
 	else
-	{
-		sendCmdToUser(sender, "PRIVMSG", _users[targetSocket], msg);
-	}
+		sendCmdToUser(sender, _cmdMap[sender._cmdToExecute], _users[targetSocket], msg);
 }
 
 void	Server::sendMsgToChannel(User &sender, std::string &target, std::string &msg)
 {
 	std::string channelName = target.substr(target.find("#"), std::string::npos);
+	std::string	&cmd = _cmdMap[sender._cmdToExecute];
 
-	if (_channels.find(channelName) == _channels.end())
+	if (_channels.find(channelName) == _channels.end() && cmd == "PRIVMSG")
 		return(numericReply(sender, num.ERR_NOSUCHNICK, target, num.MSG_ERR_NOSUCHNICK));
 
 	Channel &channel = _channels[channelName];
-	if	(!parseTargetPrefix(target) || !checkUserPermissions(sender, channel))
+	if	((!parseTargetPrefix(target) || !checkUserPermissions(sender, channel)) && cmd == "PRIVMSG")
 		return(numericReply(sender, num.ERR_CANNOTSENDTOCHAN, target, num.MSG_ERR_CANNOTSENDTOCHAN));
 
 	if (target[0] == '@')
-		sendCmdToChannel(sender, "PRIVMSG", channel._operators, channelName, msg);
+		sendCmdToChannel(sender, cmd, channel._operators, channelName, msg);
 	else
-		sendCmdToChannel(sender, "PRIVMSG", channel._members, channelName, msg);
+		sendCmdToChannel(sender, cmd, channel._members, channelName, msg);
 }
 
 bool	Server::checkUserPermissions(User &user, Channel &channel)
@@ -398,7 +435,7 @@ bool	Server::parseTargetPrefix(const std::string &target)
 	return (true);
 }
 
-int	Server::getUser(std::string &nickname)
+int	Server::getUserSocket(std::string &nickname)
 {
 	std::map<int, User>::iterator it;
 
@@ -868,7 +905,7 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 	}
 	else if (modestring == "+o" && modearguments[0].length() != 0)
 	{
-		channel.addOperator(getUser(modearguments[0]));
+		channel.addOperator(getUserSocket(modearguments[0]));
 		cmdReply(user, "MODE", channel._name + " " + modestring + " " + modearguments[0]);
 	}
 
@@ -978,6 +1015,7 @@ void	Server::initNum(void)
 	num.ERR_TOOMANYCHANNELS			= "405";
 	num.ERR_TOOMANYTARGETS = "407";
 	num.ERR_UNKNOWNCOMMAND			= "421";
+	num.ERR_USERNOTINCHANNEL = "441";
 	num.ERR_WILDTOPLEVEL = "414";
 
 	num.MSG_ERR_ALREADYREGISTERED	= " :You may not reregister";
@@ -996,7 +1034,6 @@ void	Server::initNum(void)
 	num.MSG_ERR_NOORIGIN = " :No origin specified";
 	num.MSG_ERR_NOSUCHCHANNEL		= " :No such channel";
 	num.MSG_ERR_NORECIPIENT = " :No recipient given";
-	num.MSG_ERR_NOSUCHNICK = " :No such nick/channel";
 	num.MSG_ERR_NOSUCHSERVER = " :No such server";
 	num.MSG_ERR_NOTEXTTOSEND = " :No text to send";
 	num.MSG_ERR_NOTONCHANNEL		= " :You're not on that channel";
@@ -1005,6 +1042,7 @@ void	Server::initNum(void)
 	num.MSG_ERR_TOOMANYCHANNELS		= "";
 	num.MSG_MSG_ERR_TOOMANYTARGETS = " :Duplicate recipients. No message delivered";
 	num.MSG_ERR_UNKNOWNCOMMAND		= " :Unknown command";
+	num.MSG_ERR_USERNOTINCHANNEL = " :They aren't on that channel";
 	num.MSG_ERR_WILDTOPLEVEL = " :Wildcard in toplevel domain";
 
 	num.RPL_AWAY = "301";

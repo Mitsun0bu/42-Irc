@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:24:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/23 14:29:10 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/25 01:29:09 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-User::User(void) : _isAuthenticated(false)
+User::User(void) : _isAuthenticated(false), _cmdToExecute(-1)
 {
 	std::cout	<< BLUE
 				<< "[CONSTRUCTOR] : "
