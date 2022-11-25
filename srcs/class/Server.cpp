@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/25 04:04:42 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/25 04:58:15 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -368,6 +368,8 @@ void	Server::removeUserFromChannel(User &user, Channel &channel)
 		channel._members.erase(user._socket);
 	if (channel._operators.find(user._socket) != channel._operators.end())
 		channel._operators.erase(user._socket);
+	if (channel._operators.size() == 0)
+		_channels.erase(channel._name);
 }
 
 void	Server::handlePrivmsg(User &user, std::vector<std::string> &cmdTokens)
