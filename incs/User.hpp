@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:23:53 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/28 14:54:15 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/28 15:26:28 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,8 @@ class User
 		std::string 			_username;
 		std::string 			_realname;
 		std::string				_mode;
-		std::string				_cmd;
+		std::string				_cmdReceived;
+		int						_cmdToExecute;
 
 		/* member functions												*/
 		void					setIp(void);

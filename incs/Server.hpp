@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/28 14:57:04 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/28 15:25:16 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,21 +48,22 @@ class	Server
 
 		/* public attributes											*/
 		int								_port;
-		std::string						_passwd;
+		std::string				_passwd;
 		int								_addressFamily;
 		int								_socketType;
 		int								_socketFlag;
 		int								_socketBlockingMode;
 		int								_protocol;
-		const char*						_internetHostAddr;
+		const char*				_internetHostAddr;
 		int								_socket;
 		int								_nCmd;
-		struct sockaddr_in				_socketAddr;
-		t_num							num;
-		t_fdList						clientFdList;
-		std::string						_date;
-		std::map<int, User>				_users;
+		struct sockaddr_in							_socketAddr;
+		t_num														num;
+		t_fdList												clientFdList;
+		std::string											_date;
+		std::map<int, User>							_users;
 		std::map<std::string, Channel>	_channels;
+		std::map<int, std::string>			_cmdMap;
 
 		/* member functions												*/
 		int								bindSocket(int serverSocket, struct sockaddr_in& socketAddr);
@@ -138,6 +139,8 @@ class	Server
 		bool							checkUserPermissions(User &user, Channel &channel);
 		bool							parseTargetPrefix(const std::string &target);
 		int								getUserSocket(std::string &nick);
+		void							handleKick(User &user, std::vector<std::string> &cmdTokens);
+		void							removeUserFromChannel(User &user, Channel &channel);
 		void							handlePing(User &user, std::vector<std::string> &cmdTokens);
 		void							handleQuit(User &user, std::vector<std::string> &cmdTokens);
 		void							handlePass(User &user, std::vector<std::string> &cmdTokens);
