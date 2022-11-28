@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/25 04:58:15 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/28 14:14:37 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,13 +228,13 @@ void	Server::acceptNewUser(void)
 
 void	Server::handleClientData(int &currentFd)
 {
-	char						buffer[256]	= {0};
+	char						buffer[4080]	= {0};
 	int							byteCount	= 0;
 	std::vector<std::string>	cmds;
 	std::vector<std::string>	cmdTokens;
 	User &currentUser = _users[currentFd];
 
-	byteCount = recv(currentFd, buffer, 256, 0);
+	byteCount = recv(currentFd, buffer, 4080, 0);
 	currentUser._cmdReceived += buffer;
 	if (byteCount <= 0)
 	{
@@ -364,11 +364,11 @@ void	Server::handleKick(User &user, std::vector<std::string> &cmdTokens)
 
 void	Server::removeUserFromChannel(User &user, Channel &channel)
 {
-	if (channel._members.find(user._socket) != channel._members.end())
-		channel._members.erase(user._socket);
 	if (channel._operators.find(user._socket) != channel._operators.end())
 		channel._operators.erase(user._socket);
-	if (channel._operators.size() == 0)
+	if (channel._members.find(user._socket) != channel._members.end())
+		channel._members.erase(user._socket);
+	if (channel._members.size() == 0)
 		_channels.erase(channel._name);
 }
 
