@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:23:53 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/23 21:09:49 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/28 14:54:15 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,20 +40,20 @@ class User
 		User					&operator=(const User& src);
 
 		/* private attributes											*/
-		int											_socket;
+		int						_socket;
 		struct sockaddr_storage	_socketAddr;
-		socklen_t								_socketAddrSize;
-		char										_remoteIP[INET6_ADDRSTRLEN];
-		const void*							_inAddr;
-		bool										_validPasswd;
-		bool										_isAuthenticated;
-		std::set<std::string>		_locations;
-		std::string							_ip;
-		std::string 						_nickname;
-		std::string 						_username;
-		std::string 						_realname;
-		std::string							_mode;
-		std::string							_cmd;
+		socklen_t				_socketAddrSize;
+		char					_remoteIP[INET6_ADDRSTRLEN];
+		const void*				_inAddr;
+		bool					_validPasswd;
+		bool					_isAuthenticated;
+		std::set<std::string>	_locations;
+		std::string				_ip;
+		std::string 			_nickname;
+		std::string 			_username;
+		std::string 			_realname;
+		std::string				_mode;
+		std::string				_cmd;
 
 		/* member functions												*/
 		void					setIp(void);

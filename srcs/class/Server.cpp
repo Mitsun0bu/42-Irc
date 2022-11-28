@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/24 19:30:33 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/28 15:15:09 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -816,17 +816,10 @@ void	Server::handleListCmd(User &user, std::vector<std::string> &cmdTokens)
 
 void	Server::handleInviteCmd(User &user, std::vector<std::string> &cmdTokens)
 {
-
-	// DEBUG BLOCK
-	std::cout << "~~~ HANDLE INVITE - START ~~~" << std::endl;
-
-	for(size_t i = 0; i < cmdTokens.size(); i++)
-		std::cout << cmdTokens[i] << std::endl;
-	// DEBUG BLOCK
-
 	if (cmdTokens.size() != 3)
 		return ;
 
+	std::string	userInviting	= user._nickname;
 	std::string	userToInvite	= cmdTokens[1];
 	std::string	channelName		= cmdTokens[2];
 
@@ -854,35 +847,28 @@ void	Server::handleInviteCmd(User &user, std::vector<std::string> &cmdTokens)
 	// IF USER TO INVITE IS ALREADY A CHANNEL MEMBER
 	if (_channels[channelName].isMember(getUserSocket(userToInvite)) == true)
 	{
-		// ERR_USERONCHANNEL
-		// "<client> <nick> <channel> :is already on channel"
 		std::string	inChannelMsg = " " + userToInvite + " " + channelName;
 		numericReply(user, num.ERR_USERONCHANNEL, inChannelMsg, num.MSG_ERR_USERONCHANNEL);
 		return ;
 	}
 
-	// When the invite is successful, the server MUST send a RPL_INVITING numeric to the command issuer,
-	// and an INVITE message, with the issuer as <source>, to the target user.
-	// Other channel members SHOULD NOT be notified.
+	numericReply(user, num.RPL_INVITING, " " + user._nickname + " " + userToInvite + " " + channelName);
+	sendInvitation(userInviting, userToInvite, channelName);
 
-	numericReply(user, num.RPL_INVITING, user._nickname + " " + userToInvite + " " + channelName);
-	sendInvitation(userToInvite, channelName);
-
-	// DEBUG BLOCK
-	std::cout << "~~~ HANDLE INVITE - END ~~~" << std::endl;
-	// DEBUG BLOCK
+	return ;
 }
 
-void	Server::sendInvitation(std::string userToInvite, std::string channelName)
+void	Server::sendInvitation(std::string userInviting, std::string userToInvite, std::string channelName)
 {
-	std::string	invitationMsg = "INVITE " + userToInvite + " " + channelName + "\r\n";
-	int	socket = getUserSocket(userToInvite);
+	std::string	invitationMsg	= ":" + userInviting + " INVITE " + userToInvite + " " + channelName + "\r\n";
+	int			socket			= getUserSocket(userToInvite);
+
+	std::cout << "invitation : " << invitationMsg << std::endl;
 
 	if (FD_ISSET(socket, &this->clientFdList.write))
 		if (send(socket, invitationMsg.c_str(), invitationMsg.size(), 0) == FAILED)
 			perror("send()");
 }
-
 
 void	Server::handleChannelMode(User& user, std::vector<std::string> &cmdTokens)
 {

@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/24 19:29:50 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/28 14:57:04 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ class	Server
 		void							handleListCmd(User &user, std::vector<std::string> &cmdTokens);
 
 		void							handleInviteCmd(User &user, std::vector<std::string> &cmdTokens);
-		void							sendInvitation(std::string userToInvite, std::string channelName);
+		void							sendInvitation(std::string userInviting, std::string userToInvite, std::string channelName);
 
 		void							handlePrivmsg(User &user, std::vector<std::string> &cmdTokens);
 		void							sendMsgToChannel(User &sender, std::string &target, std::string &msg);
