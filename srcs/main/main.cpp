@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:32:28 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/28 15:20:17 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/28 19:15:40 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,8 @@
 	TO DO LIST :
 
 	checkChannelName	---> interdire les ‘#’ à l’intérieur du nom
-	handlePartCmd		---> Gerer les opérateurs
+	partCmd		---> Gerer les opérateurs
 	Ne pas supprimer une channel si il n'y a plus d'operateur
-	handleInviteCmd		---> Faire en sortre que le user invité join la channel directement apres avoir recu l'invite
 */
 
 int	main(int ac, char** av)
