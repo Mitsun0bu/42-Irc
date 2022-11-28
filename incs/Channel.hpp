@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:23:07 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/24 16:52:34 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/28 16:36:19 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,11 @@ class Channel
 		std::string		_topic;
 		bool			_topicIsSet;
 		std::set<int>	_members;
+		std::set<int>	_allowedMembers;
 		std::set<int>	_bannedMembers;
 		std::set<int>	_operators;
-		std::string		_mode;
+		std::string		_modeKey;
+		std::string		_modeInvite;
 
 
 		/* operator overload											*/

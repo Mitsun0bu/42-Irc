@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/28 15:31:23 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/28 16:56:18 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -609,6 +609,13 @@ void	Server::handleJoinCmd(User &user, std::vector<std::string> &cmdTokens)
 				numericReply(user, num.ERR_BADCHANNELKEY, channelNames[i], num.MSG_ERR_BADCHANNELKEY);
 				return ;
 			}
+			// IF THE CHANNEL IS IN INVITE ONLY MODE AND USER IS NOT ALLOWED
+			if (_channels[channelNames[i]]._modeInvite == "+i"
+			&& _channels[channelNames[i]]._allowedMembers.find(user._socket) == _channels[channelNames[i]]._allowedMembers.end())
+			{
+				numericReply(user, num.ERR_INVITEONLYCHAN, channelNames[i], num.MSG_ERR_INVITEONLYCHAN);
+				return ;
+			}
 			_channels[channelNames[i]]._members.insert(user._socket);
 		}
 		// IF CHANNEL DOES NOT EXIST
@@ -862,26 +869,8 @@ void	Server::handleInviteCmd(User &user, std::vector<std::string> &cmdTokens)
 	std::string	userToInvite	= cmdTokens[1];
 	std::string	channelName		= cmdTokens[2];
 
-	// IF CHANNEL DOES NOT EXIST
-	if (channelExists(channelName) == false)
-	{
-		numericReply(user, num.ERR_NOSUCHCHANNEL, channelName, num.MSG_ERR_NOSUCHCHANNEL);
+	if (handleInviteError(user, channelName) == FAILED)
 		return ;
-	}
-
-	// IF INVITING USER IS NOT A CHANNEL MEMBER
-	if (_channels[channelName].isMember(user._socket) == false)
-	{
-		std::string	notInChannelMsg = " " + user._nickname + " " + channelName;
-		numericReply(user, num.ERR_NOTONCHANNEL, notInChannelMsg, num.MSG_ERR_NOTONCHANNEL);
-		return ;
-	}
-
-	// CHECK INVITE-ONLY MODE
-
-	// Servers MAY reject the command with the ERR_CHANOPRIVSNEEDED numeric.
-	// They SHOULD reject it when the channel has invite-only mode set,
-	// and the user is not a channel operator.
 
 	// IF USER TO INVITE IS ALREADY A CHANNEL MEMBER
 	if (_channels[channelName].isMember(getUserSocket(userToInvite)) == true)
@@ -893,16 +882,44 @@ void	Server::handleInviteCmd(User &user, std::vector<std::string> &cmdTokens)
 
 	numericReply(user, num.RPL_INVITING, " " + user._nickname + " " + userToInvite + " " + channelName);
 	sendInvitation(userInviting, userToInvite, channelName);
+	if (_channels[channelName]._modeInvite == "+i")
+		_channels[channelName]._allowedMembers.insert(getUserSocket(userToInvite));
 
 	return ;
+}
+
+int		Server::handleInviteError(User &user, std::string channelName)
+{
+	// IF CHANNEL DOES NOT EXIST
+	if (channelExists(channelName) == false)
+	{
+		numericReply(user, num.ERR_NOSUCHCHANNEL, channelName, num.MSG_ERR_NOSUCHCHANNEL);
+		return (FAILED);
+	}
+
+	// IF INVITING USER IS NOT A CHANNEL MEMBER
+	if (_channels[channelName].isMember(user._socket) == false)
+	{
+		std::string	notInChannelMsg = " " + user._nickname + " " + channelName;
+		numericReply(user, num.ERR_NOTONCHANNEL, notInChannelMsg, num.MSG_ERR_NOTONCHANNEL);
+		return (FAILED);
+	}
+
+	// IF CHANNEL IS IN INVITE-ONLY MODE AND INVITING USER IS NOT A CHANNEL OPERATOR
+	if (_channels[channelName]._modeInvite == "+i"
+	&& user.isOperator(_channels[channelName]._operators) == false)
+	{
+		numericReply(user, num.ERR_CHANOPRIVSNEEDED, channelName, num.MSG_ERR_CHANOPRIVSNEEDED);
+		return (FAILED);
+	}
+
+	return (SUCCESS);
 }
 
 void	Server::sendInvitation(std::string userInviting, std::string userToInvite, std::string channelName)
 {
 	std::string	invitationMsg	= ":" + userInviting + " INVITE " + userToInvite + " " + channelName + "\r\n";
 	int			socket			= getUserSocket(userToInvite);
-
-	std::cout << "invitation : " << invitationMsg << std::endl;
 
 	if (FD_ISSET(socket, &this->clientFdList.write))
 		if (send(socket, invitationMsg.c_str(), invitationMsg.size(), 0) == FAILED)
@@ -922,7 +939,7 @@ void	Server::handleChannelMode(User& user, std::vector<std::string> &cmdTokens)
 
 	// IF NO MODESTRING IS GIVEN
 	if (cmdTokens.size() == 2)
-		numericReply(user, num.RPL_CHANNELMODEIS, " " + target + " " + _channels[target]._mode);
+		numericReply(user, num.RPL_CHANNELMODEIS, " " + target + " " + _channels[target]._modeKey + _channels[target]._modeInvite);
 
 	if (cmdTokens.size() >= 3)
 		handleModeString(user, cmdTokens, _channels[target]);
@@ -975,7 +992,7 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 		else if (modestring[0] == '+' && modearguments.size() != 0)
 			channel.setKey(modearguments[0]);
 
-		numericReply(user, num.RPL_CHANNELMODEIS, " " + channel._name + " " + channel._mode);
+		numericReply(user, num.RPL_CHANNELMODEIS, " " + channel._name + " " + channel._modeKey);
 	}
 
 	// HANDLE CHANNEL OPERATOR MODE
@@ -992,6 +1009,15 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 		else if (modestring[0] == '+')
 			channel.addOperator(getUserSocket(modearguments[0]));
 		cmdReply(user, "MODE", channel._name + " " + modestring + " " + modearguments[0]);
+	}
+
+	// HANDLE INVITE ONLY MODE
+	if (modestring[1] == 'i')
+	{
+		if (modestring[0] == '-')
+			channel._modeInvite = "-i";
+		else if (modestring[0] == '+')
+			channel._modeInvite = "+i";
 	}
 
 	return ;
@@ -1113,7 +1139,7 @@ void	Server::initNum(void)
 	num.MSG_ERR_CHANNELISFULL		= "";
 	num.MSG_ERR_CHANOPRIVSNEEDED	= " :You're not channel operator";
 	num.MSG_ERR_ERRONEUSNICKNAME	= " :Erroneus nickname";
-	num.MSG_ERR_INVITEONLYCHAN		= "";
+	num.MSG_ERR_INVITEONLYCHAN		= " :Cannot join channel (+i)";
 	num.MSG_ERR_NEEDMOREPARAMS		= " :Not enough parameters";
 	num.MSG_ERR_NICKNAMEINUSE		= " :Nickname is already in use";
 	num.MSG_ERR_NONICKNAMEGIVEN		= " :No nickname given";

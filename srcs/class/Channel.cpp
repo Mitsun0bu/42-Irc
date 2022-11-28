@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:25:31 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/24 16:57:13 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/28 16:36:25 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ Channel::Channel(void)
 }
 
 Channel::Channel(std::string name) :
-	_name(name), _key(), _requiresKey(), _topic(), _topicIsSet(false), _members(), _operators(), _mode("-k")
+	_name(name), _key(), _requiresKey(), _topic(), _topicIsSet(false), _members(), _operators(), _modeKey("-k"), _modeInvite("-i")
 {
 	std::cout	<< BLUE
 				<< "[CONSTRUCTOR] : "
@@ -76,7 +76,8 @@ Channel&	Channel::operator=(Channel const & src)
 	this->_topicIsSet	= src._topicIsSet;
 	this->_members		= src._members;
 	this->_operators	= src._operators;
-	this->_mode			= src._mode;
+	this->_modeKey		= src._modeKey;
+	this->_modeInvite	= src._modeInvite;
 
 	return (*this);
 }
@@ -144,7 +145,7 @@ void	Channel::setKey(std::string key)
 {
 	_key			= key;
 	_requiresKey	= true;
-	_mode			= "+k";
+	_modeKey		= "+k";
 
 	return ;
 }
@@ -153,7 +154,7 @@ void	Channel::unsetKey()
 {
 	_key.clear();
 	_requiresKey	= false;
-	_mode			= "-k";
+	_modeKey		= "-k";
 
 	return ;
 }
