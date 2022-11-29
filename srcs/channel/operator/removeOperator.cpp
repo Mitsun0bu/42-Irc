@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sendCmd.cpp                                        :+:      :+:    :+:   */
+/*   removeOperator.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/28 18:42:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 10:09:47 by llethuil         ###   ########lyon.fr   */
+/*   Created: 2022/11/29 09:52:19 by llethuil          #+#    #+#             */
+/*   Updated: 2022/11/29 10:13:01 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,33 +16,26 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../../incs/Server.hpp"
+# include "../../../incs/Channel.hpp"
 # include "../../../incs/main.hpp"
 
 /* ************************************************************************** */
 /*                                                                            */
-/*                               ~~~ FUNCTIONS ~~~                            */
+/*                               ~~~ FUNCTION ~~~                             */
 /*                                                                            */
 /* ************************************************************************** */
 
-void	Server::sendCmdToUser(User &from, std::string cmd, User &target, std::string msg)
+void	Channel::removeOperator(int userSocket)
 {
-	std::string finalMsg = ":" + from._nickname + " " + cmd + " " + target._nickname + " " + msg + "\r\n";
+	std::set<int>::iterator operatorIterator;
 
-	if (FD_ISSET(target._socket, &this->clientFdList.write))
-		if (send(target._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
-			perror("send()");
-}
-
-void	Server::sendCmdToChannel(User &from, std::string cmd, std::set<int> &targets, std::string channel, std::string msg)
-{
-	std::string finalMsg = ":" + from._nickname + " " + cmd + " " + channel + " " + msg + "\r\n";
-	std::set<int>::iterator it;
-
-	for (it = targets.begin(); it != targets.end(); ++it)
+	for(operatorIterator = _operators.begin(); operatorIterator != _operators.end(); ++operatorIterator)
 	{
-		if (_users[*it]._socket != from._socket && FD_ISSET(_users[*it]._socket, &this->clientFdList.write))
-			if (send(_users[*it]._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
-				perror("send()");
+		if(*operatorIterator == userSocket)
+		{
+			_operators.erase(userSocket);
+			return ;
+		}
 	}
+	return ;
 }

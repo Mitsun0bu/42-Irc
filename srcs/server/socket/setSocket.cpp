@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   handleCmd.cpp                                      :+:      :+:    :+:   */
+/*   setSocket.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/28 19:07:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 10:07:01 by llethuil         ###   ########lyon.fr   */
+/*   Created: 2022/11/29 09:29:29 by llethuil          #+#    #+#             */
+/*   Updated: 2022/11/29 10:12:04 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,63 +25,26 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-void	Server::handleCmd(User &user, std::vector<std::string> &cmdTokens)
+int		Server::setSocket()
 {
-	user._cmdToExecute = this->findCmdToExecute(cmdTokens[0]);
+	this->_socket = socket(this->_addressFamily, this->_socketType, this->_protocol);
 
-	if (!user._isAuthenticated && user._cmdToExecute > 4)
-		return(this->numericReply(user, num.ERR_NOTREGISTERED, cmdTokens[0], num.MSG_ERR_NOTREGISTERED));
+	fcntl(this->_socket, this->_socketFlag, this->_socketBlockingMode);
 
-	switch(user._cmdToExecute)
+	this->setSocketAddr(this->_socketAddr, this->_internetHostAddr, this->_port);
+
+	if (this->bindSocket(this->_socket, this->_socketAddr) == FAILED)
+		return (FAILED);
+
+	if (listen(this->_socket, SOMAXCONN) == FAILED)
 	{
-		case PASS:
-			this->passCmd(user, cmdTokens);
-			break;
-		case CAP:
-			break;
-		case NICK:
-			this->nickCmd(user, cmdTokens);
-			break;
-		case USER:
-			this->userCmd(user, cmdTokens);
-			break;
-		case PING:
-			this->handlePing(user, cmdTokens);
-			break;
-		case QUIT:
-			this->quitCmd(user, cmdTokens);
-			break;
-		case JOIN:
-			this->joinCmd(user, cmdTokens);
-			break;
-		case PART:
-			this->partCmd(user, cmdTokens);
-			break;
-		case TOPIC:
-			this->topicCmd(user, cmdTokens);
-			break;
-		case NAMES:
-			this->namesCmd(user, cmdTokens);
-			break;
-		case LIST:
-			this->listCmd(user, cmdTokens);
-			break;
-		case INVITE:
-			this->inviteCmd(user, cmdTokens);
-			break;
-		case KICK:
-			this->kickCmd(user, cmdTokens);
-			break;
-		case MODE:
-			this->modeCmd(user, cmdTokens);
-			break;
-		case PRIVMSG:
-		case NOTICE:
-			this->privmsgCmd(user, cmdTokens);
-			break;
-		default:
-			this->numericReply(user, num.ERR_UNKNOWNCOMMAND, cmdTokens[0], num.MSG_ERR_UNKNOWNCOMMAND);
+		std::cerr	<< "Error : Server socket cannot listen to the targeted port !"
+					<< std::endl;
+
+		return (FAILED);
 	}
+
+	return (this->_socket);
 }
 
 /* ************************************************************************** */
@@ -90,15 +53,10 @@ void	Server::handleCmd(User &user, std::vector<std::string> &cmdTokens)
 /*                                                                            */
 /* ************************************************************************** */
 
-int		Server::findCmdToExecute(std::string &cmd)
+void	Server::setSocketAddr(struct sockaddr_in& socketAddr, const char* internetHostAddr, int port)
 {
-	std::map<int, std::string>::iterator it;
-
-	for (it = _cmdMap.begin(); it != _cmdMap.end(); it++)
-	{
-		if (cmd == it->second)
-			return it->first;
-	}
-	return (FAILED);
-
+	bzero(&socketAddr, sizeof(socketAddr));
+	socketAddr.sin_addr.s_addr	= inet_addr(internetHostAddr);
+	socketAddr.sin_family		= AF_INET;
+	socketAddr.sin_port			= htons(port);
 }

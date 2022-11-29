@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sendCmd.cpp                                        :+:      :+:    :+:   */
+/*   bindSocket.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/28 18:42:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 10:09:47 by llethuil         ###   ########lyon.fr   */
+/*   Created: 2022/11/29 09:29:19 by llethuil          #+#    #+#             */
+/*   Updated: 2022/11/29 10:11:44 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,28 +21,25 @@
 
 /* ************************************************************************** */
 /*                                                                            */
-/*                               ~~~ FUNCTIONS ~~~                            */
+/*                               ~~~ FUNCTION ~~~                             */
 /*                                                                            */
 /* ************************************************************************** */
 
-void	Server::sendCmdToUser(User &from, std::string cmd, User &target, std::string msg)
+int		Server::bindSocket(int serverSocket, struct sockaddr_in& socketAddr)
 {
-	std::string finalMsg = ":" + from._nickname + " " + cmd + " " + target._nickname + " " + msg + "\r\n";
+	int				bindResult	= 0;
+	unsigned int	addrSize	= sizeof(socketAddr);
 
-	if (FD_ISSET(target._socket, &this->clientFdList.write))
-		if (send(target._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
-			perror("send()");
-}
-
-void	Server::sendCmdToChannel(User &from, std::string cmd, std::set<int> &targets, std::string channel, std::string msg)
-{
-	std::string finalMsg = ":" + from._nickname + " " + cmd + " " + channel + " " + msg + "\r\n";
-	std::set<int>::iterator it;
-
-	for (it = targets.begin(); it != targets.end(); ++it)
+	bindResult = bind(serverSocket, (const struct sockaddr *)&socketAddr, addrSize);
+	if (bindResult == FAILED)
 	{
-		if (_users[*it]._socket != from._socket && FD_ISSET(_users[*it]._socket, &this->clientFdList.write))
-			if (send(_users[*it]._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
-				perror("send()");
+		std::cerr	<< "Error : Server socket cannot bind to address !"
+					<< std::endl;
+
+		close(serverSocket);
+
+		return (FAILED);
 	}
+
+	return (bindResult);
 }

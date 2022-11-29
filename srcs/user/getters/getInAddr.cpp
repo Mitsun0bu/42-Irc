@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sendCmd.cpp                                        :+:      :+:    :+:   */
+/*   getInAddr.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/28 18:42:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 10:09:47 by llethuil         ###   ########lyon.fr   */
+/*   Created: 2022/11/29 10:01:15 by llethuil          #+#    #+#             */
+/*   Updated: 2022/11/29 10:06:39 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,33 +16,22 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../../incs/Server.hpp"
-# include "../../../incs/main.hpp"
+# include "../../../incs/User.hpp"
 
 /* ************************************************************************** */
 /*                                                                            */
-/*                               ~~~ FUNCTIONS ~~~                            */
+/*                               ~~~ FUNCTION ~~~                             */
 /*                                                                            */
 /* ************************************************************************** */
 
-void	Server::sendCmdToUser(User &from, std::string cmd, User &target, std::string msg)
+const void*	User::getInAddr(void)
 {
-	std::string finalMsg = ":" + from._nickname + " " + cmd + " " + target._nickname + " " + msg + "\r\n";
+	struct sockaddr*	address = (struct sockaddr*)&this->_socketAddr;
 
-	if (FD_ISSET(target._socket, &this->clientFdList.write))
-		if (send(target._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
-			perror("send()");
-}
+	if (address->sa_family == AF_INET)
+		this->_inAddr = &(((struct sockaddr_in*)address)->sin_addr);
+	else
+		this->_inAddr = &(((struct sockaddr_in6*)address)->sin6_addr);
 
-void	Server::sendCmdToChannel(User &from, std::string cmd, std::set<int> &targets, std::string channel, std::string msg)
-{
-	std::string finalMsg = ":" + from._nickname + " " + cmd + " " + channel + " " + msg + "\r\n";
-	std::set<int>::iterator it;
-
-	for (it = targets.begin(); it != targets.end(); ++it)
-	{
-		if (_users[*it]._socket != from._socket && FD_ISSET(_users[*it]._socket, &this->clientFdList.write))
-			if (send(_users[*it]._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
-				perror("send()");
-	}
+	return (this->_inAddr);
 }

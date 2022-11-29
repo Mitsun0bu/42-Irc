@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sendCmd.cpp                                        :+:      :+:    :+:   */
+/*   handleClientData.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/28 18:42:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 10:09:47 by llethuil         ###   ########lyon.fr   */
+/*   Created: 2022/11/29 09:37:51 by llethuil          #+#    #+#             */
+/*   Updated: 2022/11/29 10:08:26 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,28 +21,39 @@
 
 /* ************************************************************************** */
 /*                                                                            */
-/*                               ~~~ FUNCTIONS ~~~                            */
+/*                               ~~~ FUNCTION ~~~                             */
 /*                                                                            */
 /* ************************************************************************** */
 
-void	Server::sendCmdToUser(User &from, std::string cmd, User &target, std::string msg)
+void	Server::handleClientData(int &currentFd)
 {
-	std::string finalMsg = ":" + from._nickname + " " + cmd + " " + target._nickname + " " + msg + "\r\n";
+	char						buffer[4080]	= {0};
+	int							byteCount	= 0;
+	std::vector<std::string>	cmds;
+	std::vector<std::string>	cmdTokens;
+	User &currentUser = _users[currentFd];
 
-	if (FD_ISSET(target._socket, &this->clientFdList.write))
-		if (send(target._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
-			perror("send()");
-}
-
-void	Server::sendCmdToChannel(User &from, std::string cmd, std::set<int> &targets, std::string channel, std::string msg)
-{
-	std::string finalMsg = ":" + from._nickname + " " + cmd + " " + channel + " " + msg + "\r\n";
-	std::set<int>::iterator it;
-
-	for (it = targets.begin(); it != targets.end(); ++it)
+	byteCount = recv(currentFd, buffer, 4080, 0);
+	currentUser._cmdReceived += buffer;
+	if (byteCount <= 0)
 	{
-		if (_users[*it]._socket != from._socket && FD_ISSET(_users[*it]._socket, &this->clientFdList.write))
-			if (send(_users[*it]._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
-				perror("send()");
+		this->printRecvError(byteCount, currentFd);
+		if (_users.find(currentFd) != _users.end())
+			logoutUser(_users[currentFd]);
+		close(currentFd);
+		FD_CLR(currentFd, &this->clientFdList.master);
+	}
+	else
+	{
+		if (currentUser._cmdReceived[currentUser._cmdReceived.length() - 1] != '\n')
+			return ;
+		tokenizer(currentUser._cmdReceived, "\r\n", cmds);
+		currentUser._cmdReceived.clear();
+
+		for(size_t i = 0; i < cmds.size(); i ++)
+		{
+			tokenizer(cmds[i], " ", cmdTokens);
+			this->handleCmd(currentUser, cmdTokens);
+		}
 	}
 }

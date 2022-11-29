@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:25:31 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/28 16:36:25 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/29 10:13:28 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,83 +80,6 @@ Channel&	Channel::operator=(Channel const & src)
 	this->_modeInvite	= src._modeInvite;
 
 	return (*this);
-}
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                         ~~~ MEMBER FUNCTIONS ~~~                           */
-/*                                                                            */
-/* ************************************************************************** */
-
-void	Channel::addMember(User &user)
-{
-	_members.insert(user._socket);
-}
-
-bool	Channel::isMember(int userSocket)
-{
-	if (_members.find(userSocket) == _members.end())
-		return (false);
-	else
-		return (true);
-}
-
-void	Channel::addOperator(int userSocket)
-{
-	_operators.insert(userSocket);
-}
-
-void	Channel::addOperator(User &user)
-{
-	_operators.insert(user._socket);
-}
-
-void	Channel::removeOperator(int userSocket)
-{
-	std::set<int>::iterator operatorIterator;
-
-	for(operatorIterator = _operators.begin(); operatorIterator != _operators.end(); ++operatorIterator)
-	{
-		if(*operatorIterator == userSocket)
-		{
-			_operators.erase(userSocket);
-			return ;
-		}
-	}
-	return ;
-}
-
-// void	Channel::removeOperator(User &user)
-// {
-// 	std::set<int>::iterator operatorIterator;
-
-// 	for(operatorIterator = _operators.begin(); operatorIterator != _operators.end(); ++operatorIterator)
-// 	{
-// 		if(*operatorIterator == user._socket)
-// 		{
-// 			_operators.erase(user._socket);
-// 			return ;
-// 		}
-// 	}
-// 	return ;
-// }
-
-void	Channel::setKey(std::string key)
-{
-	_key			= key;
-	_requiresKey	= true;
-	_modeKey		= "+k";
-
-	return ;
-}
-
-void	Channel::unsetKey()
-{
-	_key.clear();
-	_requiresKey	= false;
-	_modeKey		= "-k";
-
-	return ;
 }
 
 /* ************************************************************************** */

@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:32:28 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/28 19:15:40 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/29 09:49:05 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 	checkChannelName	---> interdire les ‘#’ à l’intérieur du nom
 	partCmd		---> Gerer les opérateurs
 	Ne pas supprimer une channel si il n'y a plus d'operateur
+	Rempalcer clientFdList par clientSocketList (apres merge avec Alex)
 */
 
 int	main(int ac, char** av)

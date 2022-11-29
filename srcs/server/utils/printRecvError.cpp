@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sendCmd.cpp                                        :+:      :+:    :+:   */
+/*   printRecvError.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/28 18:42:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 10:09:47 by llethuil         ###   ########lyon.fr   */
+/*   Created: 2022/11/29 09:36:34 by llethuil          #+#    #+#             */
+/*   Updated: 2022/11/29 10:12:09 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,28 +21,16 @@
 
 /* ************************************************************************** */
 /*                                                                            */
-/*                               ~~~ FUNCTIONS ~~~                            */
+/*                               ~~~ FUNCTION ~~~                             */
 /*                                                                            */
 /* ************************************************************************** */
 
-void	Server::sendCmdToUser(User &from, std::string cmd, User &target, std::string msg)
+void	Server::printRecvError(int byteCount, int currentFd)
 {
-	std::string finalMsg = ":" + from._nickname + " " + cmd + " " + target._nickname + " " + msg + "\r\n";
-
-	if (FD_ISSET(target._socket, &this->clientFdList.write))
-		if (send(target._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
-			perror("send()");
-}
-
-void	Server::sendCmdToChannel(User &from, std::string cmd, std::set<int> &targets, std::string channel, std::string msg)
-{
-	std::string finalMsg = ":" + from._nickname + " " + cmd + " " + channel + " " + msg + "\r\n";
-	std::set<int>::iterator it;
-
-	for (it = targets.begin(); it != targets.end(); ++it)
+	if (byteCount == 0)
 	{
-		if (_users[*it]._socket != from._socket && FD_ISSET(_users[*it]._socket, &this->clientFdList.write))
-			if (send(_users[*it]._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
-				perror("send()");
+		std::cerr << "Socket " << currentFd << " hung up !" << std::endl;
 	}
+	else
+		perror("recv()");
 }

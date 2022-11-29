@@ -6,7 +6,7 @@
 #    By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/31 14:42:54 by llethuil          #+#    #+#              #
-#    Updated: 2022/11/28 19:28:47 by llethuil         ###   ########lyon.fr    #
+#    Updated: 2022/11/29 10:16:27 by llethuil         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,52 +37,82 @@ RM				:=	rm -f
 
 INCS_DIR		:=	incs
 
-INCS_LST		:=	main.hpp					\
+INCS_LST		:=	main.hpp								\
+					Channel.hpp								\
+					Server.hpp								\
+					User.hpp								\
 
 SRCS_DIR		:=	srcs
 
-SRCS_SUBDIRS	:=	channel						\
-					main						\
-					message						\
-					parsing						\
-					server/commands				\
-					server/reply				\
-					server/send					\
-					server/utils				\
-					user						\
-					utils						\
+SRCS_SUBDIRS	:=	channel									\
+					channel/key								\
+					channel/member							\
+					channel/operator						\
+					main									\
+					message									\
+					parsing									\
+					server									\
+					server/comands							\
+					server/data								\
+					server/reply							\
+					server/send								\
+					server/socket							\
+					server/utils							\
+					user									\
+					user/getters							\
+					user/locations							\
+					user/operator							\
+					user/setters							\
+					utils									\
 
-SRCS_LST		:=	channel/Channel.cpp				\
-					user/User.cpp					\
-					server/Server.cpp				\
-					server/commands/handleCmd.cpp	\
-					server/commands/inviteCmd.cpp	\
-					server/commands/joinCmd.cpp		\
-					server/commands/kickCmd.cpp		\
-					server/commands/listCmd.cpp		\
-					server/commands/modeCmd.cpp		\
-					server/commands/namesCmd.cpp	\
-					server/commands/nickCmd.cpp		\
-					server/commands/partCmd.cpp		\
-					server/commands/passCmd.cpp		\
-					server/commands/pingCmd.cpp		\
-					server/commands/privmsgCmd.cpp	\
-					server/commands/quitCmd.cpp		\
-					server/commands/topicCmd.cpp	\
-					server/commands/userCmd.cpp		\
-					server/reply/cmdReply.cpp		\
-					server/reply/errorReply.cpp		\
-					server/reply/numericReply.cpp	\
-					server/send/sendCmd.cpp			\
-					server/send/sendMsg.cpp			\
-					server/utils/utilsChannels.cpp	\
-					server/utils/utilsUsers.cpp		\
-					main/main.cpp					\
-					main/launchServer.cpp			\
-					message/sendMsg.cpp				\
-					parsing/parseArguments.cpp		\
-					parsing/tokenizer.cpp			\
-					utils/intToStr.cpp				\
+SRCS_LST		:=	channel/Channel.cpp						\
+					channel/key/setKey.cpp					\
+					channel/key/unsetKey.cpp				\
+					channel/member/addMember.cpp			\
+					channel/member/isMember.cpp				\
+					channel/operator/addOperator.cpp		\
+					channel/operator/removeOperator.cpp		\
+					user/User.cpp							\
+					user/getters/getInAddr.cpp				\
+					user/locations/addLocation.cpp			\
+					user/operator/isOperator.cpp			\
+					user/setters/setIp.cpp					\
+					server/Server.cpp						\
+					server/commands/handleCmd.cpp			\
+					server/commands/inviteCmd.cpp			\
+					server/commands/joinCmd.cpp				\
+					server/commands/kickCmd.cpp				\
+					server/commands/listCmd.cpp				\
+					server/commands/modeCmd.cpp				\
+					server/commands/namesCmd.cpp			\
+					server/commands/nickCmd.cpp				\
+					server/commands/partCmd.cpp				\
+					server/commands/passCmd.cpp				\
+					server/commands/pingCmd.cpp				\
+					server/commands/privmsgCmd.cpp			\
+					server/commands/quitCmd.cpp				\
+					server/commands/topicCmd.cpp			\
+					server/commands/userCmd.cpp				\
+					server/data/handleClientData.cpp		\
+					server/data/searchForData.cpp			\
+					server/reply/cmdReply.cpp				\
+					server/reply/errorReply.cpp				\
+					server/reply/numericReply.cpp			\
+					server/send/sendCmd.cpp					\
+					server/send/sendMsg.cpp					\
+					server/socket/bindSocket.cpp			\
+					server/socket/clientFdListInit.cpp		\
+					server/socket/selectClientSocket.cpp	\
+					server/socket/bindSocket.cpp			\
+					server/utils/printRecvError.cpp			\
+					server/utils/utilsChannels.cpp			\
+					server/utils/utilsUsers.cpp				\
+					main/main.cpp							\
+					main/launchServer.cpp					\
+					message/sendMsg.cpp						\
+					parsing/parseArguments.cpp				\
+					parsing/tokenizer.cpp					\
+					utils/intToStr.cpp						\
 
 OBJS_DIR		:= .objs
 
