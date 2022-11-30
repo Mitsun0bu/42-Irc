@@ -109,11 +109,7 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 		{
 			channel.removeOperator(getUserSocket(modearguments[0]));
 			if (channel._operators.size() == 0)
-			{
 				deleteChannel(channel._name);
-				if (_channels.size() == 0)
-					_channels.clear();
-			}
 		}
 		else if (modestring[0] == '+')
 			channel.addOperator(getUserSocket(modearguments[0]));

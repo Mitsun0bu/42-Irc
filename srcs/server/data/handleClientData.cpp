@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 09:37:51 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 10:08:26 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 14:59:37 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	Server::handleClientData(int &currentFd)
 		if (_users.find(currentFd) != _users.end())
 			logoutUser(_users[currentFd]);
 		close(currentFd);
-		FD_CLR(currentFd, &this->clientFdList.master);
+		FD_CLR(currentFd, &this->_clientFdList.master);
 	}
 	else
 	{

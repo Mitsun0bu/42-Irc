@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   errorReply.cpp                                     :+:      :+:    :+:   */
+/*   setSocket.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/28 18:38:24 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 14:59:37 by llethuil         ###   ########lyon.fr   */
+/*   Created: 2022/11/30 14:55:28 by llethuil          #+#    #+#             */
+/*   Updated: 2022/11/30 14:55:43 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../../incs/Server.hpp"
-# include "../../../incs/main.hpp"
+# include "../../../incs/User.hpp"
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -25,10 +24,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-void	Server::errorReply(User &user, std::string reason)
+void	User::setSocket(int socket)
 {
-	std::string cmd = "Error :" + reason + "\r\n";
-	if (FD_ISSET(user._socket, &this->_clientFdList.write))
-		if (send(user._socket, cmd.c_str(), cmd.size(), 0) == FAILED)
-			perror("send");
+	_socket = socket;
 }

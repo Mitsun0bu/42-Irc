@@ -6,7 +6,7 @@
 #    By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/31 14:42:54 by llethuil          #+#    #+#              #
-#    Updated: 2022/11/30 11:04:40 by llethuil         ###   ########lyon.fr    #
+#    Updated: 2022/11/30 15:02:18 by llethuil         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -74,9 +74,10 @@ SRCS_LST		:=	channel/Channel.cpp						\
 					channel/operator/removeOperator.cpp		\
 					user/User.cpp							\
 					user/getters/getInAddr.cpp				\
+					user/getters/getSocket.cpp				\
 					user/locations/addLocation.cpp			\
 					user/operator/isOperator.cpp			\
-					user/setters/setIp.cpp					\
+					user/setters/setSocket.cpp				\
 					server/Server.cpp						\
 					server/commands/handleCmd.cpp			\
 					server/commands/inviteCmd.cpp			\

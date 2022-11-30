@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:42:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 10:09:47 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 14:59:37 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	Server::sendCmdToUser(User &from, std::string cmd, User &target, std::strin
 {
 	std::string finalMsg = ":" + from._nickname + " " + cmd + " " + target._nickname + " " + msg + "\r\n";
 
-	if (FD_ISSET(target._socket, &this->clientFdList.write))
+	if (FD_ISSET(target._socket, &this->_clientFdList.write))
 		if (send(target._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
 			perror("send()");
 }
@@ -41,7 +41,7 @@ void	Server::sendCmdToChannel(User &from, std::string cmd, std::set<int> &target
 
 	for (it = targets.begin(); it != targets.end(); ++it)
 	{
-		if (_users[*it]._socket != from._socket && FD_ISSET(_users[*it]._socket, &this->clientFdList.write))
+		if (_users[*it]._socket != from._socket && FD_ISSET(_users[*it]._socket, &this->_clientFdList.write))
 			if (send(_users[*it]._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
 				perror("send()");
 	}

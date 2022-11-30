@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:23:53 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/28 17:30:26 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 14:55:56 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ class User
 		bool					_validPasswd;
 		bool					_isAuthenticated;
 		std::set<std::string>	_locations;
-		std::string				_ip;
 		std::string 			_nickname;
 		std::string 			_username;
 		std::string 			_realname;
@@ -56,9 +55,10 @@ class User
 		int						_cmdToExecute;
 
 		/* member functions												*/
-		void					setIp(void);
 		void					addLocation(std::string channelName);
 		bool					isOperator(std::set<int> operatorSet);
+		int						getSocket(void) const;
+		void					setSocket(int socket);
 
 		/* destructor													*/
 								~User(void);

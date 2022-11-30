@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:08:07 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 10:07:09 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 14:59:37 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ void	Server::sendInvitation(std::string userInviting, std::string userToInvite, 
 	std::string	invitationMsg	= ":" + userInviting + " INVITE " + userToInvite + " " + channelName + "\r\n";
 	int			socket			= getUserSocket(userToInvite);
 
-	if (FD_ISSET(socket, &this->clientFdList.write))
+	if (FD_ISSET(socket, &this->_clientFdList.write))
 		if (send(socket, invitationMsg.c_str(), invitationMsg.size(), 0) == FAILED)
 			perror("send()");
 }

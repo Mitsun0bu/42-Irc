@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   setIp.cpp                                          :+:      :+:    :+:   */
+/*   getSocket.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/29 10:01:13 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 10:06:35 by llethuil         ###   ########lyon.fr   */
+/*   Created: 2022/11/30 14:54:07 by llethuil          #+#    #+#             */
+/*   Updated: 2022/11/30 14:54:25 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-void	User::setIp(void)
+int	User::getSocket(void) const
 {
-		this->_ip	= inet_ntop(
-									this->_socketAddr.ss_family,
-									this->getInAddr(),
-									this->_remoteIP,
-									INET6_ADDRSTRLEN
-							   );
+	return (_socket);
 }

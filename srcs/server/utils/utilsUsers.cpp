@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:58:24 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/28 19:06:13 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 14:53:56 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,34 +25,29 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-void	Server::acceptNewUser(void)
+void  Server::acceptNewUser(void)
 {
-	User		newUser;
+	int						socket;
+	struct sockaddr_storage	socketAddr;
+	socklen_t				socketAddrSize = 0;
 
-	newUser._socket = accept(
-								this->_socket,
-								(struct sockaddr *)&newUser._socketAddr,
-								&newUser._socketAddrSize
-							);
-	newUser.setIp();
+	socket = accept(this->_socket, (struct sockaddr*)&socketAddr, &socketAddrSize);
+	User &newUser = this->_users[socket];
 
-	if (newUser._socket == FAILED)
+	newUser._socketAddr = socketAddr;
+	newUser._socketAddrSize = socketAddrSize;
+	newUser.setSocket(socket);
+
+	if (newUser.getSocket() == FAILED)
+	{
 		perror("accept()");
+		this->_users.erase(socket);
+	}
 	else
 	{
-		FD_SET(newUser._socket, &this->clientFdList.master);
-
-		if (newUser._socket > this->clientFdList.max)
-			this->clientFdList.max = newUser._socket;
-
-		// DEBUG
-		std::cout	<< "~~~ New connection from "
-					<< newUser._ip
-					<< " on socket "
-					<< newUser._socket
-					<< " ~~~"
-					<< std::endl;
-		this->_users[newUser._socket] = newUser;
+		FD_SET(newUser.getSocket(), &this->_clientFdList.master);
+		if (newUser.getSocket() > this->_clientFdList.max)
+			this->_clientFdList.max = newUser.getSocket();
 	}
 }
 

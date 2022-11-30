@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:15:50 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 13:10:38 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 13:52:41 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,14 +72,7 @@ void	Server::partCmd(User &user, std::vector<std::string> &cmdTokens)
 
 				// IF THERE IS NO MEMBERS OR OPERATOR IN CHANNEL ANYMORE, DELETE THE CHANNEL
 				if (it->second._members.size() == 0 || it->second._operators.size() == 0)
-				{
 					deleteChannel(it->first);
-					if (_channels.size() == 0)
-					{
-						_channels.clear();
-						return ;
-					}
-				}
 			}
 		}
 	}

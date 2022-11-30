@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 09:37:49 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 10:08:30 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 14:59:37 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,9 @@
 
 void	Server::searchForData(void)
 {
-	for (int fd = 0; fd <= this->clientFdList.max; fd++)
+	for (int fd = 0; fd <= this->_clientFdList.max; fd++)
 	{
-		if (FD_ISSET(fd, &this->clientFdList.read))
+		if (FD_ISSET(fd, &this->_clientFdList.read))
 		{
 			if (fd == this->_socket)
 				this->acceptNewUser();

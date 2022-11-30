@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 12:06:16 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 14:59:37 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ class	Server
 		int								_nCmd;
 		struct sockaddr_in				_socketAddr;
 		t_num							num;
-		t_fdList						clientFdList;
+		t_fdList						_clientFdList;
 		std::string						_date;
 		std::map<int, User>				_users;
 		std::map<std::string, Channel>	_channels;

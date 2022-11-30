@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:24:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 10:03:21 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 15:01:16 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,9 +63,6 @@ User&	User::operator=(User const & src)
 	this->_socketAddrSize	= src._socketAddrSize;
 	strcpy(this->_remoteIP, src._remoteIP);
 	this->_inAddr = src._inAddr;
-	this->_ip = src._ip;
-
-
 
 	return (*this);
 }
