@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:23:07 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/24 15:38:53 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 15:40:11 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,7 @@ class Channel
 		/* constructors													*/
 		Channel(void);
 		Channel(std::string name);
-		/* copy constructor												*/
-		Channel(const Channel& src);
+
 		/* public attributes											*/
 		std::string		_name;
 		std::string		_key;
@@ -44,9 +43,11 @@ class Channel
 		std::string		_topic;
 		bool			_topicIsSet;
 		std::set<int>	_members;
+		std::set<int>	_allowedMembers;
 		std::set<int>	_bannedMembers;
 		std::set<int>	_operators;
-		std::string		_mode;
+		std::string		_modeKey;
+		std::string		_modeInvite;
 
 
 		/* operator overload											*/
@@ -54,19 +55,36 @@ class Channel
 
 		/* member functions												*/
 		void			addMember(User &user);
+		bool			isMember(int userSocket);
+		void			addOperator(int userSocket);
 		void			addOperator(User &user);
-		void			addOperator(int socket);
-		void			removeOperator(User &user);
-		void			setKey(std::string key);
+		void			removeOperator(int userSocket);
 		void			unsetKey(void);
 
-		// void				addMember(int userSocket);
-		// void				deleteMember(User &user);
-		// void				deleteMember(int userSocket);
-		// void				deleteOperator(User &user);
-		// void	sendMsgToMembers(const std::string &content, int socketException) const;
 
-		/* exceptions													*/
+		/* getters												*/
+		std::string		getName(void) const;
+		std::string		getKey(void) const;
+		bool			getRequiresKey(void) const;
+		std::string		getTopic(void) const;
+		bool			getTopicIsSet(void) const;
+		std::set<int>	getMembers(void) const;
+		std::set<int>	getBannedMembers(void) const;
+		std::set<int>	getOperators(void) const;
+		std::string		getModeKey(void) const;
+		std::string		getModeInvite(void) const;
+
+		/* setters												*/
+		void			setKey(std::string key);
+		void			setName(std::string name);
+		void			setRequiresKey(bool isRequired);
+		void			setTopic(std::string topic);
+		void			setTopicIsSet(bool isTopicSet);
+		void			setMembers(std::set<int> members);
+		void			setBannedMembers(std::set<int> bannedMembers);
+		void			setOperators(std::set<int> operators);
+		void			setModeKey(std::string mode);
+		void			setModeInvite(std::string mode);
 
 		/* destructor													*/
 							~Channel(void);

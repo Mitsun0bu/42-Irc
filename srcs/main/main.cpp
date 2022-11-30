@@ -6,38 +6,28 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:32:28 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/22 11:22:19 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 14:59:37 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "../../incs/main.hpp"
 
 /*
-	LISTE DES COMMANDES A CODER :
+	TO CHECK LIST :
 
-	CONNECTION
-		AUTHENTICATE
-		USER
-		PONG
+	rempalcer _clientFdList par clientSocketList (apres merge avec Alex) ??
 
-	CHANNEL OPERATIONS
-		INVITE
-		KICK
+	TO DO LIST :
 
-	SERVER QUERIES AND COMMANDS
-		MODE (gerer l'operateur)
-
-	SENDING MESSAGES
-		PRIVMSG
-		NOTICE
+	tout tester avec nc
 */
 
 int	main(int ac, char** av)
 {
 	// HANDLE PROGRAM ARGUMENTS
-	std::pair<int, std::string>	param				= parseArguments(ac, av);
-	int							port				= param.first;
-	std::string			passwd			= param.second;
+	std::pair<int, std::string>	param	= parseArguments(ac, av);
+	int							port	= param.first;
+	std::string					passwd	= param.second;
 
 	// CREATE SERVER
 	Server	server(

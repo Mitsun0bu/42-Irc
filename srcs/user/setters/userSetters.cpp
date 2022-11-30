@@ -3,21 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   UserSetters.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:24:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 15:07:14 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 15:31:20 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../incs/User.hpp"
+# include "../../../incs/User.hpp"
 
-void										User::setSocketAddr(struct sockaddr_storage socketAddr)
+void	User::setSocketAddr(struct sockaddr_storage socketAddr)
 {
 	_socketAddr = socketAddr;
 }
 
-void										User::setSocketAddrSize(socklen_t socketAddrSize)
+void	User::setSocketAddrSize(socklen_t socketAddrSize)
 {
 	_socketAddrSize = socketAddrSize;
 
@@ -41,11 +41,6 @@ void	User::setIsAuthenticated(bool isAuthenticated)
 void	User::setLocations(std::set<std::string> locations)
 {
 	_locations = locations;
-}
-
-void	User::setIp(std::string ip)
-{
-	_ip = ip;
 }
 
 void	User::setNickname(std::string nickname)

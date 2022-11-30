@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ChannelGetters.cpp                                 :+:      :+:    :+:   */
+/*   isOperator.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/07 10:25:31 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 03:22:07 by agirardi         ###   ########lyon.fr   */
+/*   Created: 2022/11/29 10:01:33 by llethuil          #+#    #+#             */
+/*   Updated: 2022/11/29 10:06:30 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,49 +16,17 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../incs/Channel.hpp"
+# include "../../../incs/User.hpp"
 
-std::string		Channel::getName(void) const
-{
-	return _name;
-}
+/* ************************************************************************** */
+/*                                                                            */
+/*                               ~~~ FUNCTION ~~~                             */
+/*                                                                            */
+/* ************************************************************************** */
 
-std::string		Channel::getKey(void) const
+bool	User::isOperator(std::set<int>	operatorSet)
 {
-	return _key;
-}
-
-bool					Channel::getRequiresKey(void) const
-{
-	return _requiresKey;
-}
-
-std::string		Channel::getTopic(void) const
-{
-	return _topic;
-}
-
-bool					Channel::getTopicIsSet(void) const
-{
-	return _topicIsSet;
-}
-
-std::set<int>	Channel::getMembers(void) const
-{
-	return _members;
-}
-
-std::set<int>	Channel::getBannedMembers(void) const
-{
-	return _bannedMembers;
-}
-
-std::set<int>	Channel::getOperators(void) const
-{
-	return _operators;
-}
-
-std::string		Channel::getMode(void) const
-{
-	return _mode;
+	if (operatorSet.find(_socket) != operatorSet.end())
+		return (true);
+	return (false);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:24:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/25 01:29:09 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 15:11:55 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,19 +37,6 @@ User::User(void) : _isAuthenticated(false), _cmdToExecute(-1)
 	return ;
 }
 
-User::User(User const & src)
-{
-	std::cout	<< ORANGE
-				<< "[COPY CONSTRUCTOR] : "
-				<< END
-				<< "A user has been duplicated !"
-				<< std::endl;
-
-	*this = src;
-
-	return ;
-}
-
 /* ************************************************************************** */
 /*                                                                            */
 /*                         ~~~ OPERATOR OVERLOAD ~~~                          */
@@ -63,58 +50,8 @@ User&	User::operator=(User const & src)
 	this->_socketAddrSize	= src._socketAddrSize;
 	strcpy(this->_remoteIP, src._remoteIP);
 	this->_inAddr = src._inAddr;
-	this->_ip = src._ip;
-
-
 
 	return (*this);
-}
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                         ~~~ MEMBER FUNCTIONS ~~~                           */
-/*                                                                            */
-/* ************************************************************************** */
-
-void	User::setIp(void)
-{
-		this->_ip	= inet_ntop(
-									this->_socketAddr.ss_family,
-									this->getInAddr(),
-									this->_remoteIP,
-									INET6_ADDRSTRLEN
-							   );
-}
-
-void	User::addLocation(std::string channelName)
-{
-	_locations.insert(channelName);
-	return ;
-}
-
-bool	User::isOperator(std::set<int>	operatorSet)
-{
-	if (operatorSet.find(_socket) != operatorSet.end())
-		return (true);
-	return (false);
-}
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                         ~~~ PRIVATE METHODS ~~~                            */
-/*                                                                            */
-/* ************************************************************************** */
-
-const void*	User::getInAddr(void)
-{
-	struct sockaddr*	address = (struct sockaddr*)&this->_socketAddr;
-
-	if (address->sa_family == AF_INET)
-		this->_inAddr = &(((struct sockaddr_in*)address)->sin_addr);
-	else
-		this->_inAddr = &(((struct sockaddr_in6*)address)->sin6_addr);
-
-	return (this->_inAddr);
 }
 
 /* ************************************************************************** */

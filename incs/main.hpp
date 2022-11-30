@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/25 02:45:11 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/11/28 15:33:37 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,44 +19,44 @@
 # ifndef MAIN_HPP
 # define MAIN_HPP
 
-# define BLUE					"\x1B[34m"
-# define CYAN					"\x1B[36m"
-# define GREEN					"\x1B[32m"
-# define MAGENTA				"\x1B[35m"
-# define ORANGE					"\x1B[34m"
-# define PURPLE					"\x1B[35m"
-# define RED					"\x1B[31m"
-# define WHITE					"\x1B[97m"
-# define YELLOW					"\x1B[33m"
-# define BBLUE					"\x1B[94m"
-# define BCYAN					"\x1B[96m"
-# define BGREEN					"\x1B[92m"
-# define BMAGENTA				"\x1B[95m"
-# define BRED					"\x1B[91m"
-# define BYELLOW			"\x1B[93m"
-# define END					"\033[0m"
+# define BLUE		"\x1B[34m"
+# define CYAN		"\x1B[36m"
+# define GREEN		"\x1B[32m"
+# define MAGENTA	"\x1B[35m"
+# define ORANGE		"\x1B[34m"
+# define PURPLE		"\x1B[35m"
+# define RED		"\x1B[31m"
+# define WHITE		"\x1B[97m"
+# define YELLOW		"\x1B[33m"
+# define BBLUE		"\x1B[94m"
+# define BCYAN		"\x1B[96m"
+# define BGREEN		"\x1B[92m"
+# define BMAGENTA	"\x1B[95m"
+# define BRED		"\x1B[91m"
+# define BYELLOW	"\x1B[93m"
+# define END		"\033[0m"
 
-# define PASS			0
-# define CAP			1
-# define NICK			2
-# define USER			3
-# define PING			4
-# define QUIT			5
-# define JOIN			6
-# define PART			7
+# define PASS		0
+# define CAP		1
+# define NICK		2
+# define USER		3
+# define PING		4
+# define QUIT		5
+# define JOIN		6
+# define PART		7
 # define TOPIC		8
 # define NAMES		9
-# define LIST			10
+# define LIST		10
 # define INVITE		11
-# define KICK			12
-# define MODE			13
+# define KICK		12
+# define MODE		13
 # define PRIVMSG	14
 # define NOTICE		15
 
 # define NCMD		16
 
-# define FAILED					-1
-# define SUCCESS				0
+# define FAILED		-1
+# define SUCCESS	0
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -117,6 +117,7 @@ typedef struct s_num
 	std::string	ERR_TOOMANYCHANNELS;
 	std::string	ERR_TOOMANYTARGETS;
 	std::string ERR_UNKNOWNCOMMAND;
+	std::string ERR_USERONCHANNEL;
 	std::string ERR_USERNOTINCHANNEL;
 	std::string	ERR_WILDTOPLEVEL;
 
@@ -145,6 +146,7 @@ typedef struct s_num
 	std::string	MSG_ERR_TOOMANYCHANNELS;
 	std::string	MSG_MSG_ERR_TOOMANYTARGETS;
 	std::string MSG_ERR_UNKNOWNCOMMAND;
+	std::string MSG_ERR_USERONCHANNEL;
 	std::string MSG_ERR_USERNOTINCHANNEL;
 	std::string	MSG_ERR_WILDTOPLEVEL;
 
@@ -152,6 +154,7 @@ typedef struct s_num
 	std::string	RPL_CREATED;
 	std::string	RPL_CHANNELMODEIS;
 	std::string	RPL_ENDOFNAMES;
+	std::string	RPL_INVITING;
 	std::string	RPL_LIST;
 	std::string	RPL_LISTEND;
 	std::string	RPL_MYINFO;
