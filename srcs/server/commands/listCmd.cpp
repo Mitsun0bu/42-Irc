@@ -35,7 +35,7 @@ void	Server::listCmd(User &user, std::vector<std::string> &cmdTokens)
 		{
 			std::string	memberCount	= intToStr(it->second._members.size());
 			std::string	listMsg		= " " + user._nickname + " " + it->second._name + " " + memberCount + " :" + it->second._topic;
-			numericReply(user, num.RPL_LIST, listMsg);
+			numericReply(user, _num.RPL_LIST, listMsg);
 		}
 	}
 	else
@@ -46,8 +46,8 @@ void	Server::listCmd(User &user, std::vector<std::string> &cmdTokens)
 			std::string	memberCount	= intToStr(_channels[channelNames[i]]._members.size());
 			std::string	topic		= _channels[channelNames[i]]._topic;
 			std::string	listMsg		= " " + user._nickname + " " + channelNames[i] + " " + memberCount + " :" + topic;
-			numericReply(user, num.RPL_LIST, listMsg);
+			numericReply(user, _num.RPL_LIST, listMsg);
 		}
 	}
-	numericReply(user, num.RPL_LISTEND, "", num.MSG_RPL_LISTEND);
+	numericReply(user, _num.RPL_LISTEND, "", _num.MSG_RPL_LISTEND);
 }

@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:58:24 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 14:53:56 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 15:17:32 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,10 +76,10 @@ bool	Server::isNickAvailable(std::string &nickname)
 void	Server::registerUser(User &user)
 {
 	user._isAuthenticated = true;
-	this->numericReply(user, num.RPL_WELCOME, user._nickname, num.MSG_RPL_WELCOME, user._nickname);
-	this->numericReply(user, num.RPL_YOURHOST, user._nickname, num.MSG_RPL_YOURHOST);
-	this->numericReply(user, num.RPL_CREATED, user._nickname, num.MSG_RPL_CREATED, _date);
-	this->numericReply(user, num.RPL_MYINFO, user._nickname, num.MSG_RPL_MYINFO);
+	this->numericReply(user, _num.RPL_WELCOME, user._nickname, _num.MSG_RPL_WELCOME, user._nickname);
+	this->numericReply(user, _num.RPL_YOURHOST, user._nickname, _num.MSG_RPL_YOURHOST);
+	this->numericReply(user, _num.RPL_CREATED, user._nickname, _num.MSG_RPL_CREATED, _date);
+	this->numericReply(user, _num.RPL_MYINFO, user._nickname, _num.MSG_RPL_MYINFO);
 }
 
 void	Server::logoutUser(User &user)

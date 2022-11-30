@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:07:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 10:07:01 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 15:17:32 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	Server::handleCmd(User &user, std::vector<std::string> &cmdTokens)
 	user._cmdToExecute = this->findCmdToExecute(cmdTokens[0]);
 
 	if (!user._isAuthenticated && user._cmdToExecute > 4)
-		return(this->numericReply(user, num.ERR_NOTREGISTERED, cmdTokens[0], num.MSG_ERR_NOTREGISTERED));
+		return(this->numericReply(user, _num.ERR_NOTREGISTERED, cmdTokens[0], _num.MSG_ERR_NOTREGISTERED));
 
 	switch(user._cmdToExecute)
 	{
@@ -80,7 +80,7 @@ void	Server::handleCmd(User &user, std::vector<std::string> &cmdTokens)
 			this->privmsgCmd(user, cmdTokens);
 			break;
 		default:
-			this->numericReply(user, num.ERR_UNKNOWNCOMMAND, cmdTokens[0], num.MSG_ERR_UNKNOWNCOMMAND);
+			this->numericReply(user, _num.ERR_UNKNOWNCOMMAND, cmdTokens[0], _num.MSG_ERR_UNKNOWNCOMMAND);
 	}
 }
 

@@ -30,9 +30,9 @@ void	Server::userCmd(User &user, std::vector<std::string> &cmdTokens)
 	if (!user._validPasswd)
 		return ;
 	else if (cmdTokens.size() < 4)
-		this->numericReply(user, num.ERR_NEEDMOREPARAMS, cmdTokens[0], num.MSG_ERR_NEEDMOREPARAMS);
+		this->numericReply(user, _num.ERR_NEEDMOREPARAMS, cmdTokens[0], _num.MSG_ERR_NEEDMOREPARAMS);
 	else if (user._isAuthenticated)
-		this->numericReply(user, num.ERR_ALREADYREGISTERED, num.MSG_ERR_ALREADYREGISTERED);
+		this->numericReply(user, _num.ERR_ALREADYREGISTERED, _num.MSG_ERR_ALREADYREGISTERED);
 	else
 	{
 		user._username = cmdTokens[1];

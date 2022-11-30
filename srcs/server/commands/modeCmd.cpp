@@ -38,7 +38,7 @@ void	Server::modeCmd(User& user, std::vector<std::string> &cmdTokens)
 
 	// IF NO MODESTRING IS GIVEN
 	if (cmdTokens.size() == 2)
-		numericReply(user, num.RPL_CHANNELMODEIS, " " + target + " " + _channels[target]._modeKey + _channels[target]._modeInvite);
+		numericReply(user, _num.RPL_CHANNELMODEIS, " " + target + " " + _channels[target]._modeKey + _channels[target]._modeInvite);
 
 	if (cmdTokens.size() >= 3)
 		handleModeString(user, cmdTokens, _channels[target]);
@@ -59,7 +59,7 @@ int		Server::handleChannelModeError(User& user, std::string& channelName)
 	// CHECK IF MODE ARGUMENT IS A CHANNEL THAT EXISTS IN THE SERVER
 	if (_channels.find(channelName) == _channels.end())
 	{
-		numericReply(user, num.ERR_NOSUCHCHANNEL, channelName, num.MSG_ERR_NOSUCHCHANNEL);
+		numericReply(user, _num.ERR_NOSUCHCHANNEL, channelName, _num.MSG_ERR_NOSUCHCHANNEL);
 		return (FAILED);
 	}
 
@@ -77,7 +77,7 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 	// CHECK IF THE USER IS AN OPERATOR
 	if (user.isOperator(channel._operators) == false)
 	{
-		numericReply(user, num.ERR_CHANOPRIVSNEEDED, channel._name, num.MSG_ERR_CHANOPRIVSNEEDED);
+		numericReply(user, _num.ERR_CHANOPRIVSNEEDED, channel._name, _num.MSG_ERR_CHANOPRIVSNEEDED);
 		return ;
 	}
 
@@ -97,7 +97,7 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 		else if (modestring[0] == '+' && modearguments.size() != 0)
 			channel.setKey(modearguments[0]);
 
-		numericReply(user, num.RPL_CHANNELMODEIS, " " + channel._name + " " + channel._modeKey);
+		numericReply(user, _num.RPL_CHANNELMODEIS, " " + channel._name + " " + channel._modeKey);
 	}
 
 	// HANDLE CHANNEL OPERATOR MODE

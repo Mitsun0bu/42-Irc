@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:16:35 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 10:07:34 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 15:17:32 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void	Server::namesCmd(User &user, std::vector<std::string> &cmdTokens)
 		//IF CHANNEL NAME IS INVALID
 		if (checkChannelName(channelNames[i]) == FAILED)
 		{
-			this->numericReply(user, num.RPL_ENDOFNAMES, nick + " " + channelNames[i], num.MSG_RPL_ENDOFNAMES);
+			this->numericReply(user, _num.RPL_ENDOFNAMES, nick + " " + channelNames[i], _num.MSG_RPL_ENDOFNAMES);
 			continue ;
 		}
 		// IF CHANNEL EXISTS
@@ -55,8 +55,8 @@ void	Server::namesCmd(User &user, std::vector<std::string> &cmdTokens)
 				namesMsg += " ";
 			}
 			std::cout << "namesMsg: " << namesMsg << std::endl;
-			this->numericReply(user, num.RPL_NAMREPLY, namesMsg);
+			this->numericReply(user, _num.RPL_NAMREPLY, namesMsg);
 		}
-		this->numericReply(user, num.RPL_ENDOFNAMES, nick + " " + channelNames[i], num.MSG_RPL_ENDOFNAMES);
+		this->numericReply(user, _num.RPL_ENDOFNAMES, nick + " " + channelNames[i], _num.MSG_RPL_ENDOFNAMES);
 	}
 }

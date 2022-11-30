@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:10:37 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 10:07:16 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 15:17:32 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	Server::joinCmd(User &user, std::vector<std::string> &cmdTokens)
 	{
 		if (checkChannelName(channelNames[i]) == FAILED)
 		{
-			numericReply(user, num.ERR_NOSUCHCHANNEL, channelNames[i], num.MSG_ERR_NOSUCHCHANNEL);
+			numericReply(user, _num.ERR_NOSUCHCHANNEL, channelNames[i], _num.MSG_ERR_NOSUCHCHANNEL);
 			continue ;
 		}
 		// IF CHANNEL ALREADY EXISTS
@@ -53,14 +53,14 @@ void	Server::joinCmd(User &user, std::vector<std::string> &cmdTokens)
 			if(_channels[channelNames[i]]._requiresKey == true
 			&& (channelKeys.size() == 0 || _channels[channelNames[i]]._key != channelKeys[i]))
 			{
-				numericReply(user, num.ERR_BADCHANNELKEY, channelNames[i], num.MSG_ERR_BADCHANNELKEY);
+				numericReply(user, _num.ERR_BADCHANNELKEY, channelNames[i], _num.MSG_ERR_BADCHANNELKEY);
 				return ;
 			}
 			// IF THE CHANNEL IS IN INVITE ONLY MODE AND USER IS NOT ALLOWED
 			if (_channels[channelNames[i]]._modeInvite == "+i"
 			&& _channels[channelNames[i]]._allowedMembers.find(user._socket) == _channels[channelNames[i]]._allowedMembers.end())
 			{
-				numericReply(user, num.ERR_INVITEONLYCHAN, channelNames[i], num.MSG_ERR_INVITEONLYCHAN);
+				numericReply(user, _num.ERR_INVITEONLYCHAN, channelNames[i], _num.MSG_ERR_INVITEONLYCHAN);
 				return ;
 			}
 			_channels[channelNames[i]]._members.insert(user._socket);

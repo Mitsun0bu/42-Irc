@@ -36,7 +36,7 @@ void	Server::topicCmd(User &user, std::vector<std::string> &cmdTokens)
 	if (user._locations.find(channelName) == user._locations.end())
 	{
 		std::string	notInChannelMsg = " " + user._nickname + " " + channelName;
-		numericReply(user, num.ERR_NOTONCHANNEL, notInChannelMsg, num.MSG_ERR_NOTONCHANNEL);
+		numericReply(user, _num.ERR_NOTONCHANNEL, notInChannelMsg, _num.MSG_ERR_NOTONCHANNEL);
 		return ;
 	}
 
@@ -76,10 +76,10 @@ void	Server::replyTopic(User& user, std::string channelName)
 	if (_channels[channelName]._topicIsSet == true)
 	{
 		topicMsg += " " + _channels[channelName]._topic;
-		numericReply(user, num.RPL_TOPIC, topicMsg);
+		numericReply(user, _num.RPL_TOPIC, topicMsg);
 	}
 	else
-		numericReply(user, num.RPL_NOTOPIC, topicMsg, num.MSG_RPL_NOTOPIC);
+		numericReply(user, _num.RPL_NOTOPIC, topicMsg, _num.MSG_RPL_NOTOPIC);
 	return ;
 }
 

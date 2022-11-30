@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:14:38 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 10:09:56 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 15:17:32 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	Server::sendMsgToUser(User &sender, std::string &target, std::string &msg)
 	int targetSocket = getUserSocket(target);
 
 	if (targetSocket == FAILED && _cmdMap[sender._cmdToExecute] == "PRIVMSG")
-		numericReply(sender, num.ERR_NOSUCHNICK, target, num.MSG_ERR_NOSUCHNICK);
+		numericReply(sender, _num.ERR_NOSUCHNICK, target, _num.MSG_ERR_NOSUCHNICK);
 	else
 		sendCmdToUser(sender, _cmdMap[sender._cmdToExecute], _users[targetSocket], msg);
 }
@@ -41,11 +41,11 @@ void	Server::sendMsgToChannel(User &sender, std::string &target, std::string &ms
 	std::string	&cmd = _cmdMap[sender._cmdToExecute];
 
 	if (_channels.find(channelName) == _channels.end() && cmd == "PRIVMSG")
-		return(numericReply(sender, num.ERR_NOSUCHNICK, target, num.MSG_ERR_NOSUCHNICK));
+		return(numericReply(sender, _num.ERR_NOSUCHNICK, target, _num.MSG_ERR_NOSUCHNICK));
 
 	Channel &channel = _channels[channelName];
 	if	((!parseTargetPrefix(target) || !checkUserPermissions(sender, channel)) && cmd == "PRIVMSG")
-		return(numericReply(sender, num.ERR_CANNOTSENDTOCHAN, target, num.MSG_ERR_CANNOTSENDTOCHAN));
+		return(numericReply(sender, _num.ERR_CANNOTSENDTOCHAN, target, _num.MSG_ERR_CANNOTSENDTOCHAN));
 
 	if (target[0] == '@')
 		sendCmdToChannel(sender, cmd, channel._operators, channelName, msg);

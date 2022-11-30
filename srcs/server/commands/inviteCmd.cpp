@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:08:07 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 14:59:37 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 15:17:32 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,11 @@ void	Server::inviteCmd(User &user, std::vector<std::string> &cmdTokens)
 	if (_channels[channelName].isMember(getUserSocket(userToInvite)) == true)
 	{
 		std::string	inChannelMsg = " " + userToInvite + " " + channelName;
-		numericReply(user, num.ERR_USERONCHANNEL, inChannelMsg, num.MSG_ERR_USERONCHANNEL);
+		numericReply(user, _num.ERR_USERONCHANNEL, inChannelMsg, _num.MSG_ERR_USERONCHANNEL);
 		return ;
 	}
 
-	numericReply(user, num.RPL_INVITING, " " + user._nickname + " " + userToInvite + " " + channelName);
+	numericReply(user, _num.RPL_INVITING, " " + user._nickname + " " + userToInvite + " " + channelName);
 	sendInvitation(userInviting, userToInvite, channelName);
 	if (_channels[channelName]._modeInvite == "+i")
 		_channels[channelName]._allowedMembers.insert(getUserSocket(userToInvite));
@@ -64,7 +64,7 @@ int		Server::handleInviteError(User &user, std::string channelName)
 	// IF CHANNEL DOES NOT EXIST
 	if (channelExists(channelName) == false)
 	{
-		numericReply(user, num.ERR_NOSUCHCHANNEL, channelName, num.MSG_ERR_NOSUCHCHANNEL);
+		numericReply(user, _num.ERR_NOSUCHCHANNEL, channelName, _num.MSG_ERR_NOSUCHCHANNEL);
 		return (FAILED);
 	}
 
@@ -72,7 +72,7 @@ int		Server::handleInviteError(User &user, std::string channelName)
 	if (_channels[channelName].isMember(user._socket) == false)
 	{
 		std::string	notInChannelMsg = " " + user._nickname + " " + channelName;
-		numericReply(user, num.ERR_NOTONCHANNEL, notInChannelMsg, num.MSG_ERR_NOTONCHANNEL);
+		numericReply(user, _num.ERR_NOTONCHANNEL, notInChannelMsg, _num.MSG_ERR_NOTONCHANNEL);
 		return (FAILED);
 	}
 
@@ -80,7 +80,7 @@ int		Server::handleInviteError(User &user, std::string channelName)
 	if (_channels[channelName]._modeInvite == "+i"
 	&& user.isOperator(_channels[channelName]._operators) == false)
 	{
-		numericReply(user, num.ERR_CHANOPRIVSNEEDED, channelName, num.MSG_ERR_CHANOPRIVSNEEDED);
+		numericReply(user, _num.ERR_CHANOPRIVSNEEDED, channelName, _num.MSG_ERR_CHANOPRIVSNEEDED);
 		return (FAILED);
 	}
 
