@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:23:07 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/28 16:36:19 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 15:11:23 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,7 @@ class Channel
 		/* constructors													*/
 		Channel(void);
 		Channel(std::string name);
-		/* copy constructor												*/
-		Channel(const Channel& src);
+
 		/* public attributes											*/
 		std::string		_name;
 		std::string		_key;

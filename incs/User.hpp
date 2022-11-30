@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:23:53 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 14:55:56 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 15:10:54 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,6 @@ class User
 	public :
 		/* constructors													*/
 								User(void);
-
-		/* copy constructor												*/
-								User(const User& src);
 
 		/* operator overload											*/
 		User					&operator=(const User& src);

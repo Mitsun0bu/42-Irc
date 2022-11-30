@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 09:49:15 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 15:12:06 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,19 +61,6 @@ Server::Server(int port, std::string passwd, int addressFamily, int socketType, 
 				<< END
 				<< "A Server has been created !"
 				<< std::endl;
-	return ;
-}
-
-Server::Server(Server const & src)
-{
-	std::cout	<< ORANGE
-				<< "[COPY CONSTRUCTOR] : "
-				<< END
-				<< "A Server has been duplicated !"
-				<< std::endl;
-
-	*this = src;
-
 	return ;
 }
 

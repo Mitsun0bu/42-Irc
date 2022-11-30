@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:24:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 15:01:16 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 15:11:55 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,19 +33,6 @@ User::User(void) : _isAuthenticated(false), _cmdToExecute(-1)
 				<< std::endl;
 
 	this->_socketAddrSize	= sizeof(this->_socketAddr);
-
-	return ;
-}
-
-User::User(User const & src)
-{
-	std::cout	<< ORANGE
-				<< "[COPY CONSTRUCTOR] : "
-				<< END
-				<< "A user has been duplicated !"
-				<< std::endl;
-
-	*this = src;
 
 	return ;
 }

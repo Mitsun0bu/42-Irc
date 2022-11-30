@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 14:59:37 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 15:11:13 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,9 +79,6 @@ class	Server
 										~Server(void);
 
 	private :
-
-		/* copy constructor												*/
-										Server(const Server& src);
 
 		/* operator overload											*/
 		Server							&operator=(const Server& src);

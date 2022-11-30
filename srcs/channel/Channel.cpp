@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:25:31 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 10:13:28 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 15:12:01 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,19 +44,6 @@ Channel::Channel(std::string name) :
 				<< END
 				<< "A Channel has been created !"
 				<< std::endl;
-
-	return ;
-}
-
-Channel::Channel(Channel const & src)
-{
-	std::cout	<< ORANGE
-				<< "[COPY CONSTRUCTOR] : "
-				<< END
-				<< "A Channel has been duplicated !"
-				<< std::endl;
-
-	*this = src;
 
 	return ;
 }
