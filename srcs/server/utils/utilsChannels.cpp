@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:56:47 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 11:11:25 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 12:06:08 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int		Server::checkChannelName(std::string channelName)
 	return (SUCCESS);
 }
 
-void	Server::deleteChannel(std::string &channelName)
+void	Server::deleteChannel(const std::string channelName)
 {
 	std::map<std::string, Channel>::iterator	channelIterator;
 

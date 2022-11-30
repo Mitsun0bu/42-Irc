@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/28 19:17:50 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 12:06:16 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,7 +177,7 @@ class	Server
 		void							addChannel(Channel &channel, std::string &channelName);
 		bool							channelExists(std::string channelName);
 		int								checkChannelName(std::string channelName);
-		void							deleteChannel(std::string &channelName);
+		void							deleteChannel(const std::string channelName);
 		void							removeUserFromChannel(User &user, Channel &channel);
 
 		int								getUserSocket(std::string &nick);

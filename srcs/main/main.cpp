@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:32:28 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 11:11:39 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 13:06:24 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,11 @@
 /*
 	TO CHECK LIST :
 
-	deleteChannel function is not used anymore ??
+	rempalcer clientFdList par clientSocketList (apres merge avec Alex) ??
 
 	TO DO LIST :
 
-	partCmd				---> Gerer les opérateurs
-	Rempalcer clientFdList par clientSocketList (apres merge avec Alex)
+	tout tester avec nc
 */
 
 int	main(int ac, char** av)

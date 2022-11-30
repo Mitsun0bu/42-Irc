@@ -106,7 +106,15 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 		if (channel.isMember(getUserSocket(modearguments[0])) == false)
 			return ;
 		if (modestring[0] == '-')
+		{
 			channel.removeOperator(getUserSocket(modearguments[0]));
+			if (channel._operators.size() == 0)
+			{
+				deleteChannel(channel._name);
+				if (_channels.size() == 0)
+					_channels.clear();
+			}
+		}
 		else if (modestring[0] == '+')
 			channel.addOperator(getUserSocket(modearguments[0]));
 		cmdReply(user, "MODE", channel._name + " " + modestring + " " + modearguments[0]);
