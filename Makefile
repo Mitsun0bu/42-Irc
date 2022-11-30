@@ -6,7 +6,7 @@
 #    By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/31 14:42:54 by llethuil          #+#    #+#              #
-#    Updated: 2022/11/29 10:16:27 by llethuil         ###   ########lyon.fr    #
+#    Updated: 2022/11/30 11:04:40 by llethuil         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -52,7 +52,7 @@ SRCS_SUBDIRS	:=	channel									\
 					message									\
 					parsing									\
 					server									\
-					server/comands							\
+					server/commands							\
 					server/data								\
 					server/reply							\
 					server/send								\
@@ -103,7 +103,7 @@ SRCS_LST		:=	channel/Channel.cpp						\
 					server/socket/bindSocket.cpp			\
 					server/socket/clientFdListInit.cpp		\
 					server/socket/selectClientSocket.cpp	\
-					server/socket/bindSocket.cpp			\
+					server/socket/setSocket.cpp				\
 					server/utils/printRecvError.cpp			\
 					server/utils/utilsChannels.cpp			\
 					server/utils/utilsUsers.cpp				\

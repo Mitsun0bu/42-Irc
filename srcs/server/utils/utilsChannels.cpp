@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utilsChannel.cpp                                   :+:      :+:    :+:   */
+/*   utilsChannels.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:56:47 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/28 18:58:06 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/11/30 11:11:25 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,15 @@ bool	Server::channelExists(std::string channelName)
 int		Server::checkChannelName(std::string channelName)
 {
 	char prefix = channelName[0];
+
+	// CHECK IF CHANNEL NAME STARTS WITH '#' PREFIX
 	if (prefix != '#')
 		return (FAILED);
 
-	// Parsing de channelName -> ‘#’ possible a l’intérieur du nom ?
+	// CHECK IF CHANNEL NAME CONTAINS '#' CHARACTER
+	for(size_t i = 1; i < channelName.size(); i++)
+		if (channelName[i] == '#')
+			return (FAILED);
 
 	return (SUCCESS);
 }
