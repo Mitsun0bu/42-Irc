@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 00:31:06 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 13:40:39 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,8 +101,9 @@ class	Server
 
 		/* JOIN */
 		void							joinCmd(User &user, std::vector<std::string> &cmdTokens);
-		// int							joinExistingChannel(User &user, std::string channelName, std::string channelKey);
-		// void							joinNewChannel(User &user, std::string channelName, std::string channelKey);
+		int								joinExistingChannel(User& user, int i, std::vector<std::string> channelNames, std::vector<std::string> channelKeys);
+		void							joinNewChannel(User& user, int i, std::vector<std::string> channelNames, std::vector<std::string> channelKeys);
+		void							doJoin(User& user, std::vector<std::string> &cmdTokens, int i, std::vector<std::string> channelNames);
 
 
 		/* KICK */
