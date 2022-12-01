@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:46:23 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 15:12:06 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 00:30:44 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,27 +62,6 @@ Server::Server(int port, std::string passwd, int addressFamily, int socketType, 
 				<< "A Server has been created !"
 				<< std::endl;
 	return ;
-}
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                         ~~~ OPERATOR OVERLOAD ~~~                          */
-/*                                                                            */
-/* ************************************************************************** */
-
-Server&	Server::operator=(Server const & src)
-{
-	this->_port					= src._port;
-	this->_addressFamily		= src._addressFamily;
-	this->_socketType			= src._socketType;
-	this->_socketFlag			= src._socketFlag;
-	this->_socketBlockingMode	= src._socketBlockingMode;
-	this->_protocol				= src._protocol;
-	this->_socket				= src._socket;
-	this->_socketAddr			= src._socketAddr;
-	this->_internetHostAddr		= src._internetHostAddr;
-
-	return (*this);
 }
 
 /* ************************************************************************** */

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   clientFdListInit.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 09:41:27 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 14:59:37 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 01:26:00 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 

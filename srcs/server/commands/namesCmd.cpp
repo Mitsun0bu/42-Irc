@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   namesCmd.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:16:35 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 15:17:32 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 01:19:30 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 
 void	Server::namesCmd(User &user, std::vector<std::string> &cmdTokens)
 {
-	std::string					nick = user._nickname;
+	std::string					nick = user.getNickname();
 	std::vector<std::string>	channelNames;
 	tokenizer(cmdTokens[1], ",", channelNames);
 
@@ -45,13 +45,13 @@ void	Server::namesCmd(User &user, std::vector<std::string> &cmdTokens)
 		{
 			std::string namesMsg = " = " + channelNames[i] + " :";
 			// ADD CHANNEL MEMBERS' NICKNAME TO MESSAGE
-			std::set<int>	members = this->_channels[channelNames[i]]._members;
+			std::set<int>	members = this->_channels[channelNames[i]].getMembers();
 			for (std::set<int>::iterator fd = members.begin(); fd != members.end(); fd++)
 			{
-				if (_channels[channelNames[i]]._operators.find(*fd) != _channels[channelNames[i]]._operators.end())
-					namesMsg += "@" + this->_users[*fd]._nickname;
+				if (_channels[channelNames[i]].getOperators().find(*fd) != _channels[channelNames[i]].getOperators().end())
+					namesMsg += "@" + this->_users[*fd].getNickname();
 				else
-					namesMsg += this->_users[*fd]._nickname;
+					namesMsg += this->_users[*fd].getNickname();
 				namesMsg += " ";
 			}
 			std::cout << "namesMsg: " << namesMsg << std::endl;

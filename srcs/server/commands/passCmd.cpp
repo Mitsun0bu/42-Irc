@@ -27,7 +27,7 @@
 
 void	Server::passCmd(User &user, std::vector<std::string> &cmdTokens)
 {
-	if (user._isAuthenticated)
+	if (user.getIsAuthenticated())
 		this->numericReply(user, _num.ERR_ALREADYREGISTERED, _num.MSG_ERR_ALREADYREGISTERED);
 	else if (cmdTokens.size() < 2)
 		this->numericReply(user, _num.ERR_NEEDMOREPARAMS, cmdTokens[0], _num.MSG_ERR_NEEDMOREPARAMS);
@@ -37,5 +37,5 @@ void	Server::passCmd(User &user, std::vector<std::string> &cmdTokens)
 		this->errorReply(user, "Authentication failed");
 	}
 	else
-		user._validPasswd = true;
+		user.setValidPasswd(true);
 }

@@ -30,12 +30,15 @@ void	Server::topicCmd(User &user, std::vector<std::string> &cmdTokens)
 	std::string	channelName	= cmdTokens[1];
 	std::string	topic		= "";
 
+	if (cmdTokens.size() < 2)
+		return(this->numericReply(user, _num.ERR_NEEDMOREPARAMS, cmdTokens[0], _num.MSG_ERR_NEEDMOREPARAMS));
+
 	if (cmdTokens.size() > 2)
 		topic = cmdTokens[2];
 
-	if (user._locations.find(channelName) == user._locations.end())
+	if (user.getLocations().find(channelName) == user.getLocations().end())
 	{
-		std::string	notInChannelMsg = " " + user._nickname + " " + channelName;
+		std::string	notInChannelMsg = " " + user.getNickname() + " " + channelName;
 		numericReply(user, _num.ERR_NOTONCHANNEL, notInChannelMsg, _num.MSG_ERR_NOTONCHANNEL);
 		return ;
 	}
@@ -51,7 +54,7 @@ void	Server::topicCmd(User &user, std::vector<std::string> &cmdTokens)
 	{
 		clearTopic(channelName);
 		setTopic(channelName, topic);
-		cmdReply(user, "TOPIC", channelName + " :" + _channels[channelName]._topic);
+		cmdReply(user, "TOPIC", channelName + " :" + _channels[channelName].getTopic());
 	}
 	return ;
 }
@@ -64,18 +67,18 @@ void	Server::topicCmd(User &user, std::vector<std::string> &cmdTokens)
 
 void	Server::clearTopic(std::string channelName)
 {
-	_channels[channelName]._topic.clear();
-	_channels[channelName]._topicIsSet = false;
+	_channels[channelName].getTopic().clear();
+	_channels[channelName].setTopicIsSet(false);
 	return ;
 }
 
 void	Server::replyTopic(User& user, std::string channelName)
 {
-	std::string topicMsg = " " + user._nickname + " " + channelName;
+	std::string topicMsg = " " + user.getNickname() + " " + channelName;
 
-	if (_channels[channelName]._topicIsSet == true)
+	if (_channels[channelName].getTopicIsSet() == true)
 	{
-		topicMsg += " " + _channels[channelName]._topic;
+		topicMsg += " " + _channels[channelName].getTopic();
 		numericReply(user, _num.RPL_TOPIC, topicMsg);
 	}
 	else
@@ -85,7 +88,7 @@ void	Server::replyTopic(User& user, std::string channelName)
 
 void	Server::setTopic(std::string channelName, std::string topic)
 {
-	_channels[channelName]._topic		= topic.erase(0, 1);
-	_channels[channelName]._topicIsSet	= true;
+	_channels[channelName].getTopic()		= topic.erase(0, 1);
+	_channels[channelName].setTopicIsSet(true);
 	return ;
 }

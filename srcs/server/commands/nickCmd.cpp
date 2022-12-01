@@ -27,20 +27,20 @@
 
 void	Server::nickCmd(User &user, std::vector<std::string> &cmdTokens)
 {
-	if (!user._validPasswd)
+	if (!user.getValidPasswd())
 		return ;
+	else if (cmdTokens.size() < 2)
+		this->numericReply(user, _num.ERR_NONICKNAMEGIVEN, _num.MSG_ERR_NONICKNAMEGIVEN);
 	else if (!isNickAvailable(cmdTokens[1]))
 		this->numericReply(user, _num.ERR_NICKNAMEINUSE, cmdTokens[1], _num.MSG_ERR_NICKNAMEINUSE);
 	else if (!parseNick(cmdTokens[1]))
 		this->numericReply(user, _num.ERR_ERRONEUSNICKNAME, cmdTokens[1], _num.MSG_ERR_ERRONEUSNICKNAME);
-	else if (cmdTokens.size() < 2)
-		this->numericReply(user, _num.ERR_NONICKNAMEGIVEN, _num.MSG_ERR_NONICKNAMEGIVEN);
 	else
 	{
-		if (user._isAuthenticated)
+		if (user.getIsAuthenticated())
 			return(this->cmdReply(user, "NICK", cmdTokens[1]));
-		user._nickname = cmdTokens[1];
-		if (!user._username.empty())
+		user.setNickname(cmdTokens[1]);
+		if (!user.getUsername().empty())
 			registerUser(user);
 	}
 }

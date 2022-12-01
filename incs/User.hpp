@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:23:53 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 15:29:40 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 00:59:59 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,24 +32,6 @@ class User
 	public :
 		/* constructors													*/
 								User(void);
-
-		/* operator overload											*/
-		User					&operator=(const User& src);
-
-		/* private attributes											*/
-		int						_socket;
-		struct sockaddr_storage	_socketAddr;
-		socklen_t				_socketAddrSize;
-		char					_remoteIP[INET6_ADDRSTRLEN];
-		const void*				_inAddr;
-		bool					_validPasswd;
-		bool					_isAuthenticated;
-		std::set<std::string>	_locations;
-		std::string 			_nickname;
-		std::string 			_username;
-		std::string 			_realname;
-		std::string				_cmdReceived;
-		int						_cmdToExecute;
 
 		/* member functions												*/
 		void					addLocation(std::string channelName);
@@ -86,6 +68,18 @@ class User
 	private :
 
 		/* private attributes											*/
+		int						_socket;
+		struct sockaddr_storage	_socketAddr;
+		socklen_t				_socketAddrSize;
+		char					_remoteIP[INET6_ADDRSTRLEN];
+		const void*				_inAddr;
+		bool					_validPasswd;
+		bool					_isAuthenticated;
+		std::set<std::string>	_locations;
+		std::string 			_nickname;
+		std::string 			_username;
+		std::string				_cmdReceived;
+		int						_cmdToExecute;
 };
 
 # endif

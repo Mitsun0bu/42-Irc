@@ -27,16 +27,16 @@
 
 void	Server::userCmd(User &user, std::vector<std::string> &cmdTokens)
 {
-	if (!user._validPasswd)
+	if (!user.getValidPasswd())
 		return ;
+	else if (user.getIsAuthenticated())
+		this->numericReply(user, _num.ERR_ALREADYREGISTERED, _num.MSG_ERR_ALREADYREGISTERED);
 	else if (cmdTokens.size() < 4)
 		this->numericReply(user, _num.ERR_NEEDMOREPARAMS, cmdTokens[0], _num.MSG_ERR_NEEDMOREPARAMS);
-	else if (user._isAuthenticated)
-		this->numericReply(user, _num.ERR_ALREADYREGISTERED, _num.MSG_ERR_ALREADYREGISTERED);
 	else
 	{
-		user._username = cmdTokens[1];
-		if (!user._nickname.empty())
+		user.setUsername(cmdTokens[1]);
+		if (!user.getNickname().empty())
 			registerUser(user);
 	}
 }

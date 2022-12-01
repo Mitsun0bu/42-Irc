@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   joinCmd.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:10:37 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 15:17:32 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 01:21:48 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,23 +47,23 @@ void	Server::joinCmd(User &user, std::vector<std::string> &cmdTokens)
 		else if (_channels.find(channelNames[i]) != _channels.end())
 		{
 			// IF USER IS ALREADY IN CHANNEL
-			if (_channels[channelNames[i]]._members.find(user._socket) != _channels[channelNames[i]]._members.end())
+			if (_channels[channelNames[i]].getMembers().find(user.getSocket()) != _channels[channelNames[i]].getMembers().end())
 				return ;
 			// IF THE CHANNEL REQUIRES A KEY AND KEY IS WRONG
-			if(_channels[channelNames[i]]._requiresKey == true
-			&& (channelKeys.size() == 0 || _channels[channelNames[i]]._key != channelKeys[i]))
+			if(_channels[channelNames[i]].getRequiresKey() == true
+			&& (channelKeys.size() == 0 || _channels[channelNames[i]].getKey() != channelKeys[i]))
 			{
 				numericReply(user, _num.ERR_BADCHANNELKEY, channelNames[i], _num.MSG_ERR_BADCHANNELKEY);
 				return ;
 			}
 			// IF THE CHANNEL IS IN INVITE ONLY MODE AND USER IS NOT ALLOWED
-			if (_channels[channelNames[i]]._modeInvite == "+i"
-			&& _channels[channelNames[i]]._allowedMembers.find(user._socket) == _channels[channelNames[i]]._allowedMembers.end())
+			if (_channels[channelNames[i]].getModeInvite() == "+i"
+			&& _channels[channelNames[i]].getAllowedMembers().find(user.getSocket()) == _channels[channelNames[i]].getAllowedMembers().end())
 			{
 				numericReply(user, _num.ERR_INVITEONLYCHAN, channelNames[i], _num.MSG_ERR_INVITEONLYCHAN);
 				return ;
 			}
-			_channels[channelNames[i]]._members.insert(user._socket);
+			_channels[channelNames[i]].getMembers().insert(user.getSocket());
 		}
 		// IF CHANNEL DOES NOT EXIST
 		else
@@ -80,7 +80,7 @@ void	Server::joinCmd(User &user, std::vector<std::string> &cmdTokens)
 
 		user.addLocation(channelNames[i]);
 		cmdReply(user, "JOIN", channelNames[i]);
-		sendCmdToChannel(user, "JOIN", _channels[channelNames[i]]._members, channelNames[i], "");
+		sendCmdToChannel(user, "JOIN", _channels[channelNames[i]].getMembers(), channelNames[i], "");
 		replyTopic(user, channelNames[i]);
 		namesCmd(user, cmdTokens);
 	}

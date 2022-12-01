@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 15:16:37 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 00:31:06 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,9 +79,6 @@ class	Server
 										~Server(void);
 
 	private :
-
-		/* operator overload											*/
-		Server							&operator=(const Server& src);
 
 		/* private methods												*/
 		void							acceptNewUser();

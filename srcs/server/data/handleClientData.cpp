@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handleClientData.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 09:37:51 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 14:59:37 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 01:05:26 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	Server::handleClientData(int &currentFd)
 	User &currentUser = _users[currentFd];
 
 	byteCount = recv(currentFd, buffer, 4080, 0);
-	currentUser._cmdReceived += buffer;
+	currentUser.setCmdReceived(currentUser.getCmdReceived() += buffer);
 	if (byteCount <= 0)
 	{
 		this->printRecvError(byteCount, currentFd);
@@ -45,10 +45,10 @@ void	Server::handleClientData(int &currentFd)
 	}
 	else
 	{
-		if (currentUser._cmdReceived[currentUser._cmdReceived.length() - 1] != '\n')
+		if (currentUser.getCmdReceived()[currentUser.getCmdReceived().length() - 1] != '\n')
 			return ;
-		tokenizer(currentUser._cmdReceived, "\r\n", cmds);
-		currentUser._cmdReceived.clear();
+		tokenizer(currentUser.getCmdReceived(), "\r\n", cmds);
+		currentUser.setCmdReceived("");
 
 		for(size_t i = 0; i < cmds.size(); i ++)
 		{

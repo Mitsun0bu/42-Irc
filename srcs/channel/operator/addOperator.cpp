@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   addOperator.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 09:52:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/29 10:12:57 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 00:30:11 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,5 +32,5 @@ void	Channel::addOperator(int userSocket)
 
 void	Channel::addOperator(User &user)
 {
-	_operators.insert(user._socket);
+	_operators.insert(user.getSocket());
 }

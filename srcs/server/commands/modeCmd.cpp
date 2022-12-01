@@ -30,6 +30,9 @@ void	Server::modeCmd(User& user, std::vector<std::string> &cmdTokens)
 	for(size_t i = 0; i < cmdTokens.size(); i++)
 		std::cout << cmdTokens[i] << std::endl;
 
+	if (cmdTokens.size() < 2)
+		return(this->numericReply(user, _num.ERR_NEEDMOREPARAMS, cmdTokens[0], _num.MSG_ERR_NEEDMOREPARAMS));
+
 	std::string	target = cmdTokens[1];
 
 	// IF TARGET IS NOT A VALID/EXISTING CHANNEL
@@ -38,7 +41,7 @@ void	Server::modeCmd(User& user, std::vector<std::string> &cmdTokens)
 
 	// IF NO MODESTRING IS GIVEN
 	if (cmdTokens.size() == 2)
-		numericReply(user, _num.RPL_CHANNELMODEIS, " " + target + " " + _channels[target]._modeKey + _channels[target]._modeInvite);
+		numericReply(user, _num.RPL_CHANNELMODEIS, " " + target + " " + _channels[target].getModeKey() + _channels[target].getModeInvite());
 
 	if (cmdTokens.size() >= 3)
 		handleModeString(user, cmdTokens, _channels[target]);
@@ -75,9 +78,9 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 		tokenizer(cmdTokens[3], " ", modearguments);
 
 	// CHECK IF THE USER IS AN OPERATOR
-	if (user.isOperator(channel._operators) == false)
+	if (user.isOperator(channel.getOperators()) == false)
 	{
-		numericReply(user, _num.ERR_CHANOPRIVSNEEDED, channel._name, _num.MSG_ERR_CHANOPRIVSNEEDED);
+		numericReply(user, _num.ERR_CHANOPRIVSNEEDED, channel.getName(), _num.MSG_ERR_CHANOPRIVSNEEDED);
 		return ;
 	}
 
@@ -97,7 +100,7 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 		else if (modestring[0] == '+' && modearguments.size() != 0)
 			channel.setKey(modearguments[0]);
 
-		numericReply(user, _num.RPL_CHANNELMODEIS, " " + channel._name + " " + channel._modeKey);
+		numericReply(user, _num.RPL_CHANNELMODEIS, " " + channel.getName() + " " + channel.getModeKey());
 	}
 
 	// HANDLE CHANNEL OPERATOR MODE
@@ -108,21 +111,22 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 		if (modestring[0] == '-')
 		{
 			channel.removeOperator(getUserSocket(modearguments[0]));
-			if (channel._operators.size() == 0)
-				deleteChannel(channel._name);
+			if (channel.getOperators().size() == 0)
+				deleteChannel(channel.getName());
 		}
 		else if (modestring[0] == '+')
 			channel.addOperator(getUserSocket(modearguments[0]));
-		cmdReply(user, "MODE", channel._name + " " + modestring + " " + modearguments[0]);
+		cmdReply(user, "MODE", channel.getName() + " " + modestring + " " + modearguments[0]);
 	}
 
 	// HANDLE INVITE ONLY MODE
 	if (modestring[1] == 'i')
 	{
 		if (modestring[0] == '-')
-			channel._modeInvite = "-i";
+			channel.setModeInvite("-i");
 		else if (modestring[0] == '+')
-			channel._modeInvite = "+i";
+			channel.setModeInvite("+i");
+
 	}
 
 	return ;

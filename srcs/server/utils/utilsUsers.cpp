@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilsUsers.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:58:24 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 15:17:32 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 01:19:30 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,8 @@ void  Server::acceptNewUser(void)
 	socket = accept(this->_socket, (struct sockaddr*)&socketAddr, &socketAddrSize);
 	User &newUser = this->_users[socket];
 
-	newUser._socketAddr = socketAddr;
-	newUser._socketAddrSize = socketAddrSize;
+	newUser.setSocketAddr(socketAddr);
+	newUser.setSocketAddrSize(socketAddrSize);
 	newUser.setSocket(socket);
 
 	if (newUser.getSocket() == FAILED)
@@ -57,8 +57,8 @@ int		Server::getUserSocket(std::string &nickname)
 
 	for (it = _users.begin(); it != _users.end(); it++)
 	{
-		if (it->second._nickname == nickname)
-			return (it->second._socket);
+		if (it->second.getNickname() == nickname)
+			return (it->second.getSocket());
 	}
 	return (FAILED);
 }
@@ -68,18 +68,18 @@ bool	Server::isNickAvailable(std::string &nickname)
 	std::map<int, User>::iterator	it;
 
 	for (it = this->_users.begin(); it != this->_users.end(); it++)
-			if (nickname == it->second._nickname)
+			if (it->second.getNickname() == nickname)
 				return (false);
 	return (true);
 }
 
 void	Server::registerUser(User &user)
 {
-	user._isAuthenticated = true;
-	this->numericReply(user, _num.RPL_WELCOME, user._nickname, _num.MSG_RPL_WELCOME, user._nickname);
-	this->numericReply(user, _num.RPL_YOURHOST, user._nickname, _num.MSG_RPL_YOURHOST);
-	this->numericReply(user, _num.RPL_CREATED, user._nickname, _num.MSG_RPL_CREATED, _date);
-	this->numericReply(user, _num.RPL_MYINFO, user._nickname, _num.MSG_RPL_MYINFO);
+	user.setIsAuthenticated(true);
+	this->numericReply(user, _num.RPL_WELCOME, user.getNickname(), _num.MSG_RPL_WELCOME, user.getNickname());
+	this->numericReply(user, _num.RPL_YOURHOST, user.getNickname(), _num.MSG_RPL_YOURHOST);
+	this->numericReply(user, _num.RPL_CREATED, user.getNickname(), _num.MSG_RPL_CREATED, _date);
+	this->numericReply(user, _num.RPL_MYINFO, user.getNickname(), _num.MSG_RPL_MYINFO);
 }
 
 void	Server::logoutUser(User &user)
@@ -88,12 +88,12 @@ void	Server::logoutUser(User &user)
 
 	while (it != _channels.end())
 	{
-		if (it->second._operators.find(user._socket) != it->second._operators.end())
-			it->second._operators.erase(user._socket);
-		if (it->second._members.find(user._socket) != it->second._members.end())
+		if (it->second.getOperators().find(user.getSocket()) != it->second.getOperators().end())
+			it->second.getOperators().erase(user.getSocket());
+		if (it->second.getMembers().find(user.getSocket()) != it->second.getMembers().end())
 		{
-			it->second._members.erase(user._socket);
-			if (it->second._members.size() == 0)
+			it->second.getMembers().erase(user.getSocket());
+			if (it->second.getMembers().size() == 0)
 			{
 				std::map<std::string, Channel>::iterator toErase = it;
 				++it;
@@ -103,5 +103,5 @@ void	Server::logoutUser(User &user)
 				++it;
 		}
 	}
-	this->_users.erase(user._socket);
+	this->_users.erase(user.getSocket());
 }

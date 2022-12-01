@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ChannelGetters.cpp                                 :+:      :+:    :+:   */
+/*   channelGetters.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:25:31 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 15:36:12 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 01:18:14 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,17 +43,22 @@ bool					Channel::getTopicIsSet(void) const
 	return _topicIsSet;
 }
 
-std::set<int>	Channel::getMembers(void) const
+std::set<int>	&Channel::getMembers(void)
 {
 	return _members;
 }
 
-std::set<int>	Channel::getBannedMembers(void) const
+std::set<int>	&Channel::getAllowedMembers(void)
+{
+	return _allowedMembers;
+}
+
+std::set<int>	&Channel::getBannedMembers(void)
 {
 	return _bannedMembers;
 }
 
-std::set<int>	Channel::getOperators(void) const
+std::set<int>	&Channel::getOperators(void)
 {
 	return _operators;
 }

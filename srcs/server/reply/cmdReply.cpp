@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdReply.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:32:44 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 14:59:37 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 00:39:50 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,9 @@
 
 void	Server::cmdReply(User &user, std::string cmd, std::string param)
 {
-	std::string finalMsg = ":" + user._nickname + " " + cmd + " " + param + "\r\n";
+	std::string finalMsg = ":" + user.getNickname() + " " + cmd + " " + param + "\r\n";
 
-	if (FD_ISSET(user._socket, &this->_clientFdList.write))
-		if (send(user._socket, finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
+	if (FD_ISSET(user.getSocket(), &this->_clientFdList.write))
+		if (send(user.getSocket(), finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
 			perror("send()");
 }

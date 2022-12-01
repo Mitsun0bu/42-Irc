@@ -33,8 +33,8 @@ void	Server::listCmd(User &user, std::vector<std::string> &cmdTokens)
 	{
 		for (std::map<std::string, Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
 		{
-			std::string	memberCount	= intToStr(it->second._members.size());
-			std::string	listMsg		= " " + user._nickname + " " + it->second._name + " " + memberCount + " :" + it->second._topic;
+			std::string	memberCount	= intToStr(it->second.getMembers().size());
+			std::string	listMsg		= " " + user.getNickname() + " " + it->second.getName() + " " + memberCount + " :" + it->second.getTopic();
 			numericReply(user, _num.RPL_LIST, listMsg);
 		}
 	}
@@ -43,9 +43,9 @@ void	Server::listCmd(User &user, std::vector<std::string> &cmdTokens)
 		tokenizer(cmdTokens[1], ",", channelNames);
 		for(size_t i = 0; i < channelNames.size(); i++)
 		{
-			std::string	memberCount	= intToStr(_channels[channelNames[i]]._members.size());
-			std::string	topic		= _channels[channelNames[i]]._topic;
-			std::string	listMsg		= " " + user._nickname + " " + channelNames[i] + " " + memberCount + " :" + topic;
+			std::string	memberCount	= intToStr(_channels[channelNames[i]].getMembers().size());
+			std::string	topic		= _channels[channelNames[i]].getTopic();
+			std::string	listMsg		= " " + user.getNickname() + " " + channelNames[i] + " " + memberCount + " :" + topic;
 			numericReply(user, _num.RPL_LIST, listMsg);
 		}
 	}

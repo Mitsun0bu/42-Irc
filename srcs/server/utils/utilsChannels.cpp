@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilsChannels.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:56:47 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 12:06:08 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 01:19:30 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,10 @@ void	Server::deleteChannel(const std::string channelName)
 
 void	Server::removeUserFromChannel(User &user, Channel &channel)
 {
-	if (channel._operators.find(user._socket) != channel._operators.end())
-		channel._operators.erase(user._socket);
-	if (channel._members.find(user._socket) != channel._members.end())
-		channel._members.erase(user._socket);
-	if (channel._members.size() == 0)
-		_channels.erase(channel._name);
+	if (channel.getOperators().find(user.getSocket()) != channel.getOperators().end())
+		channel.getOperators().erase(user.getSocket());
+	if (channel.getMembers().find(user.getSocket()) != channel.getMembers().end())
+		channel.getMembers().erase(user.getSocket());
+	if (channel.getMembers().size() == 0)
+		_channels.erase(channel.getName());
 }

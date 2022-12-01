@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   sendMsg.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:14:38 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 15:17:32 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 01:19:30 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,16 +29,16 @@ void	Server::sendMsgToUser(User &sender, std::string &target, std::string &msg)
 {
 	int targetSocket = getUserSocket(target);
 
-	if (targetSocket == FAILED && _cmdMap[sender._cmdToExecute] == "PRIVMSG")
+	if (targetSocket == FAILED && _cmdMap[sender.getCmdToExecute()] == "PRIVMSG")
 		numericReply(sender, _num.ERR_NOSUCHNICK, target, _num.MSG_ERR_NOSUCHNICK);
 	else
-		sendCmdToUser(sender, _cmdMap[sender._cmdToExecute], _users[targetSocket], msg);
+		sendCmdToUser(sender, _cmdMap[sender.getCmdToExecute()], _users[targetSocket], msg);
 }
 
 void	Server::sendMsgToChannel(User &sender, std::string &target, std::string &msg)
 {
 	std::string channelName = target.substr(target.find("#"), std::string::npos);
-	std::string	&cmd = _cmdMap[sender._cmdToExecute];
+	std::string	&cmd = _cmdMap[sender.getCmdToExecute()];
 
 	if (_channels.find(channelName) == _channels.end() && cmd == "PRIVMSG")
 		return(numericReply(sender, _num.ERR_NOSUCHNICK, target, _num.MSG_ERR_NOSUCHNICK));
@@ -48,9 +48,9 @@ void	Server::sendMsgToChannel(User &sender, std::string &target, std::string &ms
 		return(numericReply(sender, _num.ERR_CANNOTSENDTOCHAN, target, _num.MSG_ERR_CANNOTSENDTOCHAN));
 
 	if (target[0] == '@')
-		sendCmdToChannel(sender, cmd, channel._operators, channelName, msg);
+		sendCmdToChannel(sender, cmd, channel.getOperators(), channelName, msg);
 	else
-		sendCmdToChannel(sender, cmd, channel._members, channelName, msg);
+		sendCmdToChannel(sender, cmd, channel.getMembers(), channelName, msg);
 }
 
 /* ************************************************************************** */
@@ -72,8 +72,8 @@ bool	Server::parseTargetPrefix(const std::string &target)
 
 bool	Server::checkUserPermissions(User &user, Channel &channel)
 {
-	if (channel._bannedMembers.find(user._socket) != channel._bannedMembers.end() ||
-			channel._members.find(user._socket) == channel._members.end())
+	if (channel.getBannedMembers().find(user.getSocket()) != channel.getBannedMembers().end() ||
+			channel.getMembers().find(user.getSocket()) == channel.getMembers().end())
 		return (false);
 	return (true);
 }

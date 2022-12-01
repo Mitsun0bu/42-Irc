@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:24:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 15:11:55 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 00:37:15 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,23 +35,6 @@ User::User(void) : _isAuthenticated(false), _cmdToExecute(-1)
 	this->_socketAddrSize	= sizeof(this->_socketAddr);
 
 	return ;
-}
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                         ~~~ OPERATOR OVERLOAD ~~~                          */
-/*                                                                            */
-/* ************************************************************************** */
-
-User&	User::operator=(User const & src)
-{
-	this->_socket			= src._socket;
-	this->_socketAddr		= src._socketAddr;
-	this->_socketAddrSize	= src._socketAddrSize;
-	strcpy(this->_remoteIP, src._remoteIP);
-	this->_inAddr = src._inAddr;
-
-	return (*this);
 }
 
 /* ************************************************************************** */

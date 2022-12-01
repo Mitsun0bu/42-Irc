@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handleCmd.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:07:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 15:17:32 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 00:59:35 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,12 @@
 
 void	Server::handleCmd(User &user, std::vector<std::string> &cmdTokens)
 {
-	user._cmdToExecute = this->findCmdToExecute(cmdTokens[0]);
+	user.setCmdToExecute(this->findCmdToExecute(cmdTokens[0]));
 
-	if (!user._isAuthenticated && user._cmdToExecute > 4)
+	if (!user.getIsAuthenticated() && user.getCmdToExecute() > 4)
 		return(this->numericReply(user, _num.ERR_NOTREGISTERED, cmdTokens[0], _num.MSG_ERR_NOTREGISTERED));
 
-	switch(user._cmdToExecute)
+	switch(user.getCmdToExecute())
 	{
 		case PASS:
 			this->passCmd(user, cmdTokens);
