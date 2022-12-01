@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   partCmd.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:15:50 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 01:19:30 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 11:32:44 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,11 @@ void	Server::partCmd(User &user, std::vector<std::string> &cmdTokens)
 					it->second.removeOperator(user.getSocket());
 				// IF THERE IS NO MEMBERS OR OPERATOR IN CHANNEL ANYMORE, DELETE THE CHANNEL
 				if (it->second.getMembers().size() == 0 || it->second.getOperators().size() == 0)
+				{
 					deleteChannel(it->first);
+					if (_channels.size() == 0)
+						return ;
+				}
 			}
 		}
 	}
