@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:15:50 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 11:32:44 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/02 17:01:57 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ void	Server::partCmd(User &user, std::vector<std::string> &cmdTokens)
 				user.getLocations().erase(channelsToLeave[i]);
 				// REPLY
 				cmdReply(user, "PART", channelsToLeave[i] + " " + reason);
+				sendCmdToChannel(user, "PART", it->second.getMembers(), channelsToLeave[i], " " + reason);
 
 				// IF THE USER WAS AN OPERATOR, REMOVE IT FROM OPERATOR SET
 				if (it->second.getOperators().find(user.getSocket()) != it->second.getOperators().end())

@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:26:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/02 14:06:40 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/02 17:20:42 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,10 +207,11 @@ class User;
 
 int							main(int argc, char** av);
 void						launchServer(Server &s);
-int							sendMsg(const int socket, std::string msg);
+void						printServerWelcomeMessage(void);
+std::string					intToStr (int n);
+// std::string					getDate(void);
+// int							sendMsg(const int socket, std::string msg);
 std::pair<int, std::string>	parseArguments(int ac, char** av);
 void						tokenizer(std::string str, const char *del, std::vector<std::string> &tokens);
-std::string					intToStr (int n);
-std::string					getDate(void);
 
 # endif
