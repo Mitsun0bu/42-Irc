@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 13:40:39 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 18:30:34 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,6 +150,8 @@ class	Server
 
 		/* reply */
 		void							cmdReply(User &user, std::string cmd, std::string firstParam);
+		void							cmdReply(std::string serverIp, User &user, std::string cmd, std::string param);
+
 
 		void							errorReply(User &user, std::string reason);
 

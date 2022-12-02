@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   numericReply.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:11:42 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 00:30:11 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 19:03:11 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ void	Server::numericReply(User &user, std::string num, std::string firstParam, s
 {
 	std::string finalMsg = num + " " + firstParam + msg + "\r\n";
 
+	std::cout << "finalMsg 1 : " << finalMsg << std::endl;
+
 	if (FD_ISSET(user.getSocket(), &this->_clientFdList.write))
 		if (send(user.getSocket(), finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
 			perror("send()");
@@ -46,6 +48,8 @@ void	Server::numericReply(User &user, std::string num, std::string firstParam, s
 void	Server::numericReply(User &user, std::string num, std::string firstParam, std::string secondParam, std::string msg)
 {
 	std::string finalMsg = num + " " + firstParam + " " + secondParam + msg + "\r\n";
+
+	std::cout << "finalMsg 2 : " << finalMsg << std::endl;
 
 	if (FD_ISSET(user.getSocket(), &this->_clientFdList.write))
 		if (send(user.getSocket(), finalMsg.c_str(), finalMsg.size(), 0) == FAILED)

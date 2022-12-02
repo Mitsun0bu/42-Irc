@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:23:07 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 01:22:27 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 18:06:34 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,10 @@ class Channel
 		void			setMembers(std::set<int> members);
 		void			setBannedMembers(std::set<int> bannedMembers);
 		void			setOperators(std::set<int> operators);
-		void			setModeKey(std::string mode);
-		void			setModeInvite(std::string mode);
+		void			setModeKey();
+		void			unsetModeKey();
+		void			setModeInvite();
+		void			unsetModeInvite();
 
 		/* destructor													*/
 							~Channel(void);

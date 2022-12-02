@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   namesCmd.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:16:35 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 01:19:30 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 14:51:19 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void	Server::namesCmd(User &user, std::vector<std::string> &cmdTokens)
 		if(this->_channels.find(channelNames[i]) != this->_channels.end())
 		{
 			std::string namesMsg = " = " + channelNames[i] + " :";
+
 			// ADD CHANNEL MEMBERS' NICKNAME TO MESSAGE
 			std::set<int>	members = this->_channels[channelNames[i]].getMembers();
 			for (std::set<int>::iterator fd = members.begin(); fd != members.end(); fd++)
@@ -54,7 +55,6 @@ void	Server::namesCmd(User &user, std::vector<std::string> &cmdTokens)
 					namesMsg += this->_users[*fd].getNickname();
 				namesMsg += " ";
 			}
-			std::cout << "namesMsg: " << namesMsg << std::endl;
 			this->numericReply(user, _num.RPL_NAMREPLY, namesMsg);
 		}
 		this->numericReply(user, _num.RPL_ENDOFNAMES, nick + " " + channelNames[i], _num.MSG_RPL_ENDOFNAMES);

@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:10:37 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 13:49:41 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 14:34:06 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,11 @@ void	Server::joinCmd(User &user, std::vector<std::string> &cmdTokens)
 		}
 
 		// IF CHANNEL ALREADY EXISTS
-		if ((_channels.find(channelNames[i]) != _channels.end())
-		&& (joinExistingChannel(user, i, channelNames, channelKeys) == FAILED))
-			continue ;
+		if (_channels.find(channelNames[i]) != _channels.end())
+		{
+			if (joinExistingChannel(user, i, channelNames, channelKeys) == FAILED)
+				continue ;
+		}
 		// IF CHANNEL DOES NOT EXIST
 		else
 			joinNewChannel(user, i, channelNames, channelKeys);

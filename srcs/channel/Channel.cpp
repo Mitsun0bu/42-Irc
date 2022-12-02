@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:25:31 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 00:37:10 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 18:06:44 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ Channel::Channel(void)
 }
 
 Channel::Channel(std::string name) :
-	_name(name), _key(), _requiresKey(), _topic(), _topicIsSet(false), _members(), _operators(), _modeKey("-k"), _modeInvite("-i")
+	_name(name), _key(), _requiresKey(), _topic(), _topicIsSet(false), _members(), _operators(), _modeKey(""), _modeInvite("")
 {
 	std::cout	<< BLUE
 				<< "[CONSTRUCTOR] : "

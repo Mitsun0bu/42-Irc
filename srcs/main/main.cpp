@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:32:28 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 14:59:37 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 14:50:13 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,6 @@ int	main(int ac, char** av)
 	if (server.setSocket() == FAILED)
 		exit(1);
 	server.clientFdListInit();
-
-	// DEBUG
-	std::cout << std::endl << "~~~ Waiting for new connection ~~~" << std::endl;
 
 	// HANDLE CLIENT CONNECTION
 	launchServer(server);

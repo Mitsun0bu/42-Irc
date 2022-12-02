@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ChannelSetters.cpp                                 :+:      :+:    :+:   */
+/*   channelSetters.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:25:31 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 15:40:01 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/01 18:06:56 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	Channel::unsetKey()
 {
 	_key.clear();
 	_requiresKey	= false;
-	_modeKey		= "-k";
+	_modeKey		= "";
 
 	return ;
 }
@@ -71,12 +71,22 @@ void	Channel::setOperators(std::set<int> operators)
 	_operators = operators;
 }
 
-void	Channel::setModeKey(std::string mode)
+void	Channel::setModeKey(void)
 {
-	_modeKey = mode;
+	_modeKey = "+k";
 }
 
-void	Channel::setModeInvite(std::string mode)
+void	Channel::unsetModeKey(void)
 {
-	_modeInvite = mode;
+	_modeKey = "";
+}
+
+void	Channel::setModeInvite(void)
+{
+	_modeInvite = "+i";
+}
+
+void	Channel::unsetModeInvite(void)
+{
+	_modeInvite = "";
 }

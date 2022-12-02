@@ -27,6 +27,7 @@
 
 void	Server::modeCmd(User& user, std::vector<std::string> &cmdTokens)
 {
+	// DEBUG
 	for(size_t i = 0; i < cmdTokens.size(); i++)
 		std::cout << cmdTokens[i] << std::endl;
 
@@ -41,7 +42,10 @@ void	Server::modeCmd(User& user, std::vector<std::string> &cmdTokens)
 
 	// IF NO MODESTRING IS GIVEN
 	if (cmdTokens.size() == 2)
-		numericReply(user, _num.RPL_CHANNELMODEIS, " " + target + " " + _channels[target].getModeKey() + _channels[target].getModeInvite());
+	{
+		std::string	modeString = _channels[target].getModeKey() + _channels[target].getModeInvite();
+		cmdReply(user, _num.RPL_CHANNELMODEIS, user.getNickname() + " " + target + " " + modeString);
+	}
 
 	if (cmdTokens.size() >= 3)
 		handleModeString(user, cmdTokens, _channels[target]);
@@ -72,19 +76,19 @@ int		Server::handleChannelModeError(User& user, std::string& channelName)
 void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, Channel& channel)
 {
 	std::string					modestring = cmdTokens[2];
-
 	std::vector<std::string>	modearguments;
+
 	if (cmdTokens.size() > 3)
 		tokenizer(cmdTokens[3], " ", modearguments);
 
-	// CHECK IF THE USER IS AN OPERATOR
+	// IF THE USER IS AN OPERATOR
 	if (user.isOperator(channel.getOperators()) == false)
 	{
 		numericReply(user, _num.ERR_CHANOPRIVSNEEDED, channel.getName(), _num.MSG_ERR_CHANOPRIVSNEEDED);
 		return ;
 	}
 
-	// CHECK IF THE MODESTRING IS VALID
+	// IF THE MODESTRING IS VALID
 	if (modestring.size() != 2 && (modestring[0] != '-' || modestring[0] != '+'))
 		return ;
 
@@ -100,7 +104,8 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 		else if (modestring[0] == '+' && modearguments.size() != 0)
 			channel.setKey(modearguments[0]);
 
-		numericReply(user, _num.RPL_CHANNELMODEIS, " " + channel.getName() + " " + channel.getModeKey());
+		std::string	modeString = channel.getModeKey() + channel.getModeInvite();
+		cmdReply(user, _num.RPL_CHANNELMODEIS, user.getNickname() + " " + channel.getName() + " " + modeString);
 	}
 
 	// HANDLE CHANNEL OPERATOR MODE
@@ -116,6 +121,7 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 		}
 		else if (modestring[0] == '+')
 			channel.addOperator(getUserSocket(modearguments[0]));
+
 		cmdReply(user, "MODE", channel.getName() + " " + modestring + " " + modearguments[0]);
 	}
 
@@ -123,10 +129,12 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 	if (modestring[1] == 'i')
 	{
 		if (modestring[0] == '-')
-			channel.setModeInvite("-i");
+			channel.unsetModeInvite();
 		else if (modestring[0] == '+')
-			channel.setModeInvite("+i");
+			channel.setModeInvite();
 
+		std::string	modeString = channel.getModeKey() + channel.getModeInvite();
+		cmdReply(user, _num.RPL_CHANNELMODEIS, user.getNickname() + " " + channel.getName() + " " + modeString);
 	}
 
 	return ;
