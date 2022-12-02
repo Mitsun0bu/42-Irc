@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilsUsers.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:58:24 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 01:19:30 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/12/02 15:11:43 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void  Server::acceptNewUser(void)
 	}
 }
 
-int		Server::getUserSocket(std::string &nickname)
+int		Server::getUserSocket(std::string& nickname)
 {
 	std::map<int, User>::iterator it;
 
@@ -61,6 +61,18 @@ int		Server::getUserSocket(std::string &nickname)
 			return (it->second.getSocket());
 	}
 	return (FAILED);
+}
+
+std::string	Server::getUserNickname(int socket)
+{
+	std::map<int, User>::iterator it;
+
+	for (it = _users.begin(); it != _users.end(); it++)
+	{
+		if (it->second.getSocket() == socket)
+			return (it->second.getNickname());
+	}
+	return ("");
 }
 
 bool	Server::isNickAvailable(std::string &nickname)

@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 18:30:34 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/02 15:12:00 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,8 +114,12 @@ class	Server
 
 		/* MODE */
 		void							modeCmd(User &user, std::vector<std::string> &cmdTokens);
-		int								handleChannelModeError(User& user, std::string& channelName);
+		int								findErrorInModeCmd(User& user, std::string& channelName);
 		void							handleModeString(User &user, std::vector<std::string> &cmdTokens, Channel& channel);
+		int								findErrorInModeString(User& user, Channel& channel, std::string modestring);
+		int								handleKeyMode(Channel& channel, std::string modestring, std::vector<std::string> modearguments);
+		void							handleInviteMode(Channel& channel, std::string modestring);
+		int								handleOperatorMode(User& user, Channel& channel, std::string modestring, std::vector<std::string> modearguments);
 
 		/* NAMES */
 		void							namesCmd(User &user, std::vector<std::string> &cmdTokens);
@@ -150,8 +154,6 @@ class	Server
 
 		/* reply */
 		void							cmdReply(User &user, std::string cmd, std::string firstParam);
-		void							cmdReply(std::string serverIp, User &user, std::string cmd, std::string param);
-
 
 		void							errorReply(User &user, std::string reason);
 
@@ -177,7 +179,8 @@ class	Server
 		void							deleteChannel(const std::string channelName);
 		void							removeUserFromChannel(User &user, Channel &channel);
 
-		int								getUserSocket(std::string &nick);
+		int								getUserSocket(std::string& nickname);
+		std::string						getUserNickname(int socket);
 		void							registerUser(User &user);
 		bool							isNickAvailable(std::string &nickname);
 		void							logoutUser(User &user);

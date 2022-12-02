@@ -27,24 +27,20 @@
 
 void	Server::modeCmd(User& user, std::vector<std::string> &cmdTokens)
 {
-	// DEBUG
-	for(size_t i = 0; i < cmdTokens.size(); i++)
-		std::cout << cmdTokens[i] << std::endl;
-
 	if (cmdTokens.size() < 2)
 		return(this->numericReply(user, _num.ERR_NEEDMOREPARAMS, cmdTokens[0], _num.MSG_ERR_NEEDMOREPARAMS));
 
 	std::string	target = cmdTokens[1];
 
 	// IF TARGET IS NOT A VALID/EXISTING CHANNEL
-	if (handleChannelModeError(user, target) == FAILED)
+	if (findErrorInModeCmd(user, target) == true)
 		return ;
 
 	// IF NO MODESTRING IS GIVEN
 	if (cmdTokens.size() == 2)
 	{
-		std::string	modeString = _channels[target].getModeKey() + _channels[target].getModeInvite();
-		cmdReply(user, _num.RPL_CHANNELMODEIS, user.getNickname() + " " + target + " " + modeString);
+		std::string	modeReply = _channels[target].getModeKey() + _channels[target].getModeInvite();
+		cmdReply(user, _num.RPL_CHANNELMODEIS, user.getNickname() + " " + target + " " + modeReply);
 	}
 
 	if (cmdTokens.size() >= 3)
@@ -57,20 +53,20 @@ void	Server::modeCmd(User& user, std::vector<std::string> &cmdTokens)
 /*                                                                            */
 /* ************************************************************************** */
 
-int		Server::handleChannelModeError(User& user, std::string& channelName)
+int		Server::findErrorInModeCmd(User& user, std::string& channelName)
 {
-	// CHECK IF MODE ARGUMENT IS A CHANNEL
+	// IF MODE ARGUMENT IS NOT A CHANNEL
 	if (checkChannelName(channelName) == FAILED)
-		return (FAILED);
+		return (true);
 
-	// CHECK IF MODE ARGUMENT IS A CHANNEL THAT EXISTS IN THE SERVER
+	// IF MODE ARGUMENT IS A CHANNEL THAT DOES NOT EXIST IN THE SERVER
 	if (_channels.find(channelName) == _channels.end())
 	{
 		numericReply(user, _num.ERR_NOSUCHCHANNEL, channelName, _num.MSG_ERR_NOSUCHCHANNEL);
-		return (FAILED);
+		return (true);
 	}
 
-	return (SUCCESS);
+	return (false);
 }
 
 void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, Channel& channel)
@@ -81,61 +77,95 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 	if (cmdTokens.size() > 3)
 		tokenizer(cmdTokens[3], " ", modearguments);
 
-	// IF THE USER IS AN OPERATOR
-	if (user.isOperator(channel.getOperators()) == false)
-	{
-		numericReply(user, _num.ERR_CHANOPRIVSNEEDED, channel.getName(), _num.MSG_ERR_CHANOPRIVSNEEDED);
-		return ;
-	}
-
-	// IF THE MODESTRING IS VALID
-	if (modestring.size() != 2 && (modestring[0] != '-' || modestring[0] != '+'))
+	if (findErrorInModeString(user, channel, modestring) == true)
 		return ;
 
-	// HANDLE CHANNEL KEY MODE
-	if (modestring[1] == 'k')
+	// HANDLE KEY MODE OR INVITE MODE
+	if (modestring[1] == 'k' || modestring[1] == 'i')
 	{
-		if ((modestring[0] == '-' && modearguments.size() != 0)
-		||	(modestring[0] == '+' && modearguments.size() == 0))
+		if (modestring[1] == 'k' && handleKeyMode(channel, modestring, modearguments) == FAILED)
 			return ;
+		else if (modestring[1] == 'i')
+			handleInviteMode(channel, modestring);
 
-		if (modestring[0] == '-' && modearguments.size() == 0)
-			channel.unsetKey();
-		else if (modestring[0] == '+' && modearguments.size() != 0)
-			channel.setKey(modearguments[0]);
-
-		std::string	modeString = channel.getModeKey() + channel.getModeInvite();
-		cmdReply(user, _num.RPL_CHANNELMODEIS, user.getNickname() + " " + channel.getName() + " " + modeString);
+		std::string	modeReply = channel.getModeKey() + channel.getModeInvite();
+		cmdReply(user, _num.RPL_CHANNELMODEIS, user.getNickname() + " " + channel.getName() + " " + modeReply);
 	}
 
-	// HANDLE CHANNEL OPERATOR MODE
+	// HANDLE OPERATOR MODE
 	if (modestring[1] == 'o' && modearguments[0].length() != 0)
 	{
-		if (channel.isMember(getUserSocket(modearguments[0])) == false)
+		if (handleOperatorMode(user, channel, modestring, modearguments) == FAILED)
 			return ;
-		if (modestring[0] == '-')
-		{
-			channel.removeOperator(getUserSocket(modearguments[0]));
-			if (channel.getOperators().size() == 0)
-				deleteChannel(channel.getName());
-		}
-		else if (modestring[0] == '+')
-			channel.addOperator(getUserSocket(modearguments[0]));
 
 		cmdReply(user, "MODE", channel.getName() + " " + modestring + " " + modearguments[0]);
 	}
 
-	// HANDLE INVITE ONLY MODE
-	if (modestring[1] == 'i')
-	{
-		if (modestring[0] == '-')
-			channel.unsetModeInvite();
-		else if (modestring[0] == '+')
-			channel.setModeInvite();
+	return ;
+}
 
-		std::string	modeString = channel.getModeKey() + channel.getModeInvite();
-		cmdReply(user, _num.RPL_CHANNELMODEIS, user.getNickname() + " " + channel.getName() + " " + modeString);
+int		Server::findErrorInModeString(User& user, Channel& channel, std::string modestring)
+{
+	// IF THE USER IS NOT AN OPERATOR
+	if (user.isOperator(channel.getOperators()) == false)
+	{
+		numericReply(user, _num.ERR_CHANOPRIVSNEEDED, channel.getName(), _num.MSG_ERR_CHANOPRIVSNEEDED);
+		return (true);
 	}
 
-	return ;
+	// IF THE MODESTRING IS INVALID
+	if (modestring.size() != 2 && (modestring[0] != '-' || modestring[0] != '+'))
+		return (true);
+
+	return (false);
+}
+
+int		Server::handleKeyMode(Channel& channel, std::string modestring, std::vector<std::string> modearguments)
+{
+	if ((modestring[0] == '-' && modearguments.size() != 0) || (modestring[0] == '+' && modearguments.size() == 0))
+		return (FAILED);
+
+	if (modestring[0] == '-' && modearguments.size() == 0)
+		channel.unsetKey();
+	else if (modestring[0] == '+' && modearguments.size() != 0)
+		channel.setKey(modearguments[0]);
+
+	return (SUCCESS);
+}
+
+int		Server::handleOperatorMode(User& user, Channel& channel, std::string modestring, std::vector<std::string> modearguments)
+{
+	if (channel.isMember(getUserSocket(modearguments[0])) == false)
+		return (FAILED);
+	if (modestring[0] == '-')
+	{
+		channel.removeOperator(getUserSocket(modearguments[0]));
+		if (channel.getOperators().size() == 0)
+		{
+			cmdReply(user, "PART", channel.getName());
+			sendCmdToChannel(user, "PART", channel.getMembers(), channel.getName(), "");
+			channel.getMembers().erase(getUserSocket(modearguments[0]));
+			for (std::set<int>::iterator it = channel.getMembers().begin(); it != channel.getMembers().end(); it ++)
+			{
+				cmdReply(user, "KICK", channel.getName() + " " + getUserNickname(*it));
+				sendCmdToChannel(user, "KICK", channel.getMembers(),  channel.getName(), getUserNickname(*it));
+				removeUserFromChannel(_users[*it], channel);
+				if (channel.getMembers().size() == 0)
+					break;
+			}
+			deleteChannel(channel.getName());
+		}
+	}
+	else if (modestring[0] == '+')
+		channel.addOperator(getUserSocket(modearguments[0]));
+
+	return (SUCCESS);
+}
+
+void	Server::handleInviteMode(Channel& channel, std::string modestring)
+{
+	if (modestring[0] == '-')
+		channel.unsetModeInvite();
+	else if (modestring[0] == '+')
+		channel.setModeInvite();
 }

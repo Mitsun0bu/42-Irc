@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:32:44 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/02 13:48:48 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/02 14:02:09 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,3 @@ void	Server::cmdReply(User &user, std::string cmd, std::string param)
 		if (send(user.getSocket(), finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
 			perror("send()");
 }
-
-// void	Server::cmdReply(std::string serverIp, User &user, std::string cmd, std::string param)
-// {
-// 	std::string finalMsg = ":" + serverIp + " " + cmd + " " + param + "\r\n";
-
-// 	if (FD_ISSET(user.getSocket(), &this->_clientFdList.write))
-// 		if (send(user.getSocket(), finalMsg.c_str(), finalMsg.size(), 0) == FAILED)
-// 			perror("send()");
-// }
