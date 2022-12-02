@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:24:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 00:37:15 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/12/02 13:41:18 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,6 @@
 
 User::User(void) : _isAuthenticated(false), _cmdToExecute(-1)
 {
-	std::cout	<< BLUE
-				<< "[CONSTRUCTOR] : "
-				<< END
-				<< "A new user has been created !"
-				<< std::endl;
-
 	this->_socketAddrSize	= sizeof(this->_socketAddr);
 
 	return ;
@@ -45,12 +39,5 @@ User::User(void) : _isAuthenticated(false), _cmdToExecute(-1)
 
 User::~User(void)
 {
-	std::cout	<< PURPLE
-				<< "[DESTRUCTOR] : "
-				<< END
-				<< "User "
-				<< this->_socket
-				<< " has been destroyed."
-				<< std::endl;
 	return ;
 }
