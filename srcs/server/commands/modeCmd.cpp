@@ -106,7 +106,7 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 
 		std::string	modeReply = channel.getModeKey() + channel.getModeInvite();
 		cmdReply(user, _num.RPL_CHANNELMODEIS, user.getNickname() + " " + channel.getName() + " " + modeReply);
-		sendCmdToChannel(user, "MODE", channel.getMembers(), channel.getName(), channel.getName() + " " + modestring + " " + modearguments[0]);
+		sendCmdToChannel(user, "MODE", channel.getMembers(), channel.getName(), channel.getName() + " " + modestring);
 
 	}
 
