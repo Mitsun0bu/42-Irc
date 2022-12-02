@@ -69,6 +69,22 @@ int		Server::findErrorInModeCmd(User& user, std::string& channelName)
 	return (false);
 }
 
+int		Server::findErrorInModeString(User& user, Channel& channel, std::string modestring)
+{
+	// IF THE USER IS NOT AN OPERATOR
+	if (user.isOperator(channel.getOperators()) == false)
+	{
+		numericReply(user, _num.ERR_CHANOPRIVSNEEDED, channel.getName(), _num.MSG_ERR_CHANOPRIVSNEEDED);
+		return (true);
+	}
+
+	// IF THE MODESTRING IS INVALID
+	if (modestring.size() != 2 && (modestring[0] != '-' || modestring[0] != '+'))
+		return (true);
+
+	return (false);
+}
+
 void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, Channel& channel)
 {
 	std::string					modestring = cmdTokens[2];
@@ -90,6 +106,8 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 
 		std::string	modeReply = channel.getModeKey() + channel.getModeInvite();
 		cmdReply(user, _num.RPL_CHANNELMODEIS, user.getNickname() + " " + channel.getName() + " " + modeReply);
+		sendCmdToChannel(user, "MODE", channel.getMembers(), channel.getName(), channel.getName() + " " + modestring + " " + modearguments[0]);
+
 	}
 
 	// HANDLE OPERATOR MODE
@@ -99,25 +117,11 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 			return ;
 
 		cmdReply(user, "MODE", channel.getName() + " " + modestring + " " + modearguments[0]);
+		sendCmdToChannel(user, "MODE", channel.getMembers(), channel.getName(), channel.getName() + " " + modestring + " " + modearguments[0]);
 	}
+
 
 	return ;
-}
-
-int		Server::findErrorInModeString(User& user, Channel& channel, std::string modestring)
-{
-	// IF THE USER IS NOT AN OPERATOR
-	if (user.isOperator(channel.getOperators()) == false)
-	{
-		numericReply(user, _num.ERR_CHANOPRIVSNEEDED, channel.getName(), _num.MSG_ERR_CHANOPRIVSNEEDED);
-		return (true);
-	}
-
-	// IF THE MODESTRING IS INVALID
-	if (modestring.size() != 2 && (modestring[0] != '-' || modestring[0] != '+'))
-		return (true);
-
-	return (false);
 }
 
 int		Server::handleKeyMode(Channel& channel, std::string modestring, std::vector<std::string> modearguments)

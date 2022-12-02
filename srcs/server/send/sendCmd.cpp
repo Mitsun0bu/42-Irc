@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   sendCmd.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:42:54 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 00:39:50 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/12/02 16:36:32 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ void	Server::sendCmdToChannel(User &from, std::string cmd, std::set<int> &target
 {
 	std::string finalMsg = ":" + from.getNickname() + " " + cmd + " " + channel + " " + msg + "\r\n";
 	std::set<int>::iterator it;
+
+	std::cout << BLUE << "[SERVER] : " << END << finalMsg << std::endl;
 
 	for (it = targets.begin(); it != targets.end(); ++it)
 	{
