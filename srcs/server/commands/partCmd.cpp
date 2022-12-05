@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:15:50 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/05 14:09:07 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/05 17:46:45 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,11 @@ int	Server::leaveChannel(User &user, Channel& channel, std::string channelName, 
 
 	// REMOVE CHANNEL FROM USER LOCATIONS
 	user.getLocations().erase(channelName);
+
+	// IF CHANNEL HAS INVITE MODE, REMOVE USER FROM ALLOWED MEMBERS
+	if (channel.getModeInvite() == "+i"
+	&&  channel.getAllowedMembers().find(user.getSocket()) != channel.getAllowedMembers().end())
+		channel.getAllowedMembers().erase(user.getSocket());
 
 	// REPLY
 	cmdReply(user, "PART", channelName + " " + reason);
