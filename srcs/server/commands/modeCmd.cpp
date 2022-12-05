@@ -151,23 +151,21 @@ int		Server::handleOperatorMode(User& user, Channel& channel, std::string modest
 	if (modestring[0] == '-')
 	{
 		channel.removeOperator(getUserSocket(modearguments[0]));
-		// SEE WITH ALEX
-		(void)user;
-		// if (channel.getOperators().size() == 0)
-		// {
-		// 	cmdReply(user, "PART", channel.getName());
-		// 	sendCmdToChannel(user, "PART", channel.getMembers(), channel.getName(), "");
-		// 	channel.getMembers().erase(getUserSocket(modearguments[0]));
-		// 	for (std::set<int>::iterator it = channel.getMembers().begin(); it != channel.getMembers().end(); it ++)
-		// 	{
-		// 		cmdReply(user, "KICK", channel.getName() + " " + getUserNickname(*it));
-		// 		sendCmdToChannel(user, "KICK", channel.getMembers(),  channel.getName(), getUserNickname(*it));
-		// 		removeUserFromChannel(_users[*it], channel);
-		// 		if (channel.getMembers().size() == 0)
-		// 			break;
-		// 	}
-		// 	deleteChannel(channel.getName());
-		// }
+		if (channel.getOperators().size() == 0)
+		{
+			cmdReply(user, "PART", channel.getName());
+			sendCmdToChannel(user, "PART", channel.getMembers(), channel.getName(), "");
+			channel.getMembers().erase(getUserSocket(modearguments[0]));
+			for (std::set<int>::iterator it = channel.getMembers().begin(); it != channel.getMembers().end(); it ++)
+			{
+				cmdReply(user, "KICK", channel.getName() + " " + getUserNickname(*it));
+				sendCmdToChannel(user, "KICK", channel.getMembers(),  channel.getName(), getUserNickname(*it));
+				removeUserFromChannel(_users[*it], channel);
+				if (channel.getMembers().size() == 0)
+					break;
+			}
+			deleteChannel(channel.getName());
+		}
 	}
 	else if (modestring[0] == '+')
 		channel.addOperator(getUserSocket(modearguments[0]));

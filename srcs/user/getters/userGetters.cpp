@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   UserGetters.cpp                                    :+:      :+:    :+:   */
+/*   userGetters.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:24:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 15:30:33 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/05 14:12:14 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ bool	User::getIsAuthenticated(void) const
 	return (_isAuthenticated);
 }
 
-std::set<std::string>	User::getLocations(void) const
+std::set<std::string>&	User::getLocations(void)
 {
 	return (_locations);
 }

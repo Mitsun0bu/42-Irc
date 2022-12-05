@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:23:53 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 00:59:59 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/12/05 14:11:34 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ class User
 		int						getSocket(void) const;
 		bool					getValidPasswd(void) const;
 		bool					getIsAuthenticated(void) const;
-		std::set<std::string>	getLocations(void) const;
+		std::set<std::string>&	getLocations(void);
 		std::string				getIp(void) const;
 		std::string 			getNickname(void) const;
 		std::string 			getUsername(void) const;

@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:15:50 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/05 11:11:51 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/05 14:09:07 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,8 +89,16 @@ int	Server::leaveChannel(User &user, Channel& channel, std::string channelName, 
 		channel.removeOperator(user.getSocket());
 
 	// IF THERE IS NO MEMBERS OR OPERATOR IN CHANNEL ANYMORE, DELETE THE CHANNEL
-	if (channel.getMembers().size() == 0 /*|| channel.getOperators().size() == 0*/) // SEE WITH ALEX
+	if (channel.getMembers().size() == 0 || channel.getOperators().size() == 0) // SEE WITH ALEX
 	{
+		for (std::set<int>::iterator it = channel.getMembers().begin(); it != channel.getMembers().end(); it ++)
+		{
+			cmdReply(user, "KICK", channel.getName() + " " + getUserNickname(*it));
+			sendCmdToChannel(user, "KICK", channel.getMembers(),  channel.getName(), getUserNickname(*it));
+			removeUserFromChannel(_users[*it], channel);
+			if (channel.getMembers().size() == 0)
+				break;
+		}
 		deleteChannel(channelName);
 		if (_channels.size() == 0)
 			return(STOP);

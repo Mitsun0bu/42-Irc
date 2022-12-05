@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:58:24 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/02 15:11:43 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/05 14:13:02 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,24 +96,10 @@ void	Server::registerUser(User &user)
 
 void	Server::logoutUser(User &user)
 {
-	std::map<std::string, Channel>::iterator it = _channels.begin();
+	std::set<std::string>	copyLocations(user.getLocations());
+	std::set<std::string>::iterator it;
 
-	while (it != _channels.end())
-	{
-		if (it->second.getOperators().find(user.getSocket()) != it->second.getOperators().end())
-			it->second.getOperators().erase(user.getSocket());
-		if (it->second.getMembers().find(user.getSocket()) != it->second.getMembers().end())
-		{
-			it->second.getMembers().erase(user.getSocket());
-			if (it->second.getMembers().size() == 0)
-			{
-				std::map<std::string, Channel>::iterator toErase = it;
-				++it;
-				_channels.erase(toErase);
-			}
-			else
-				++it;
-		}
-	}
+	for(it = copyLocations.begin(); it != copyLocations.end(); ++it)
+		leaveChannel(user, _channels[*it], *it, "");
 	this->_users.erase(user.getSocket());
 }
