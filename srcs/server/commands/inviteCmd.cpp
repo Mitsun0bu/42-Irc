@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   inviteCmd.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:08:07 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 01:21:48 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/12/05 15:05:12 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,9 @@
 
 void	Server::inviteCmd(User &user, std::vector<std::string> &cmdTokens)
 {
+	if (cmdTokens.size() < 3)
+		return(this->numericReply(user, _num.ERR_NEEDMOREPARAMS, cmdTokens[0], _num.MSG_ERR_NEEDMOREPARAMS));
+
 	if (cmdTokens.size() != 3)
 		return ;
 

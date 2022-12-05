@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:23:53 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/05 14:11:34 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/05 15:02:13 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,9 @@ class User
 		bool					getIsAuthenticated(void) const;
 		std::set<std::string>&	getLocations(void);
 		std::string				getIp(void) const;
-		std::string 			getNickname(void) const;
-		std::string 			getUsername(void) const;
-		std::string				getCmdReceived(void) const;
+		std::string& 			getNickname(void);
+		std::string& 			getUsername(void);
+		std::string&			getCmdReceived(void);
 		int						getCmdToExecute(void) const;
 
 		/* setters												*/

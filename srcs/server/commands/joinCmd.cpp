@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:10:37 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 14:34:06 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/05 15:04:17 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,9 @@ void	Server::joinCmd(User &user, std::vector<std::string> &cmdTokens)
 	std::vector<std::string>	channelNames;
 	std::vector<std::string>	channelKeys;
 	std::string					topicMsg;
+
+	if (cmdTokens.size() < 2)
+		return(this->numericReply(user, _num.ERR_NEEDMOREPARAMS, cmdTokens[0], _num.MSG_ERR_NEEDMOREPARAMS));
 
 	tokenizer(cmdTokens[1], ",", channelNames);
 	if(cmdTokens.size() > 2)

@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/05 10:27:45 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/05 14:45:52 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ class	Server
 		void							acceptNewUser();
 
 		void							handleClientData(int &currentFd);
-		void							printRecvError(int byteCount, int currentFd);
+		void							printRecvError(int currentFd);
 
 		int								findCmdToExecute(std::string &cmd);
 

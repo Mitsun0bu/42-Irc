@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:58:24 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/05 14:13:02 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/05 14:59:47 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,4 +102,6 @@ void	Server::logoutUser(User &user)
 	for(it = copyLocations.begin(); it != copyLocations.end(); ++it)
 		leaveChannel(user, _channels[*it], *it, "");
 	this->_users.erase(user.getSocket());
+	FD_CLR(user.getSocket(), &_clientFdList.master);
+	close(user.getSocket());
 }

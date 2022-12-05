@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handleClientData.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 09:37:51 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 01:05:26 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/12/05 15:07:10 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,9 @@ void	Server::handleClientData(int &currentFd)
 	currentUser.setCmdReceived(currentUser.getCmdReceived() += buffer);
 	if (byteCount <= 0)
 	{
-		this->printRecvError(byteCount, currentFd);
+		this->printRecvError(currentFd);
 		if (_users.find(currentFd) != _users.end())
 			logoutUser(_users[currentFd]);
-		close(currentFd);
-		FD_CLR(currentFd, &this->_clientFdList.master);
 	}
 	else
 	{

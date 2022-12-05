@@ -6,21 +6,11 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 13:32:28 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 14:50:13 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/05 15:06:41 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "../../incs/main.hpp"
-
-/*
-	TO CHECK LIST :
-
-	rempalcer _clientFdList par clientSocketList (apres merge avec Alex) ??
-
-	TO DO LIST :
-
-	tout tester avec nc
-*/
 
 int	main(int ac, char** av)
 {

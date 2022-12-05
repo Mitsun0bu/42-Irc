@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:24:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/05 14:12:14 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/05 15:02:44 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,17 +42,17 @@ std::set<std::string>&	User::getLocations(void)
 	return (_locations);
 }
 
-std::string	User::getNickname(void) const
+std::string&	User::getNickname(void)
 {
 	return (_nickname);
 }
 
-std::string	User::getUsername(void) const
+std::string&	User::getUsername(void)
 {
 	return (_username);
 }
 
-std::string	User::getCmdReceived(void) const
+std::string&	User::getCmdReceived(void)
 {
 	return (_cmdReceived);
 }
