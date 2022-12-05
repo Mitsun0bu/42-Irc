@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/05 14:45:52 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/05 17:02:21 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ class	Server
 
 		/* member functions												*/
 		int								bindSocket(int serverSocket, struct sockaddr_in& socketAddr);
-		void							setSocketAddr(struct sockaddr_in& socketAddr, const char* internetHostAddr, int port);
+		void							setSocketAddr(struct sockaddr_in& socketAddr, int port);
 		int								setSocket(void);
 		void							clientFdListInit(void);
 		void							selectClientSocket(void);
