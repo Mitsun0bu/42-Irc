@@ -120,7 +120,6 @@ void	Server::handleModeString(User &user, std::vector<std::string> &cmdTokens, C
 		sendCmdToChannel(user, "MODE", channel.getMembers(), channel.getName(), channel.getName() + " " + modestring + " " + modearguments[0]);
 	}
 
-
 	return ;
 }
 
@@ -137,6 +136,14 @@ int		Server::handleKeyMode(Channel& channel, std::string modestring, std::vector
 	return (SUCCESS);
 }
 
+void	Server::handleInviteMode(Channel& channel, std::string modestring)
+{
+	if (modestring[0] == '-')
+		channel.unsetModeInvite();
+	else if (modestring[0] == '+')
+		channel.setModeInvite();
+}
+
 int		Server::handleOperatorMode(User& user, Channel& channel, std::string modestring, std::vector<std::string> modearguments)
 {
 	if (channel.isMember(getUserSocket(modearguments[0])) == false)
@@ -144,32 +151,26 @@ int		Server::handleOperatorMode(User& user, Channel& channel, std::string modest
 	if (modestring[0] == '-')
 	{
 		channel.removeOperator(getUserSocket(modearguments[0]));
-		if (channel.getOperators().size() == 0)
-		{
-			cmdReply(user, "PART", channel.getName());
-			sendCmdToChannel(user, "PART", channel.getMembers(), channel.getName(), "");
-			channel.getMembers().erase(getUserSocket(modearguments[0]));
-			for (std::set<int>::iterator it = channel.getMembers().begin(); it != channel.getMembers().end(); it ++)
-			{
-				cmdReply(user, "KICK", channel.getName() + " " + getUserNickname(*it));
-				sendCmdToChannel(user, "KICK", channel.getMembers(),  channel.getName(), getUserNickname(*it));
-				removeUserFromChannel(_users[*it], channel);
-				if (channel.getMembers().size() == 0)
-					break;
-			}
-			deleteChannel(channel.getName());
-		}
+		// SEE WITH ALEX
+		(void)user;
+		// if (channel.getOperators().size() == 0)
+		// {
+		// 	cmdReply(user, "PART", channel.getName());
+		// 	sendCmdToChannel(user, "PART", channel.getMembers(), channel.getName(), "");
+		// 	channel.getMembers().erase(getUserSocket(modearguments[0]));
+		// 	for (std::set<int>::iterator it = channel.getMembers().begin(); it != channel.getMembers().end(); it ++)
+		// 	{
+		// 		cmdReply(user, "KICK", channel.getName() + " " + getUserNickname(*it));
+		// 		sendCmdToChannel(user, "KICK", channel.getMembers(),  channel.getName(), getUserNickname(*it));
+		// 		removeUserFromChannel(_users[*it], channel);
+		// 		if (channel.getMembers().size() == 0)
+		// 			break;
+		// 	}
+		// 	deleteChannel(channel.getName());
+		// }
 	}
 	else if (modestring[0] == '+')
 		channel.addOperator(getUserSocket(modearguments[0]));
 
 	return (SUCCESS);
-}
-
-void	Server::handleInviteMode(Channel& channel, std::string modestring)
-{
-	if (modestring[0] == '-')
-		channel.unsetModeInvite();
-	else if (modestring[0] == '+')
-		channel.setModeInvite();
 }

@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/02 15:12:00 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/05 10:27:45 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,7 @@ class	Server
 
 		/* PART */
 		void							partCmd(User &user, std::vector<std::string> &cmdTokens);
+		int								leaveChannel(User &user, Channel& channel, std::string channelName, std::string reason);
 
 		/* PASS */
 		void							passCmd(User &user, std::vector<std::string> &cmdTokens);

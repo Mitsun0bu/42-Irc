@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 11:57:04 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/02 17:23:06 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/05 11:07:42 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	launchServer(Server &server)
 
 void	printServerWelcomeMessage(void)
 {
-	std::cout << "\t\t~~~ Welcome to Haycee & Mitsunobu's	~~~" << std::endl;
+	std::cout << "\t\t~~~ Welcome to Haycee & Mitsunobu's ~~~" << std::endl;
 	std::cout << std::endl;
 	std::cout << "██╗██████╗░░█████╗░  ░██████╗███████╗██████╗░██╗░░░██╗███████╗██████╗░" << std::endl;
 	std::cout << "██║██╔══██╗██╔══██╗  ██╔════╝██╔════╝██╔══██╗██║░░░██║██╔════╝██╔══██╗" << std::endl;

@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:15:50 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/02 17:01:57 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/05 11:11:51 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,38 +47,53 @@ void	Server::partCmd(User &user, std::vector<std::string> &cmdTokens)
 			continue;
 		}
 
+		// IF CHANNEL TO LEAVE EXISTS
 		for(it = _channels.begin(); it != _channels.end(); ++it)
 		{
 			// WHEN CHANNEL IS FIND IN SERVER CHANNELS
 			if (it->first == channelsToLeave[i])
-			{
-				// IF USER IS NOT IN CHANNEL TO LEAVE
-				if (user.getLocations().find(channelsToLeave[i]) == user.getLocations().end())
-				{
-					std::string	notInChannelMsg = " " + user.getNickname() + " " + channelsToLeave[i];
-					numericReply(user, _num.ERR_NOTONCHANNEL, notInChannelMsg, _num.MSG_ERR_NOTONCHANNEL);
-					continue ;
-				}
-				// REMOVE USER FROM CHANNEL MEMBERS
-				it->second.getMembers().erase(user.getSocket());
-
-				// REMOVE CHANNEL FROM USER LOCATIONS
-				user.getLocations().erase(channelsToLeave[i]);
-				// REPLY
-				cmdReply(user, "PART", channelsToLeave[i] + " " + reason);
-				sendCmdToChannel(user, "PART", it->second.getMembers(), channelsToLeave[i], " " + reason);
-
-				// IF THE USER WAS AN OPERATOR, REMOVE IT FROM OPERATOR SET
-				if (it->second.getOperators().find(user.getSocket()) != it->second.getOperators().end())
-					it->second.removeOperator(user.getSocket());
-				// IF THERE IS NO MEMBERS OR OPERATOR IN CHANNEL ANYMORE, DELETE THE CHANNEL
-				if (it->second.getMembers().size() == 0 || it->second.getOperators().size() == 0)
-				{
-					deleteChannel(it->first);
-					if (_channels.size() == 0)
-						return ;
-				}
-			}
+				if (leaveChannel(user, it->second, channelsToLeave[i], reason) == STOP)
+					return ;
 		}
 	}
+}
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                               ~~~ UTILS ~~~                                */
+/*                                                                            */
+/* ************************************************************************** */
+
+int	Server::leaveChannel(User &user, Channel& channel, std::string channelName, std::string reason)
+{
+	// IF USER IS NOT IN CHANNEL TO LEAVE
+	if (user.getLocations().find(channelName) == user.getLocations().end())
+	{
+		std::string	notInChannelMsg = " " + user.getNickname() + " " + channelName;
+		numericReply(user, _num.ERR_NOTONCHANNEL, notInChannelMsg, _num.MSG_ERR_NOTONCHANNEL);
+		return (CONTINUE);
+	}
+
+	// REMOVE USER FROM CHANNEL MEMBERS
+	channel.getMembers().erase(user.getSocket());
+
+	// REMOVE CHANNEL FROM USER LOCATIONS
+	user.getLocations().erase(channelName);
+
+	// REPLY
+	cmdReply(user, "PART", channelName + " " + reason);
+	sendCmdToChannel(user, "PART", channel.getMembers(), channelName, " " + reason);
+
+	// IF THE USER WAS AN OPERATOR, REMOVE IT FROM OPERATOR SET
+	if (channel.getOperators().find(user.getSocket()) != channel.getOperators().end())
+		channel.removeOperator(user.getSocket());
+
+	// IF THERE IS NO MEMBERS OR OPERATOR IN CHANNEL ANYMORE, DELETE THE CHANNEL
+	if (channel.getMembers().size() == 0 /*|| channel.getOperators().size() == 0*/) // SEE WITH ALEX
+	{
+		deleteChannel(channelName);
+		if (_channels.size() == 0)
+			return(STOP);
+	}
+	return (SUCCESS);
 }
