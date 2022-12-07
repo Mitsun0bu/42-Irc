@@ -6,7 +6,7 @@
 #    By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/31 14:42:54 by llethuil          #+#    #+#              #
-#    Updated: 2022/12/02 17:17:07 by llethuil         ###   ########lyon.fr    #
+#    Updated: 2022/12/07 16:58:50 by llethuil         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -58,7 +58,6 @@ SRCS_SUBDIRS	:=	channel									\
 					server/reply							\
 					server/send								\
 					server/socket							\
-					server/utils							\
 					user									\
 					user/getters							\
 					user/locations							\
@@ -105,15 +104,15 @@ SRCS_LST		:=	channel/Channel.cpp						\
 					server/socket/clientFdListInit.cpp		\
 					server/socket/selectClientSocket.cpp	\
 					server/socket/setSocket.cpp				\
-					server/utils/printRecvError.cpp			\
-					server/utils/utilsChannels.cpp			\
-					server/utils/utilsUsers.cpp				\
 					main/main.cpp							\
 					message/sendMsg.cpp						\
 					parsing/parseArguments.cpp				\
 					parsing/tokenizer.cpp					\
 					utils/intToStr.cpp						\
 					utils/launchServer.cpp					\
+					utils/printRecvError.cpp				\
+					utils/utilsChannels.cpp					\
+					utils/utilsUsers.cpp					\
 
 OBJS_DIR		:= .objs
 

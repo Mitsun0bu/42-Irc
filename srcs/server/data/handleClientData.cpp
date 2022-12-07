@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 09:37:51 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/07 11:26:22 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/07 15:49:49 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void	Server::handleClientData(int &currentFd)
 		tokenizer(currentUser.getCmdReceived(), "\r\n", cmds);
 		currentUser.setCmdReceived("");
 
-		for(size_t i = 0; i < cmds.size(); i ++)
+		for (size_t i = 0; i < cmds.size(); i ++)
 		{
 			tokenizer(cmds[i], " ", cmdTokens);
 			this->handleCmd(currentUser, cmdTokens);
