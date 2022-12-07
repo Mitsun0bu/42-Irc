@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:15:50 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/05 17:46:45 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/07 11:15:11 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,12 @@ void	Server::partCmd(User &user, std::vector<std::string> &cmdTokens)
 	std::string									reason = "";
 	std::map<std::string, Channel>::iterator	it;
 
+	if (cmdTokens.size() < 2)
+		return(this->numericReply(user, _num.ERR_NEEDMOREPARAMS, cmdTokens[0], _num.MSG_ERR_NEEDMOREPARAMS));
+
 	tokenizer(cmdTokens[1], ",", channelsToLeave);
 	if(cmdTokens.size() == 3)
 		reason = cmdTokens[2];
-
-	if (cmdTokens.size() < 2)
-		return(this->numericReply(user, _num.ERR_NEEDMOREPARAMS, cmdTokens[0], _num.MSG_ERR_NEEDMOREPARAMS));
 
 	for (size_t i = 0; i < channelsToLeave.size(); i++)
 	{

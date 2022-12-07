@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 09:29:29 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/05 17:34:42 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/07 10:19:43 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ int		Server::setSocket()
 	{
 		std::cerr	<< "Error : Server socket cannot listen to the targeted port !"
 					<< std::endl;
-
 		return (FAILED);
 	}
 

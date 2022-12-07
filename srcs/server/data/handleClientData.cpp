@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 09:37:51 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/05 15:07:10 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/07 11:26:22 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,9 @@ void	Server::handleClientData(int &currentFd)
 	User &currentUser = _users[currentFd];
 
 	byteCount = recv(currentFd, buffer, 4080, 0);
+
 	currentUser.setCmdReceived(currentUser.getCmdReceived() += buffer);
+
 	if (byteCount <= 0)
 	{
 		this->printRecvError(currentFd);
