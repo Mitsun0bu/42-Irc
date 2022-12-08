@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 09:37:51 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/07 15:49:49 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/08 13:34:42 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,10 @@ void	Server::handleClientData(int &currentFd)
 
 	currentUser.setCmdReceived(currentUser.getCmdReceived() += buffer);
 
-	if (byteCount <= 0)
+	if (byteCount <= 0 && _users.find(currentFd) != _users.end())
 	{
-		this->printRecvError(currentFd);
-		if (_users.find(currentFd) != _users.end())
-			logoutUser(_users[currentFd]);
+		this->printRecvError(currentFd, byteCount);
+		logoutUser(_users[currentFd]);
 	}
 	else
 	{
