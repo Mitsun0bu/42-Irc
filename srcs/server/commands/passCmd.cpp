@@ -27,6 +27,8 @@
 
 void	Server::passCmd(User &user, std::vector<std::string> &cmdTokens)
 {
+
+
 	if (user.getIsAuthenticated())
 		this->numericReply(user, _num.ERR_ALREADYREGISTERED, _num.MSG_ERR_ALREADYREGISTERED);
 	else if (cmdTokens.size() < 2)

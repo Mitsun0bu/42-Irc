@@ -27,7 +27,6 @@
 
 void	Server::nickCmd(User &user, std::vector<std::string> &cmdTokens)
 {
-
 	if (!user.getValidPasswd())
 		return ;
 	else if (cmdTokens.size() < 2)
@@ -61,7 +60,7 @@ void	Server::notifyAllChannels(User &user, std::string &nickname)
 
 	for(it = user.getLocations().begin(); it != user.getLocations().end(); ++it)
 		sendCmdToChannel(user, "NICK", _channels[*it].getMembers(), "", nickname);
-}    
+}
 
 bool	Server::parseNick(std::string &nickname)
 {

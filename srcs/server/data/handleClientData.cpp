@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handleClientData.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 09:37:51 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/08 14:33:23 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/12/08 15:19:20 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,14 @@ void	Server::handleClientData(int &currentFd)
 		if (currentUser.getCmdReceived()[currentUser.getCmdReceived().length() - 1] != '\n')
 			return ;
 		tokenizer(currentUser.getCmdReceived(), "\r\n", cmds);
+
 		currentUser.setCmdReceived("");
 
 		for (size_t i = 0; i < cmds.size(); i ++)
 		{
 			tokenizer(cmds[i], " ", cmdTokens);
 			this->handleCmd(currentUser, cmdTokens);
+			cmdTokens.clear();
 		}
 	}
 }

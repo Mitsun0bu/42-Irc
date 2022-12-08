@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handleCmd.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:07:17 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 00:59:35 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/12/08 15:17:59 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,6 @@ int		Server::findCmdToExecute(std::string &cmd)
 		if (cmd == it->second)
 			return it->first;
 	}
-	return (FAILED);
 
+	return (FAILED);
 }

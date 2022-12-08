@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilsUsers.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:58:24 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/08 14:34:28 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/12/08 15:02:23 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,6 @@ void  Server::acceptNewUser(void)
 	int						socket;
 	struct sockaddr_storage	socketAddr;
 	socklen_t				socketAddrSize = 0;
-
-	// DEBUG
-	std::cout << "HERE" << std::endl;
 
 	socket = accept(this->_socket, (struct sockaddr*)&socketAddr, &socketAddrSize);
 	User &newUser = this->_users[socket];
