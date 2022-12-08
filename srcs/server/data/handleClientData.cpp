@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 09:37:51 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/08 15:19:20 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/08 15:31:44 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,7 @@ void	Server::handleClientData(int &currentFd)
 	{
 		this->printRecvError(currentFd, byteCount);
 		if (_users.find(currentFd) != _users.end())
-		{
 			logoutUser(_users[currentFd]);
-		}
 	}
 	else
 	{
