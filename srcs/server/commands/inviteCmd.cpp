@@ -6,7 +6,7 @@
 /*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:08:07 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/05 15:05:12 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/08 17:40:36 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void	Server::inviteCmd(User &user, std::vector<std::string> &cmdTokens)
 	std::string	userToInvite	= cmdTokens[1];
 	std::string	channelName		= cmdTokens[2];
 
-	if (handleInviteError(user, channelName) == FAILED)
+	if (handleInviteError(user, channelName, userToInvite) == FAILED)
 		return ;
 
 	// IF USER TO INVITE IS ALREADY A CHANNEL MEMBER
@@ -49,7 +49,9 @@ void	Server::inviteCmd(User &user, std::vector<std::string> &cmdTokens)
 	}
 
 	numericReply(user, _num.RPL_INVITING, " " + user.getNickname() + " " + userToInvite + " " + channelName);
+
 	sendInvitation(userInviting, userToInvite, channelName);
+
 	if (_channels[channelName].getModeInvite() == "+i")
 		_channels[channelName].getAllowedMembers().insert(getUserSocket(userToInvite));
 
@@ -62,12 +64,19 @@ void	Server::inviteCmd(User &user, std::vector<std::string> &cmdTokens)
 /*                                                                            */
 /* ************************************************************************** */
 
-int		Server::handleInviteError(User &user, std::string channelName)
+int		Server::handleInviteError(User &user, std::string channelName, std::string userToInvite)
 {
 	// IF CHANNEL DOES NOT EXIST
 	if (channelExists(channelName) == false)
 	{
 		numericReply(user, _num.ERR_NOSUCHCHANNEL, channelName, _num.MSG_ERR_NOSUCHCHANNEL);
+		return (FAILED);
+	}
+
+	// IF USER TO INVITE DOES NOT EXIST
+	if (getUserSocket(userToInvite) == FAILED)
+	{
+		numericReply(user, _num.ERR_NOSUCHNICK, userToInvite, _num.MSG_ERR_NOSUCHNICK);
 		return (FAILED);
 	}
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/08 14:33:03 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/12/08 17:37:50 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ class	Server
 
 		/* INVITE */
 		void							inviteCmd(User &user, std::vector<std::string> &cmdTokens);
-		int								handleInviteError(User &user, std::string channelName);
+		int								handleInviteError(User &user, std::string channelName, std::string userToInvite);
 		void							sendInvitation(std::string userInviting, std::string userToInvite, std::string channelName);
 
 		/* JOIN */
