@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   quitCmd.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:13:50 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/05 15:07:02 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/07 20:17:44 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 
 void	Server::quitCmd(User &user, std::vector<std::string> &cmdTokens)
 {
-	std::string msg = "Quit: ";
+	std::string msg = ":Quit";
 
 	for (size_t i = 1; i < cmdTokens.size(); i++)
 		msg.append(cmdTokens[i]);

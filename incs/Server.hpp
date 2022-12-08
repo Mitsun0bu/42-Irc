@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 10:29:59 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/08 13:32:32 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/08 14:33:03 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,6 +128,7 @@ class	Server
 		/* NICK */
 		void							nickCmd(User &user, std::vector<std::string> &cmdTokens);
 		bool							parseNick(std::string &nickname);
+		void							notifyAllChannels(User &user, std::string &nickname);
 
 		/* PART */
 		void							partCmd(User &user, std::vector<std::string> &cmdTokens);

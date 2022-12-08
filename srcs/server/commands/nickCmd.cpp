@@ -27,6 +27,7 @@
 
 void	Server::nickCmd(User &user, std::vector<std::string> &cmdTokens)
 {
+
 	if (!user.getValidPasswd())
 		return ;
 	else if (cmdTokens.size() < 2)
@@ -38,9 +39,12 @@ void	Server::nickCmd(User &user, std::vector<std::string> &cmdTokens)
 	else
 	{
 		if (user.getIsAuthenticated())
-			return(this->cmdReply(user, "NICK", cmdTokens[1]));
+		{
+			this->cmdReply(user, "NICK", cmdTokens[1]);
+			notifyAllChannels(user, cmdTokens[1]);
+		}
 		user.setNickname(cmdTokens[1]);
-		if (!user.getUsername().empty())
+		if (!user.getUsername().empty() && !user.getIsAuthenticated())
 			registerUser(user);
 	}
 }
@@ -50,6 +54,14 @@ void	Server::nickCmd(User &user, std::vector<std::string> &cmdTokens)
 /*                               ~~~ UTILS ~~~                                */
 /*                                                                            */
 /* ************************************************************************** */
+
+void	Server::notifyAllChannels(User &user, std::string &nickname)
+{
+	std::set<std::string>::iterator it;
+
+	for(it = user.getLocations().begin(); it != user.getLocations().end(); ++it)
+		sendCmdToChannel(user, "NICK", _channels[*it].getMembers(), "", nickname);
+}    
 
 bool	Server::parseNick(std::string &nickname)
 {

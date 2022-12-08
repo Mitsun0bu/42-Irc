@@ -6,7 +6,7 @@
 /*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:09:50 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 19:15:05 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/12/08 14:21:17 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	Server::privmsgCmd(User &user, std::vector<std::string> &cmdTokens)
 		return(numericReply(user, _num.ERR_NOTEXTTOSEND, _num.MSG_ERR_NOTEXTTOSEND));
 
 	for (size_t i = 2; i < cmdTokens.size(); i++)
-		msg.append(cmdTokens[i]);
+		msg.append(cmdTokens[i] + " ");
 
 	tokenizer(cmdTokens[1], ",", targets);
 	for (size_t i = 0; i < targets.size(); i++)

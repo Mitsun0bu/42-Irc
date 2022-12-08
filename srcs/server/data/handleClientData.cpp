@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handleClientData.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 09:37:51 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/08 14:26:14 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/08 14:33:23 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
