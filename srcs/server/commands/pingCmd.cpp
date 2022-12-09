@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pingCmd.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 19:15:05 by llethuil          #+#    #+#             */
-/*   Updated: 2022/11/30 15:17:32 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/09 15:01:32 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 void	Server::handlePing(User &user, std::vector<std::string> &cmdTokens)
 {
 	if (cmdTokens.size() < 2)
-		this->numericReply(user, _num.ERR_NEEDMOREPARAMS, cmdTokens[0], _num.MSG_ERR_NEEDMOREPARAMS);
+		return(this->numericReply(user, _num.ERR_NEEDMOREPARAMS, cmdTokens[0], _num.MSG_ERR_NEEDMOREPARAMS));
 
 	std::string host = _internetHostAddr;
 	cmdReply(user, "PONG", host + " " + cmdTokens[1]);

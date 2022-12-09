@@ -74,7 +74,7 @@ void	Server::clearTopic(std::string channelName)
 
 void	Server::replyTopic(User& user, std::string channelName)
 {
-	std::string topicMsg = user.getNickname() + " " + channelName;
+	std::string topicMsg = " " + user.getNickname() + " " + channelName;
 
 	if (_channels[channelName].getTopicIsSet() == true)
 	{
@@ -88,7 +88,7 @@ void	Server::replyTopic(User& user, std::string channelName)
 
 void	Server::setTopic(std::string channelName, std::string topic)
 {
-	_channels[channelName].getTopic()		= topic.erase(0, 1);
+	_channels[channelName].setTopic(topic.erase(0, 1));
 	_channels[channelName].setTopicIsSet(true);
 	return ;
 }

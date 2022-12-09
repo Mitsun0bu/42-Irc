@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilsUsers.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:58:24 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/08 15:02:23 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2022/12/09 15:01:10 by agirardi         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,5 @@ void	Server::logoutUser(User &user)
 		leaveChannel(user, _channels[*it], *it, "");
 	FD_CLR(user.getSocket(), &_clientFdList.master);
 	close(user.getSocket());
-	this->_users.erase(user.getSocket());
 	this->_users.erase(user.getSocket());
 }
