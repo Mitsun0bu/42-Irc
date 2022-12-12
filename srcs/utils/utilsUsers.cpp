@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilsUsers.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirardi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 18:58:24 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/09 15:01:10 by agirardi         ###   ########lyon.fr   */
+/*   Updated: 2022/12/12 15:41:40 by llethuil         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,8 +96,8 @@ void	Server::registerUser(User &user)
 
 void	Server::logoutUser(User &user)
 {
-	std::set<std::string>	copyLocations(user.getLocations());
-	std::set<std::string>::iterator it;
+	std::set<std::string>			copyLocations(user.getLocations());
+	std::set<std::string>::iterator	it;
 
 	for(it = copyLocations.begin(); it != copyLocations.end(); ++it)
 		leaveChannel(user, _channels[*it], *it, "");
