@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llethuil <llethuil@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: llethuil <lucas.lethuillier@gmail.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 10:23:07 by llethuil          #+#    #+#             */
-/*   Updated: 2022/12/01 18:06:34 by llethuil         ###   ########lyon.fr   */
+/*   Updated: 2023/05/08 15:20:12 by llethuil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,12 @@ class User;
 class Channel
 {
 	public :
-		/* constructors													*/
+		/* constructors											*/
 		Channel(void);
 		Channel(std::string name);
 
 
-		/* member functions												*/
+		/* member functions										*/
 		void			addMember(User &user);
 		bool			isMember(int userSocket);
 		void			addOperator(int userSocket);

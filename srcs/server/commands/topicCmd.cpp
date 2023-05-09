@@ -53,6 +53,9 @@ void	Server::topicCmd(User &user, std::vector<std::string> &cmdTokens)
 	else if (topic.empty() == false)
 	{
 		clearTopic(channelName);
+		topic = cmdTokens[2];
+		for (size_t i = 3; i < cmdTokens.size(); i++)
+			topic += " " + cmdTokens[i];
 		setTopic(channelName, topic);
 		cmdReply(user, "TOPIC", channelName + " :" + _channels[channelName].getTopic());
 	}
